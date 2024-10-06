@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { addUser } from "./api/user/route.client";
 
 export default function Home() {
   return (
@@ -22,6 +25,24 @@ export default function Home() {
           </li>
           <li>Save and see your changes instantly.</li>
         </ol>
+
+        {/* Test Button */}
+        <button
+          onClick={async () => {
+            const response = await addUser({
+              body: {
+                user: {
+                  firstName: "Johnny",
+                  lastName: "Tan",
+                  email: "johnny.tan.best.pm@tufts.edu",
+                },
+              },
+            });
+            console.log(response);
+          }}
+        >
+          Add User
+        </button>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <a
