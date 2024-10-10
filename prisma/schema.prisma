@@ -28,10 +28,6 @@ model User {
 
 model Event {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
-  title       String      @default("")
-  description String      @default("")
-  location    String      @default("")
-  maxSignUps  Int         @default(0)
   UserIds     String[]    @db.ObjectId
   Users       User[]      @relation(fields: [UserIds], references: [id])
 }
