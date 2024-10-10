@@ -21,7 +21,6 @@ enum Role {
 model User {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   firstName   String      @default("")
-  lastName    String      @default("")
   email       String      @default("")
   EventIds    String[]    @db.ObjectId
   Events      Event[]     @relation(fields: [EventIds], references: [id])

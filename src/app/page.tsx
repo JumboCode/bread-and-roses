@@ -13,7 +13,6 @@ export default function Home() {
             body: {
               user: {
                 firstName: "Johnny",
-                lastName: "Tan",
                 email: "johnny.tan.best.pm@tufts.edu",
               },
             },

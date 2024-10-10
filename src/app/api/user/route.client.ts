@@ -1,5 +1,5 @@
 export const addUser = async (request: {
-  body: { user: { firstName: string; lastName: string; email: string } };
+  body: { user: { firstName: string; email: string } };
 }) => {
   const { body, ...options } = request;
   const response = await fetch("/api/user", {
