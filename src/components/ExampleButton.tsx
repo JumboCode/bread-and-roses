@@ -1,4 +1,5 @@
 import { addUser } from "@/app/api/user/route.client";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 interface ExampleButtonProps {
   buttonText: string;
@@ -7,7 +8,7 @@ interface ExampleButtonProps {
 const ExampleButton = ({ buttonText }: ExampleButtonProps) => {
   return (
     <button
-      className="bg-slate-700 text-white p-4 rounded-full"
+      className="bg-slate-700 text-white p-4 rounded-full flex flex-row items-center gap-3"
       onClick={async () => {
         const response = await addUser({
           body: {
@@ -21,6 +22,7 @@ const ExampleButton = ({ buttonText }: ExampleButtonProps) => {
       }}
     >
       {buttonText}
+      <Icon icon="tabler:click" width="20" />
     </button>
   );
 };
