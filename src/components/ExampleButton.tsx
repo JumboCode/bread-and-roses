@@ -1,4 +1,4 @@
-import { addUser } from "@/app/api/user/route.client";
+import { addUser } from "@api/user/route.client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 interface ExampleButtonProps {

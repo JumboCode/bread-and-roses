@@ -1,6 +1,6 @@
 "use client";
 
-import ExampleButton from "@/components/ExampleButton";
+import ExampleButton from "@components/ExampleButton";
 
 export default function Home() {
   return (
