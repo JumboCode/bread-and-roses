@@ -6,12 +6,18 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import Avatar from "@mui/material/Avatar";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+import IconButton from "@mui/material/IconButton";
+
+import profilePic from "../../../public/profile.png";
 
 function createData(
   name: string,
   type: number,
   email: string,
-  location: string,
+  location: string
 ) {
   return { name, type, email, location };
 }
@@ -36,6 +42,7 @@ export default function VolunteerTable() {
             <TableCell align="left">Type</TableCell>
             <TableCell align="left">Email address</TableCell>
             <TableCell align="left">Location</TableCell>
+            <TableCell align="center"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody sx={{ borderColor: "pink" }}>
@@ -48,14 +55,20 @@ export default function VolunteerTable() {
               }}
             >
               <TableCell
-                sx={{ borderColor: "#E4E7EC" }}
+                sx={{
+                  borderColor: "#E4E7EC",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
                 component="th"
                 scope="row"
               >
+                <Avatar alt={row.name} src={profilePic.src} />
                 {row.name}
               </TableCell>
               <TableCell sx={{ borderColor: "#E4E7EC" }} align="left">
-                {/* <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" /> */}
                 {row.type}
               </TableCell>
               <TableCell sx={{ borderColor: "#E4E7EC" }} align="left">
@@ -64,6 +77,14 @@ export default function VolunteerTable() {
               <TableCell sx={{ borderColor: "#E4E7EC" }} align="left">
                 {row.location}
               </TableCell>
+              <TableCell sx={{ borderColor: "#E4E7EC", padding: "0 15px 0 0" }} align="right">
+                <IconButton aria-label="delete volunteer">
+                  <DeleteOutlineIcon sx={{ color: "#344054"}} />
+                </IconButton>
+                <IconButton aria-label="more information on volunteer">
+                  <ArrowRightAltIcon sx={{ color: "#344054"}} />
+                </IconButton>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -71,9 +92,3 @@ export default function VolunteerTable() {
     </TableContainer>
   );
 }
-
-// box-shadow: 0px 2px 4px -2px #1018280F;
-
-// box-shadow: 0px 4px 8px -2px #1018281A;
-
-
