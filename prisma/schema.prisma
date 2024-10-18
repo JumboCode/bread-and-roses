@@ -32,9 +32,6 @@ model User {
 
 model VolunteerDetails {
   id            String  @id @default(auto()) @map("_id") @db.ObjectId
-  firstName     String      @default("")
-  lastName      String      @default("")
-  email         String      @default("")
   ageOver14     Boolean     @default(false)
   country       Boolean     @default(false)
   address       String      @default("")
@@ -49,14 +46,10 @@ model VolunteerDetails {
   basis         String      @default("")
   user          User        @relation(fields: [userId], references: [id])
   userId        String      @unique @db.ObjectId
-  EventIds      String[]    @db.ObjectId
-  Events        Event[]     @relation(fields: [EventIds], references: [id])
 }
 
 model Event {
   id            String @id @default(auto()) @map("_id") @db.ObjectId
   UserIds       String[]    @db.ObjectId
   Users         User[]      @relation(fields: [UserIds], references: [id])
-  VolunteerIds  String[]    @db.ObjectId
-  Volunteers    VolunteerDetails[] @relation(fields: [UserIds], references: [id])
 }
