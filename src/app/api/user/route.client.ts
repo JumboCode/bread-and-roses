@@ -1,5 +1,8 @@
 export const addUser = async (request: {
-  body: { user: { firstName: string; email: string } };
+  body: {
+    user: { firstName: string; email: string };
+    volunteerDetails: { ageOver14: boolean };
+  };
 }) => {
   const { body, ...options } = request;
   const response = await fetch("/api/user", {

@@ -7,12 +7,18 @@ export const POST = async (request: NextRequest) => {
   try {
     /* @TODO: Add auth */
 
-    const { user } = await request.json();
+    const { User, VolunteerDetails } = await request.json();
 
     const savedUser = await prisma.user.create({
-      data: user,
+      data: {
+        User,
+        volunteerDetails: {
+          create: {
+            VolunteerDetails,
+          },
+        },
+      },
     });
-
     return NextResponse.json({
       code: "SUCCESS",
       message: savedUser.email,
