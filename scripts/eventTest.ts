@@ -8,14 +8,12 @@ const prisma = new PrismaClient();
 async function main() {
   const events = [
     {
-      Users: "Amelia",
       EventName: "Bread Meeting",
       TimeDate: "10/18/24",
       Description: "Jumbo Code Meeting 1",
       MaxPeople: "14",
     },
     {
-      Users: "Tomas",
       EventName: "Roses Meeting",
       TimeDate: "10/24/24",
       Description: "Jumbo Code Meeting 2",
