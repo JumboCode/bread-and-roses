@@ -38,10 +38,10 @@ export default function VolunteerTable() {
       >
         <TableHead>
           <TableRow sx={{ backgroundColor: "#F9FAFB" }}>
-            <TableCell>Name</TableCell>
-            <TableCell align="left">Type</TableCell>
-            <TableCell align="left">Email address</TableCell>
-            <TableCell align="left">Location</TableCell>
+          <TableCell sx={{color: "#667085", fontWeight: 'bold' }}>Name</TableCell>
+            <TableCell align="left" sx={{color: "#667085", fontWeight: 'bold' }}>Type</TableCell>
+            <TableCell align="left" sx={{color: "#667085", fontWeight: 'bold' }}>Email address</TableCell>
+            <TableCell align="left" sx={{color: "#667085" }}>Location</TableCell>
             <TableCell align="center"></TableCell>
           </TableRow>
         </TableHead>
@@ -55,26 +55,24 @@ export default function VolunteerTable() {
               }}
             >
               <TableCell
-                sx={{
-                  borderColor: "#E4E7EC",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
+                sx={{ borderColor: "#E4E7EC" }}
                 component="th"
                 scope="row"
               >
                 <Avatar alt={row.name} src={profilePic.src} />
                 {row.name}
               </TableCell>
-              <TableCell sx={{ borderColor: "#E4E7EC" }} align="left">
+              <TableCell sx={{ borderColor: "#E4E7EC",  color: "#344054", 
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "10px", }} align="left">
                 {row.type}
               </TableCell>
-              <TableCell sx={{ borderColor: "#E4E7EC" }} align="left">
+              <TableCell sx={{ borderColor: "#E4E7EC", color: "#344054" }} align="left">
                 {row.email}
               </TableCell>
-              <TableCell sx={{ borderColor: "#E4E7EC" }} align="left">
+              <TableCell sx={{ borderColor: "#E4E7EC", color: "#344054" }} align="left">
                 {row.location}
               </TableCell>
               <TableCell sx={{ borderColor: "#E4E7EC", padding: "0 15px 0 0" }} align="right">
