@@ -25,7 +25,6 @@ model User {
   lastName           String             @default("")
   email              String             @default("")
   volunteerDetails   VolunteerDetails?  
-  volunteerDetailsId String?            @unique @db.ObjectId
   EventIds           String[]           @db.ObjectId
   Events             Event[]            @relation(fields: [EventIds], references: [id])
 }
