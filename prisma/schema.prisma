@@ -30,8 +30,8 @@ model Event {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   UserIds     String[]    @db.ObjectId
   Users       User[]      @relation(fields: [UserIds], references: [id])
-  EventName   String      //should this be related to id/userid?
-  TimeDate    DateTime    //make sure this isn't in the past? 
+  EventName   String      
+  DateTime    DateTime    
   Description String
   MaxPeople   Int         
 }

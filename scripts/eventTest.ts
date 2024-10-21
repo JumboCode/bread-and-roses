@@ -1,4 +1,4 @@
-// TO RUN: npx ts-node scripts/seed.tsgit
+// TO RUN: npx ts-node scripts/eventTest.ts
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { PrismaClient } = require("@prisma/client");
@@ -9,21 +9,20 @@ async function main() {
   const events = [
     {
       EventName: "Bread Meeting",
-      TimeDate: "10/18/24",
+      TimeDate: "2022-01-20T12:01:30.543Z",
       Description: "Jumbo Code Meeting 1",
-      MaxPeople: "14",
+      MaxPeople: 14,
     },
     {
       EventName: "Roses Meeting",
-      TimeDate: "10/24/24",
+      TimeDate: "2022-01-20T12:01:30.543Z",
       Description: "Jumbo Code Meeting 2",
-      MaxPeople: "25",
+      MaxPeople: 25,
     },
   ];
 
   for (const event of events) {
     await prisma.event.create({
-      // <---- change to event
       data: event,
     });
   }
