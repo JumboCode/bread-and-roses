@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div className="flex items-center justify-center h-screen">
       {/* Example Button (ExampleButton.tsx in components folder) */}
-      <TopHeader/>
+      <TopHeader userType="volunteer" />
       {/* <ExampleButton buttonText="Add User" /> */}
     </div>
   );
