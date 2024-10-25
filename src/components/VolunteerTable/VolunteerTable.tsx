@@ -57,28 +57,28 @@ export default function VolunteerTable() {
       >
         <TableHead>
           <TableRow sx={{ backgroundColor: "#F9FAFB" }}>
-            <TableCell sx={{ color: "#667085", fontWeight: "bold" }}>
+            <TableCell sx={{ color: "#667085", fontWeight: "bold", height: "44px", width: "255px" }}>
               Name
             </TableCell>
             <TableCell
               align="left"
-              sx={{ color: "#667085", fontWeight: "bold" }}
+              sx={{ color: "#667085", fontWeight: "bold", height: "44px", width: "255px"}}
             >
               Type
             </TableCell>
             <TableCell
               align="left"
-              sx={{ color: "#667085", fontWeight: "bold" }}
+              sx={{ color: "#667085", fontWeight: "bold", height: "44px", width: "255px" }}
             >
               Email address
             </TableCell>
             <TableCell
               align="left"
-              sx={{ color: "#667085", fontWeight: "bold" }}
+              sx={{ color: "#667085", fontWeight: "bold", height: "44px", width: "255px" }}
             >
               Location
             </TableCell>
-            <TableCell align="center"></TableCell>
+            <TableCell sx = {{ width: "116px", height: "44px  "}} align="center"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody sx={{ borderColor: "pink" }}>
@@ -107,25 +107,25 @@ export default function VolunteerTable() {
                 {row.name}
               </TableCell>
               <TableCell
-                sx={{ borderColor: "#E4E7EC", color: "#344054" }}
+                sx={{ borderColor: "#E4E7EC", color: "#344054", height: "72px", width: "255px" }}
                 align="left"
               >
                 {getUserRole(row.type)}
               </TableCell>
               <TableCell
-                sx={{ borderColor: "#E4E7EC", color: "#344054" }}
+                sx={{ borderColor: "#E4E7EC", color: "#344054", height: "72px", width: "255px" }}
                 align="left"
               >
                 {row.email}
               </TableCell>
               <TableCell
-                sx={{ borderColor: "#E4E7EC", color: "#344054" }}
+                sx={{ borderColor: "#E4E7EC", color: "#344054", height: "72px", width: "255px" }}
                 align="left"
               >
                 {row.location}
               </TableCell>
               <TableCell
-                sx={{ borderColor: "#E4E7EC", padding: "0 15px 0 0" }}
+                sx={{ borderColor: "#E4E7EC", padding: "0 15px 0 0", height: "44px", width: "255px" }}
                 align="right"
               >
                 <IconButton aria-label="delete volunteer">
