@@ -10,17 +10,30 @@ interface StatsCardProps {
 
 const StatsCard = ({ heading, value, icon, date }: StatsCardProps) => {
   return (
-    <div className="block w-full max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow-lg relative h-256 w-512">
-      <div className="flex flex-col justify-between h-full">
-        <h2 className="absolute inset-x-0 top-0 h-16 font-style font-bold text-black">{heading}</h2>
-        <p className="font-style font-bold text-black text-6xl">{value}</p>
-        <div className="absolute inset-y-0 right-0 w-16">
-          <Icon icon={icon} className="text-8xl" style={{ color: '#33BDB5' }} />
+    <div className="w-[360px] h-[160px] h-40 px-6 py-4 bg-white rounded-lg shadow border border-[#e4e7ec] flex-col justify-start items-start gap-4 inline-flex">
+    <div className="self-stretch justify-start items-center gap-2 inline-flex">
+        <div className="grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
+            <div className="self-stretch justify-start items-start gap-2 inline-flex">
+                <div className="grow shrink basis-0 text-[#344053] text-base font-semibold font-['Sofia Pro'] leading-normal">{heading}</div>
+            </div>
+            <div className="self-stretch justify-start items-end gap-4 inline-flex">
+                <div className="grow shrink basis-0 flex-col justify-start items-start gap-2 inline-flex">
+                    <div className="self-stretch text-[#0f1728] text-5xl font-semibold font-['Kepler Std'] leading-[60px]">{value}</div>
+                    <div className="self-stretch justify-start items-center gap-2 inline-flex">
+                      <div className="grow shrink basis-0 text-[#475466] py-1 text-sm font-medium font-['Inter'] leading-tight">{date}</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <p className="absolute inset-x-0 bottom-0 h-6 font-style text-gray-200">{date}</p>
-      </div>
+        <div className="w-[110px] h-[110px] relative">
+          <Icon icon={icon} className="size-full" style={{ color: '#33BDB5' }} />
+        </div>
     </div>
+    </div>
+    
   );
 };
 
 export default StatsCard;
+
+
