@@ -1,6 +1,6 @@
 import { addUser } from "@api/user/route.client";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import {addEvent} from "@api/event/route.client";
+import { addEvent, deleteEvent, updateEvent } from "@api/event/route.client";
 
 interface ExampleButtonProps {
   buttonText: string;
@@ -19,20 +19,23 @@ const ExampleButton = ({ buttonText }: ExampleButtonProps) => {
             },
           },
         });
-
-        const response2 = await addEvent({
+        await addEvent({
           body: {
             event: {
-              EventName: "bread & roses meeting :)",
-              DateTime: new Date("2024-10-18"),
-              Description: "friday meeting yippee",
-              MaxPeople: 10000,
+              EventName: "eventname",
+              Description: "desc",
+              MaxPeople: 10,
+              DateTime: new Date(),
             },
           },
         });
-
+        // const response2 = await deleteEvent({
+        //   body: {
+        //     id: "6712a960e56a47a7792d837c",
+        //   },
+        // });
         console.log(response);
-        console.log(response2);
+        // console.log(response2);
       }}
     >
       {buttonText}
