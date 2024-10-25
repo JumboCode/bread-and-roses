@@ -1,17 +1,41 @@
-export const addUser = async (request: {
-  body: {
-    user: { firstName: string; email: string };
-    volunteerDetails: { ageOver14: boolean };
-  };
-}) => {
-  const { body, ...options } = request;
-  const response = await fetch("/api/user", {
-    method: "POST",
+import { Prisma } from "@prisma/client";
+
+export const fetchApi = async (
+  endpoint: string,
+  method: "POST" | "GET" | "DELETE",
+  body?: Record<string, any>
+) => {
+  console.log(method);
+  const response = await fetch(endpoint, {
+    method,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
-    ...options,
   });
 
-  const json = await response.json();
+  if (!response.ok) {
+    throw new Error("API Error: $(response.statusText)");
+  }
 
-  return json;
+  return response.json();
+};
+
+export const addUser = async (
+  user: Prisma.UserCreateInput,
+  volunteerDetails: Prisma.VolunteerDetailsCreateInput
+) => fetchApi("/api/user", "POST", { user, volunteerDetails });
+
+export const getUser = async (user: Prisma.UserWhereUniqueInput) => {
+  const queryString = new URLSearchParams(
+    user as Record<string, string>
+  ).toString();
+  const url = `/api/user?${queryString}`;
+  return fetchApi(url, "GET");
+};
+
+export const deleteUser = async (user: Prisma.UserWhereUniqueInput) => {
+  const queryString = new URLSearchParams(
+    user as Record<string, string>
+  ).toString();
+  const url = `/api/user?${queryString}`;
+  return fetchApi(url, "DELETE");
 };

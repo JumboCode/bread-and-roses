@@ -32,7 +32,7 @@ model User {
 model VolunteerDetails {
   id            String  @id @default(auto()) @map("_id") @db.ObjectId
   ageOver14     Boolean     @default(false)
-  country       Boolean     @default(false)
+  country       String      @default("")
   address       String      @default("")
   city          String      @default("")
   state         String      @default("")
