@@ -102,3 +102,45 @@ export const GET = async (request: NextRequest) => {
     });
   }
 };
+
+export const PUT = async (request: NextRequest) => {
+  try {
+    /* @TODO: Add auth */
+
+    const { user, volunteerDetails } = await request.json();
+
+    console.log("USER IN PUT: ", user);
+    console.log("VOLUNTEERDET IN PUT: ", volunteerDetails);
+
+    const updatedUser = await prisma.user.update({
+    where: {
+      id: user.id
+    },
+    data: {
+      ...user,
+    }
+  });
+    
+
+    await prisma.volunteerDetails.update({
+      where: {
+        id: user.id
+      },
+      data: {
+        ...volunteerDetails,
+      },
+    });
+
+    return NextResponse.json({
+      code: "SUCCESS",
+      message: `User created with email: ${updatedUser.email}`,
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    return NextResponse.json({
+      code: "ERROR",
+      message: error,
+    });
+  }
+};

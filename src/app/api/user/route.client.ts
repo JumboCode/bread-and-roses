@@ -1,8 +1,8 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, User, VolunteerDetails } from "@prisma/client";
 
 export const fetchApi = async (
   endpoint: string,
-  method: "POST" | "GET" | "DELETE",
+  method: "POST" | "GET" | "DELETE" | "PUT",
   body?: Record<string, any>
 ) => {
   console.log(method);
@@ -19,23 +19,26 @@ export const fetchApi = async (
   return response.json();
 };
 
-export const addUser = async (
-  user: Prisma.UserCreateInput,
-  volunteerDetails: Prisma.VolunteerDetailsCreateInput
-) => fetchApi("/api/user", "POST", { user, volunteerDetails });
+export const addUser = async (user: User, volunteerDetails: VolunteerDetails) =>
+  fetchApi("/api/user", "POST", { user, volunteerDetails });
 
-export const getUser = async (user: Prisma.UserWhereUniqueInput) => {
+export const getUser = async (userID: string) => {
   const queryString = new URLSearchParams(
-    user as Record<string, string>
+    userID as Record<string, string>
   ).toString();
   const url = `/api/user?${queryString}`;
   return fetchApi(url, "GET");
 };
 
-export const deleteUser = async (user: Prisma.UserWhereUniqueInput) => {
+export const deleteUser = async (userID: string) => {
   const queryString = new URLSearchParams(
-    user as Record<string, string>
+    userID as Record<string, string>
   ).toString();
   const url = `/api/user?${queryString}`;
   return fetchApi(url, "DELETE");
 };
+
+export const updateUser = async (
+  user: User,
+  volunteerDetails: VolunteerDetails
+) => fetchApi("/api/user", "PUT", { user, volunteerDetails });
