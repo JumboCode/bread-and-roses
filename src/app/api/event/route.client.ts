@@ -1,17 +1,12 @@
 import { Event } from "@prisma/client";
 
-// interface addEventRequest {
+type CreateEventInput = Pick<
+  Event,
+  "EventName" | "Description" | "MaxPeople" | "DateTime"
+>;
 
-// }
-
-// {
-//   EventName: string;
-//   Description: string;
-//   MaxPeople: number;
-//   DateTime: Date;
-// };
 export const addEvent = async (request: {
-  body: { event: Partial<Event> };
+  body: { event: CreateEventInput };
 }) => {
   const { body, ...options } = request;
   const response = await fetch("/api/event", {

@@ -29,13 +29,7 @@ const ExampleButton = ({ buttonText }: ExampleButtonProps) => {
             },
           },
         });
-        // const response2 = await deleteEvent({
-        //   body: {
-        //     id: "6712a960e56a47a7792d837c",
-        //   },
-        // });
         console.log(response);
-        // console.log(response2);
       }}
     >
       {buttonText}
