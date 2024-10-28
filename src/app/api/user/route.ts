@@ -7,7 +7,8 @@ export const POST = async (request: NextRequest) => {
   try {
     /* @TODO: Add auth */
 
-    const { user, VolunteerDetails } = await request.json();
+    const { user, volunteerDetails } = await request.json();
+    console.log()
 
     const savedUser = await prisma.user.create({
       data: {
@@ -17,11 +18,12 @@ export const POST = async (request: NextRequest) => {
 
     await prisma.volunteerDetails.create({
       data: {
-        ...VolunteerDetails,
+        ...volunteerDetails,
         userId: savedUser.id,
       },
     });
-    console.log(savedUser)
+    console.log(savedUser);
+    console.log()
 
     return NextResponse.json({
       code: "SUCCESS",
@@ -63,7 +65,7 @@ export const GET = async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id"); // Assuming the user is queried by 'id'
 
-  console.log(id)
+  console.log(id);
 
   // Check if id is null
   if (!id) {
@@ -78,13 +80,13 @@ export const GET = async (request: NextRequest) => {
   try {
     const fetchedUser = await prisma.user.findUnique({
       where: { id },
-      include: {volunteerDetails: true}
+      include: { volunteerDetails: true },
     });
 
     // const fetchedVD = await prisma.volunteerDetails.findUnique({
     //   where: { id }
     // })
-    const fetchedVD = fetchedUser?.volunteerDetails
+    const fetchedVD = fetchedUser?.volunteerDetails;
 
     if (!fetchedUser || !fetchedVD) {
       return NextResponse.json(
@@ -96,11 +98,14 @@ export const GET = async (request: NextRequest) => {
       );
     }
 
-    console.log("IN GET: ", fetchedUser)
+    console.log("IN GET: ", fetchedUser);
+    const { volunteerDetails, ...user } = fetchedUser;
+
+    console.log(user);
 
     return NextResponse.json({
       code: "SUCCESS",
-      data: { fetchedUser, fetchedVD }
+      data: { user, fetchedVD },
     });
   } catch (error) {
     console.error("Error:", error);
@@ -121,28 +126,29 @@ export const PUT = async (request: NextRequest) => {
     console.log("VOLUNTEERDET IN PUT: ", volunteerDetails);
 
     const updatedUser = await prisma.user.update({
-    where: {
-      id: user.id
-    },
-    data: {
-      ...user,
-    }
-  });
-    
-
-    await prisma.volunteerDetails.update({
       where: {
-        id: user.id
+        id: user.id,
+      },
+      data: {
+        ...user,
+        id: undefined,
+      },
+    });
+
+    const updatedVD = await prisma.volunteerDetails.update({
+      where: {
+        id: volunteerDetails.id,
       },
       data: {
         ...volunteerDetails,
+        id: undefined,
       },
     });
 
     return NextResponse.json({
       code: "SUCCESS",
-      message: `User created with email: ${updatedUser.email}`,
-      data: updatedUser,
+      message: `User update with email: ${updatedUser.email}`,
+      data: { user: updatedUser, volunteerDetails: updatedVD },
     });
   } catch (error) {
     console.error("Error:", error);
