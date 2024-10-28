@@ -26,15 +26,16 @@ export const getUser = async (userID: string) => {
   const queryString = new URLSearchParams(
     userID as Record<string, string>
   ).toString();
-  const url = `/api/user?${queryString}`;
+  const url = `/api/user?id=${queryString}`;
   return fetchApi(url, "GET");
 };
 
 export const deleteUser = async (userID: string) => {
+  
   const queryString = new URLSearchParams(
     userID as Record<string, string>
   ).toString();
-  const url = `/api/user?${queryString}`;
+  const url = `/api/user?id=${queryString}`;
   return fetchApi(url, "DELETE");
 };
 

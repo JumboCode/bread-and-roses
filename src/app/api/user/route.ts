@@ -7,10 +7,7 @@ export const POST = async (request: NextRequest) => {
   try {
     /* @TODO: Add auth */
 
-    const { user, volunteerDetails } = await request.json();
-
-    console.log("USER IN POST: ", user);
-    console.log("VOLUNTEERDET IN POST: ", volunteerDetails);
+    const { user, VolunteerDetails } = await request.json();
 
     const savedUser = await prisma.user.create({
       data: {
@@ -20,10 +17,11 @@ export const POST = async (request: NextRequest) => {
 
     await prisma.volunteerDetails.create({
       data: {
-        ...volunteerDetails,
+        ...VolunteerDetails,
         userId: savedUser.id,
       },
     });
+    console.log(savedUser)
 
     return NextResponse.json({
       code: "SUCCESS",
@@ -65,6 +63,8 @@ export const GET = async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id"); // Assuming the user is queried by 'id'
 
+  console.log(id)
+
   // Check if id is null
   if (!id) {
     return NextResponse.json(
@@ -78,9 +78,15 @@ export const GET = async (request: NextRequest) => {
   try {
     const fetchedUser = await prisma.user.findUnique({
       where: { id },
+      include: {volunteerDetails: true}
     });
 
-    if (!fetchedUser) {
+    // const fetchedVD = await prisma.volunteerDetails.findUnique({
+    //   where: { id }
+    // })
+    const fetchedVD = fetchedUser?.volunteerDetails
+
+    if (!fetchedUser || !fetchedVD) {
       return NextResponse.json(
         {
           code: "NOT_FOUND",
@@ -90,9 +96,11 @@ export const GET = async (request: NextRequest) => {
       );
     }
 
+    console.log("IN GET: ", fetchedUser)
+
     return NextResponse.json({
       code: "SUCCESS",
-      data: fetchedUser,
+      data: { fetchedUser, fetchedVD }
     });
   } catch (error) {
     console.error("Error:", error);

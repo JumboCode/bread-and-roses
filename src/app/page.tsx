@@ -13,10 +13,11 @@ export default function Home() {
 
   const getUserButton = async () => {
     try {
-      const fetchedUser = await getUser(userID);
+      console.log(userID)
+      const { fetchedUser, fetchedVD } = await getUser(userID);
       console.log("THIS IS USER: ", fetchedUser);
       setUser(fetchedUser);
-      setVolunteerDetails()
+      setVolunteerDetails(fetchedVD)
       console.log("User fetched successfully.");
     } catch (error) {
       console.error("Error fetching user:", error);
