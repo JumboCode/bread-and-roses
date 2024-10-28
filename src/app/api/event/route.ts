@@ -32,7 +32,7 @@ export const PUT = async (request: NextRequest) => {
     const { id, ...other } = event;
     const updateEvent = await prisma.event.update({
       where: {
-        id: event.id,
+        id: id,
       },
       data: other,
     });
