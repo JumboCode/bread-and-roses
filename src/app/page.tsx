@@ -42,23 +42,19 @@ export default function Home() {
   const updateUserButton = async () => {
     try {
       // const fetchedUser = await
-      const updatedUser: User = {
-        firstName: "Justin",
+      const updatedUser = {
         ...user,
+        firstName: "Justin",
       };
 
-      const updatedVD: VolunteerDetails = {
-        country: "Mexico",
+      const updatedVD = {
         ...volunteerDetails,
+        country: "Mexico",
       };
-      console.log(updatedVD);
-      console.log(updatedUser);
 
       const response = await updateUser(updatedUser, updatedVD);
-      console.log("THIS IS UPDATED USER: ", response.data.user);
       setUser(response.data.user);
       setVolunteerDetails(response.data.volunteerDetails);
-      console.log("User updated successfully.");
     } catch (error) {
       console.error("Error fetching user:", error);
     }

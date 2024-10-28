@@ -3,12 +3,16 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
+/**
+ * Creates a new user with associated volunteerDetails.
+ * @param {NextRequest} request - The incoming request.
+ * @returns {NextResponse} - JSON response with user data or error.
+ */
 export const POST = async (request: NextRequest) => {
   try {
     /* @TODO: Add auth */
 
     const { user, volunteerDetails } = await request.json();
-    console.log()
 
     const savedUser = await prisma.user.create({
       data: {
@@ -22,8 +26,6 @@ export const POST = async (request: NextRequest) => {
         userId: savedUser.id,
       },
     });
-    console.log(savedUser);
-    console.log()
 
     return NextResponse.json({
       code: "SUCCESS",
@@ -39,12 +41,33 @@ export const POST = async (request: NextRequest) => {
   }
 };
 
+/**
+ * Deletes a user and its associated volunteerDetails.
+ * @param {NextRequest} request - The incoming request with user ID.
+ * @returns {NextResponse} - JSON response indicating success or error.
+ */
 export const DELETE = async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id"); // Assuming the user is queried by 'id'
+  const id = searchParams.get("id");
+
+  // Check if id is null
+  if (!id) {
+    return NextResponse.json(
+      {
+        code: "BAD_REQUEST",
+        message: "User ID is required.",
+      },
+      { status: 400 }
+    );
+  }
+
   try {
+    await prisma.volunteerDetails.delete({
+      where: { userId: id },
+    });
+
     const deletedUser = await prisma.user.delete({
-      where: { id }, // `user` must include a unique field (e.g., { id: "some-object-id" })
+      where: { id },
     });
 
     return NextResponse.json({
@@ -61,11 +84,14 @@ export const DELETE = async (request: NextRequest) => {
   }
 };
 
+/**
+ * Fetches a user with associated volunteerDetails.
+ * @param {NextRequest} request - The incoming request with user ID.
+ * @returns {NextResponse} - JSON response with user and volunteerDetails or error.
+ */
 export const GET = async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id"); // Assuming the user is queried by 'id'
-
-  console.log(id);
 
   // Check if id is null
   if (!id) {
@@ -83,12 +109,7 @@ export const GET = async (request: NextRequest) => {
       include: { volunteerDetails: true },
     });
 
-    // const fetchedVD = await prisma.volunteerDetails.findUnique({
-    //   where: { id }
-    // })
-    const fetchedVD = fetchedUser?.volunteerDetails;
-
-    if (!fetchedUser || !fetchedVD) {
+    if (!fetchedUser) {
       return NextResponse.json(
         {
           code: "NOT_FOUND",
@@ -98,14 +119,12 @@ export const GET = async (request: NextRequest) => {
       );
     }
 
-    console.log("IN GET: ", fetchedUser);
+    // Do not include volunteerDetails in user we return
     const { volunteerDetails, ...user } = fetchedUser;
-
-    console.log(user);
 
     return NextResponse.json({
       code: "SUCCESS",
-      data: { user, fetchedVD },
+      data: { user, volunteerDetails },
     });
   } catch (error) {
     console.error("Error:", error);
@@ -116,14 +135,16 @@ export const GET = async (request: NextRequest) => {
   }
 };
 
+/**
+ * Updates a user and associated volunteerDetails.
+ * @param {NextRequest} request - The incoming request with user and volunteerDetails data.
+ * @returns {NextResponse} - JSON response with updated data or error.
+ */
 export const PUT = async (request: NextRequest) => {
   try {
     /* @TODO: Add auth */
 
     const { user, volunteerDetails } = await request.json();
-
-    console.log("USER IN PUT: ", user);
-    console.log("VOLUNTEERDET IN PUT: ", volunteerDetails);
 
     const updatedUser = await prisma.user.update({
       where: {
@@ -131,7 +152,6 @@ export const PUT = async (request: NextRequest) => {
       },
       data: {
         ...user,
-        id: undefined,
       },
     });
 
@@ -141,7 +161,6 @@ export const PUT = async (request: NextRequest) => {
       },
       data: {
         ...volunteerDetails,
-        id: undefined,
       },
     });
 
