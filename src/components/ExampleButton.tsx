@@ -1,6 +1,6 @@
 import { addUser } from "@api/user/route.client";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { addEvent, deleteEvent, updateEvent } from "@api/event/route.client";
+import { addEvent } from "@api/event/route.client";
 
 interface ExampleButtonProps {
   buttonText: string;
