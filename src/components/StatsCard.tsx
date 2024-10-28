@@ -10,7 +10,7 @@ interface StatsCardProps {
 
 const StatsCard = ({ heading, value, icon, date }: StatsCardProps) => {
   return (
-    <div className="w-[360px] h-[160px] h-40 px-6 py-4 bg-white rounded-lg shadow border border-[#e4e7ec] flex-col justify-start items-start gap-4 inline-flex">
+    <div className="w-[360px] h-[160px] px-6 py-4 bg-white rounded-lg shadow border border-[#e4e7ec] flex-col justify-start items-start gap-4 inline-flex">
     <div className="self-stretch justify-start items-center gap-2 inline-flex">
         <div className="grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
             <div className="self-stretch justify-start items-start gap-2 inline-flex">
