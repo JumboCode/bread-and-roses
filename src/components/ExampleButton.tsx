@@ -1,5 +1,6 @@
 import { addUser } from "@api/user/route.client";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { addEvent } from "@api/event/route.client";
 
 interface ExampleButtonProps {
   buttonText: string;
@@ -15,6 +16,16 @@ const ExampleButton = ({ buttonText }: ExampleButtonProps) => {
             user: {
               firstName: "Johnny",
               email: "johnny.tan.best.pm@tufts.edu",
+            },
+          },
+        });
+        await addEvent({
+          body: {
+            event: {
+              EventName: "eventname",
+              Description: "desc",
+              MaxPeople: 10,
+              DateTime: new Date(),
             },
           },
         });
