@@ -19,11 +19,30 @@ enum Role {
 }
 
 model User {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  firstName   String      @default("")
-  email       String      @default("")
-  EventIds    String[]    @db.ObjectId
-  Events      Event[]     @relation(fields: [EventIds], references: [id])
+  id                 String @id         @default(auto()) @map("_id") @db.ObjectId
+  role               Role               @default(VOLUNTEER)
+  firstName          String             @default("")
+  lastName           String             @default("")
+  email              String             @default("")
+  volunteerDetails   VolunteerDetails?  
+  EventIds           String[]           @db.ObjectId
+  Events             Event[]            @relation(fields: [EventIds], references: [id])
+}
+
+model VolunteerDetails {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  ageOver14     Boolean     @default(false)
+  country       String      @default("")
+  address       String      @default("")
+  city          String      @default("")
+  state         String      @default("")
+  zipCode       Int?        
+  hasLicense    Boolean     @default(false)
+  speaksEsp     Boolean     @default(false)
+  volunteerType String      @default("")
+  hoursWorked   Int         @default(0)
+  user          User        @relation(fields: [userId], references: [id])
+  userId        String      @unique @db.ObjectId
 }
 
 model Event {
