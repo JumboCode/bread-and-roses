@@ -1,5 +1,4 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { addEvent } from "@api/event/route.client";
 
 interface ExampleButtonProps {
   buttonText: string;
