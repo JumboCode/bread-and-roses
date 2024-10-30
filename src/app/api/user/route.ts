@@ -146,12 +146,14 @@ export const PUT = async (request: NextRequest) => {
 
     const { user, volunteerDetails } = await request.json();
 
+    // id: undefined for data because we cannot modify the id
     const updatedUser = await prisma.user.update({
       where: {
         id: user.id,
       },
       data: {
         ...user,
+        id: undefined,
       },
     });
 
@@ -161,6 +163,7 @@ export const PUT = async (request: NextRequest) => {
       },
       data: {
         ...volunteerDetails,
+        id: undefined,
       },
     });
 

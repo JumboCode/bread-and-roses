@@ -17,7 +17,7 @@ export default function Home() {
       console.log("userID:", userID);
       const response = await getUser(userID);
       const fetchedUser = response.data.user;
-      const fetchedVD = response.data.fetchedVD;
+      const fetchedVD = response.data.volunteerDetails;
 
       console.log(fetchedUser.firstName);
       console.log(fetchedVD);
@@ -51,6 +51,7 @@ export default function Home() {
         ...volunteerDetails,
         country: "Mexico",
       };
+      console.log(updatedVD);
 
       const response = await updateUser(updatedUser, updatedVD);
       setUser(response.data.user);
