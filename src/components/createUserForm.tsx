@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { addUser } from "@api/user/route.client";
+import { Role } from "@prisma/client";
 
 interface CreateUserForm {
   setUserID: (id: string) => void;
@@ -10,7 +11,7 @@ const CreateUserForm = ({ setUserID }: CreateUserForm) => {
     firstName: "",
     lastName: "",
     email: "",
-    role: "VOLUNTEER",
+    role: Role.VOLUNTEER,
     ageOver14: false,
     country: "",
     address: "",
@@ -20,9 +21,7 @@ const CreateUserForm = ({ setUserID }: CreateUserForm) => {
     hasLicense: false,
     speaksEsp: false,
     volunteerType: "",
-    daysAvailable: "",
-    timeAvailable: "",
-    basis: "",
+    hoursWorked: 0,
   });
 
   const handleChange = (
@@ -30,10 +29,17 @@ const CreateUserForm = ({ setUserID }: CreateUserForm) => {
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type } = e.target;
+    const newValue =
+      type === "checkbox" && e.target instanceof HTMLInputElement
+        ? e.target.checked
+        : name === "hoursWorked"
+        ? parseInt(value) || 0
+        : value;
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: newValue,
     }));
   };
 
@@ -57,9 +63,7 @@ const CreateUserForm = ({ setUserID }: CreateUserForm) => {
           hasLicense: formData.hasLicense,
           speaksEsp: formData.speaksEsp,
           volunteerType: formData.volunteerType,
-          daysAvailable: formData.daysAvailable,
-          timeAvailable: formData.timeAvailable,
-          basis: formData.basis,
+          hoursWorked: formData.hoursWorked,
         }
       );
       setUserID(response.data.id);
@@ -203,40 +207,17 @@ const CreateUserForm = ({ setUserID }: CreateUserForm) => {
       </div>
       <div>
         <label>Volunteer Type</label>
-        <input
-          type="text"
-          name="volunteerType"
-          value={formData.volunteerType}
-          onChange={handleChange}
-          className="input"
-        />
+        <select name="role" id="role">
+          <option value={Role.ADMIN}>Admin</option>
+          <option value={Role.VOLUNTEER}>Volunteer</option>
+        </select>
       </div>
       <div>
-        <label>Days Available</label>
+        <label>Hours Worked</label>
         <input
-          type="text"
-          name="daysAvailable"
-          value={formData.daysAvailable}
-          onChange={handleChange}
-          className="input"
-        />
-      </div>
-      <div>
-        <label>Time Available</label>
-        <input
-          type="text"
-          name="timeAvailable"
-          value={formData.timeAvailable}
-          onChange={handleChange}
-          className="input"
-        />
-      </div>
-      <div>
-        <label>Basis</label>
-        <input
-          type="text"
-          name="basis"
-          value={formData.basis}
+          type="number"
+          name="hoursWorked"
+          value={formData.hoursWorked}
           onChange={handleChange}
           className="input"
         />

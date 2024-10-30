@@ -1,5 +1,11 @@
 import { User, VolunteerDetails } from "@prisma/client";
 
+type CreateUserInput = Omit<User, "id" | "Events" | "EventIds">;
+type CreateVolunteerDetailsInput = Omit<
+  VolunteerDetails,
+  "id" | "user" | "userId"
+>;
+
 /**
  * Sends an HTTP request to the specified endpoint with the provided method and body.
  *
@@ -13,7 +19,7 @@ import { User, VolunteerDetails } from "@prisma/client";
 export const fetchApi = async (
   endpoint: string,
   method: "POST" | "GET" | "DELETE" | "PUT",
-  body?: Record<string, any>
+  body?: Record<string, unknown>
 ) => {
   const response = await fetch(endpoint, {
     method,
@@ -28,8 +34,10 @@ export const fetchApi = async (
   return response.json();
 };
 
-export const addUser = async (user: User, volunteerDetails: VolunteerDetails) =>
-  fetchApi("/api/user", "POST", { user, volunteerDetails });
+export const addUser = async (
+  user: CreateUserInput,
+  volunteerDetails: CreateVolunteerDetailsInput
+) => fetchApi("/api/user", "POST", { user, volunteerDetails });
 
 export const getUser = async (userID: string) => {
   const url = `/api/user?id=${userID}`;
