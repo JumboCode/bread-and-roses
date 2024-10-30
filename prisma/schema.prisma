@@ -46,7 +46,11 @@ model VolunteerDetails {
 }
 
 model Event {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
-  UserIds       String[]    @db.ObjectId
-  Users         User[]      @relation(fields: [UserIds], references: [id])
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  UserIds     String[]    @db.ObjectId
+  Users       User[]      @relation(fields: [UserIds], references: [id])
+  EventName   String      
+  DateTime    DateTime    
+  Description String
+  MaxPeople   Int         
 }
