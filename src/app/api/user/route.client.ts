@@ -1,6 +1,6 @@
 import { User, VolunteerDetails } from "@prisma/client";
 
-type CreateUserInput = Omit<User, "id" | "Events" | "EventIds">;
+type CreateUserInput = Omit<User, "id" | "events" | "eventIds">;
 type CreateVolunteerDetailsInput = Omit<
   VolunteerDetails,
   "id" | "user" | "userId"

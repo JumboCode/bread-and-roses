@@ -15,7 +15,7 @@ export const POST = async (request: NextRequest) => {
 
     return NextResponse.json({
       code: "SUCCESS",
-      message: savedEvent.EventName,
+      message: savedEvent.eventName,
     });
   } catch (error) {
     console.error("Error:", error);
@@ -39,7 +39,7 @@ export const PUT = async (request: NextRequest) => {
 
     return NextResponse.json({
       code: "SUCCESS",
-      message: updateEvent.EventName,
+      message: updateEvent.eventName,
     });
   } catch (error) {
     console.error("Error:", error);
@@ -62,7 +62,7 @@ export const DELETE = async (request: NextRequest) => {
 
     return NextResponse.json({
       code: "SUCCESS",
-      message: deleteEvent.EventName,
+      message: deleteEvent.eventName,
     });
   } catch (error) {
     console.error("Error:", error);
