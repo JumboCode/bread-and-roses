@@ -2,17 +2,14 @@ import { Event } from "@prisma/client";
 
 type CreateEventInput = Pick<
   Event,
-  "EventName" | "Description" | "MaxPeople" | "DateTime"
+  "eventName" | "description" | "maxPeople" | "dateTime"
 >;
 
-export const addEvent = async (request: {
-  body: { event: CreateEventInput };
-}) => {
-  const { body, ...options } = request;
+export const addEvent = async (event: CreateEventInput) => {
   const response = await fetch("/api/event", {
     method: "POST",
-    body: JSON.stringify(body),
-    ...options,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ event }),
   });
 
   const json = await response.json();
@@ -20,12 +17,11 @@ export const addEvent = async (request: {
   return json;
 };
 
-export const updateEvent = async (request: { body: { event: Event } }) => {
-  const { body, ...options } = request;
+export const updateEvent = async (event: Event) => {
   const response = await fetch("/api/event", {
     method: "PUT",
-    body: JSON.stringify(body),
-    ...options,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ event }),
   });
 
   const json = await response.json();
@@ -33,12 +29,11 @@ export const updateEvent = async (request: { body: { event: Event } }) => {
   return json;
 };
 
-export const deleteEvent = async (request: { body: { id: string } }) => {
-  const { body, ...options } = request;
+export const deleteEvent = async (id: string) => {
   const response = await fetch("/api/event", {
     method: "DELETE",
-    body: JSON.stringify(body),
-    ...options,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id }),
   });
 
   const json = await response.json();
