@@ -29,7 +29,7 @@ function getUserRole(userType: number): string {
     case 2:
       return "Individual Volunteer";
     default:
-      return "undefined user role"
+      return "undefined user role";
   }
 }
 
@@ -57,28 +57,53 @@ export default function VolunteerTable() {
       >
         <TableHead>
           <TableRow sx={{ backgroundColor: "#F9FAFB" }}>
-            <TableCell sx={{ color: "#667085", fontWeight: "bold", height: "44px", width: "255px" }}>
+            <TableCell
+              sx={{
+                color: "#667085",
+                fontWeight: "bold",
+                height: "44px",
+                width: "255px",
+              }}
+            >
               Name
             </TableCell>
             <TableCell
               align="left"
-              sx={{ color: "#667085", fontWeight: "bold", height: "44px", width: "255px"}}
+              sx={{
+                color: "#667085",
+                fontWeight: "bold",
+                height: "44px",
+                width: "255px",
+              }}
             >
               Type
             </TableCell>
             <TableCell
               align="left"
-              sx={{ color: "#667085", fontWeight: "bold", height: "44px", width: "255px" }}
+              sx={{
+                color: "#667085",
+                fontWeight: "bold",
+                height: "44px",
+                width: "255px",
+              }}
             >
               Email address
             </TableCell>
             <TableCell
               align="left"
-              sx={{ color: "#667085", fontWeight: "bold", height: "44px", width: "255px" }}
+              sx={{
+                color: "#667085",
+                fontWeight: "bold",
+                height: "44px",
+                width: "255px",
+              }}
             >
               Location
             </TableCell>
-            <TableCell sx = {{ width: "116px", height: "44px  "}} align="center"></TableCell>
+            <TableCell
+              sx={{ width: "116px", height: "44px  " }}
+              align="center"
+            ></TableCell>
           </TableRow>
         </TableHead>
         <TableBody sx={{ borderColor: "pink" }}>
@@ -95,37 +120,55 @@ export default function VolunteerTable() {
                   borderColor: "#E4E7EC",
                   fontWeight: "bold",
                   color: "#101828",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: "15px",
                 }}
                 component="th"
                 scope="row"
               >
-                <Avatar alt={row.name} src={profilePic.src} />
-                {row.name}
+                <div className="flex items-center gap-4">
+                  <Avatar alt={row.name} src={profilePic.src} />
+                  {row.name}
+                </div>
               </TableCell>
               <TableCell
-                sx={{ borderColor: "#E4E7EC", color: "#344054", height: "72px", width: "255px" }}
+                sx={{
+                  borderColor: "#E4E7EC",
+                  color: "#344054",
+                  height: "72px",
+                  width: "255px",
+                }}
                 align="left"
               >
                 {getUserRole(row.type)}
               </TableCell>
               <TableCell
-                sx={{ borderColor: "#E4E7EC", color: "#344054", height: "72px", width: "255px" }}
+                sx={{
+                  borderColor: "#E4E7EC",
+                  color: "#344054",
+                  height: "72px",
+                  width: "255px",
+                }}
                 align="left"
               >
                 {row.email}
               </TableCell>
               <TableCell
-                sx={{ borderColor: "#E4E7EC", color: "#344054", height: "72px", width: "255px" }}
+                sx={{
+                  borderColor: "#E4E7EC",
+                  color: "#344054",
+                  height: "72px",
+                  width: "255px",
+                }}
                 align="left"
               >
                 {row.location}
               </TableCell>
               <TableCell
-                sx={{ borderColor: "#E4E7EC", padding: "0 15px 0 0", height: "44px", width: "255px" }}
+                sx={{
+                  borderColor: "#E4E7EC",
+                  padding: "0 15px 0 0",
+                  height: "44px",
+                  width: "255px",
+                }}
                 align="right"
               >
                 <IconButton aria-label="delete volunteer">
