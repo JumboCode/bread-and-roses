@@ -36,7 +36,7 @@ const EventCard = ({ title, date, address, volunteers }: EventCardProps) => {
                   height="12"
                   className="mx-2"
                 />
-                {date}
+                {address}
               </div>
               <div className="self-stretch justify-start items-center gap-2 inline-flex">
                 <div className="grow shrink basis-0 text-[#475466] py-1 text-sm font-medium font-['Sofia Pro'] leading-tight">
