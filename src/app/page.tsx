@@ -1,8 +1,6 @@
 "use client";
 import React from "react";
-import { Icon } from "@iconify/react/dist/iconify.js";
 import EventCard from "@components/EventCard";
-import StatsCard from "@components/EventCard";
 
 export default function Home() {
   return (
