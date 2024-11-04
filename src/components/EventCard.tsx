@@ -34,7 +34,7 @@ const EventCard = ({
                   icon="mdi:clock-outline"
                   width="12"
                   height="12"
-                  className="mx-2"
+                  className="mr-2"
                 />
                 {date}
               </div>
@@ -43,7 +43,7 @@ const EventCard = ({
                   icon="mingcute:location-line"
                   width="12"
                   height="12"
-                  className="mx-2"
+                  className="mr-2"
                 />
                 {address}
               </div>
