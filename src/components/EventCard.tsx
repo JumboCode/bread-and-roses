@@ -5,22 +5,31 @@ interface EventCardProps {
   title: string;
   date: string;
   address: string;
-  volunteers: string;
+  volunteers: number;
+  maxVolunteers: number;
 }
 
-const EventCard = ({ title, date, address, volunteers }: EventCardProps) => {
+const EventCard = ({
+  title,
+  date,
+  address,
+  volunteers,
+  maxVolunteers,
+}: EventCardProps) => {
+  const isFull = volunteers === maxVolunteers ? true : false;
+  const volunteerText = volunteers + "/" + maxVolunteers + " volunteers";
   return (
-    <div className="w-[360px] h-[160px] px-6 py-4 bg-white rounded-lg shadow border border-[#e4e7ec] flex-col justify-start items-start gap-4 inline-flex">
-      <div className="self-stretch justify-start items-center gap-2 inline-flex">
+    <div className="w-[360px] h-auto px-5 py-5 bg-white rounded-lg shadow border-1 border-[#e4e7ec] flex-col justify-start items-start gap-4 inline-flex">
+      <div className="self-stretch justify-start items-center inline-flex">
         <div className="grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
           <div className="self-stretch justify-start items-start gap-2 inline-flex">
-            <div className="grow shrink basis-0 text-[#344053] text-base font-semibold font-['Sofia Pro'] leading-[18px]">
+            <div className="grow shrink basis-0 text-[#344053] text-base font-semibold font-['Sofia Pro'] leading-[18px] ">
               {title}
             </div>
           </div>
           <div className="self-stretch justify-start items-end gap-4 inline-flex">
-            <div className="grow shrink basis-0 flex-col justify-start items-start gap-2 inline-flex">
-              <div className="self-stretch flex flex-row items-center text-[#0f1728] text-base font-medium font-['Sofia Pro'] leading-[18px]">
+            <div className="grow shrink basis-0 flex-col justify-start items-start gap-3 inline-flex">
+              <div className="self-stretch flex flex-row items-center text-[#0f1728] text-sm font-medium font-['Sofia Pro'] text-[14px] leading-[20px]">
                 <Icon
                   icon="mdi:clock-outline"
                   width="12"
@@ -29,7 +38,7 @@ const EventCard = ({ title, date, address, volunteers }: EventCardProps) => {
                 />
                 {date}
               </div>
-              <div className="self-stretch flex flex-row items-center text-[#0f1728] text-base font-medium font-['Sofia Pro'] leading-[18px]">
+              <div className="self-stretch flex flex-row items-center text-[#0f1728] text-sm font-medium font-['Sofia Pro'] text-[14px] leading-[20px]">
                 <Icon
                   icon="mingcute:location-line"
                   width="12"
@@ -38,18 +47,14 @@ const EventCard = ({ title, date, address, volunteers }: EventCardProps) => {
                 />
                 {address}
               </div>
-              <div className="self-stretch justify-start items-center gap-2 inline-flex">
-                <div className="grow shrink basis-0 text-[#475466] py-1 text-sm font-medium font-['Sofia Pro'] leading-tight">
-                  {volunteers}
+              <div className="border-b"> </div>
+              <div className="self-stretch justify-start items-center inline-flex">
+                <div className="w-[153px] h-[20px] grow shrink basis-0 text-[#475466] text-sm font-medium font-['Sofia Pro'] pr-3 text-[14px] font-semibold leading-[20px]">
+                  {volunteerText}
                 </div>
-                <button className="flex flex-row gap-x-2 bg-teal-600 p-2.5 px-3 text-white rounded-full place-items-center">
+                <button className="flex justify-end flex-row gap-x-2 bg-teal-600 px-3.5 py-1 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]">
                   See details
-                  <Icon
-                    icon="formkit:arrowright"
-                    width="20"
-                    height="20"
-                    className="mx-2"
-                  />
+                  <Icon icon="formkit:arrowright" width="20" height="20" />
                 </button>
               </div>
             </div>
