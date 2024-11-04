@@ -11,8 +11,8 @@ export default function Home() {
         title="Dewick Community Meal"
         date="12:30 - 9:30 PM"
         address="25 Latin Way, Medford, MA 02155"
-        volunteers={25}
-        maxVolunteers = {30}
+        volunteers={20}
+        maxVolunteers={25}
       />
     </div>
   );

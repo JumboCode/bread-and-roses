@@ -23,13 +23,13 @@ const EventCard = ({
       <div className="self-stretch justify-start items-center inline-flex">
         <div className="grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
           <div className="self-stretch justify-start items-start gap-2 inline-flex">
-            <div className="grow shrink basis-0 text-[#344053] text-base font-semibold font-['Sofia Pro'] leading-[18px] ">
+            <div className="grow shrink basis-0 text-[#101828] text-base font-semibold font-['Sofia Pro'] leading-[18px] ">
               {title}
             </div>
           </div>
           <div className="self-stretch justify-start items-end gap-4 inline-flex">
             <div className="grow shrink basis-0 flex-col justify-start items-start gap-3 inline-flex">
-              <div className="self-stretch flex flex-row items-center text-[#0f1728] text-sm font-medium font-['Sofia Pro'] text-[14px] leading-[20px]">
+              <div className="self-stretch flex flex-row items-center text-[#344054] text-sm font-medium font-['Sofia Pro'] text-[14px] leading-[20px]">
                 <Icon
                   icon="mdi:clock-outline"
                   width="12"
@@ -38,7 +38,7 @@ const EventCard = ({
                 />
                 {date}
               </div>
-              <div className="self-stretch flex flex-row items-center text-[#0f1728] text-sm font-medium font-['Sofia Pro'] text-[14px] leading-[20px]">
+              <div className="self-stretch flex flex-row items-center text-[#344054] text-sm font-medium font-['Sofia Pro'] text-[14px] leading-[20px]">
                 <Icon
                   icon="mingcute:location-line"
                   width="12"
@@ -47,9 +47,15 @@ const EventCard = ({
                 />
                 {address}
               </div>
-              <div className="border-b"> </div>
+              <div className="w-full border-b border-0.5 border-[#F2F4F7]">
+                {" "}
+              </div>
               <div className="self-stretch justify-start items-center inline-flex">
-                <div className="w-[153px] h-[20px] grow shrink basis-0 text-[#475466] text-sm font-medium font-['Sofia Pro'] pr-3 text-[14px] font-semibold leading-[20px]">
+                <div
+                  className={`w-[153px] h-[20px] grow shrink basis-0 text-[#475466] text-sm font-medium font-['Sofia Pro'] pr-3 text-[14px] font-semibold leading-[20px] ${
+                    isFull ? "text-[#E61932]" : "text-[#558D22]"
+                  }`}
+                >
                   {volunteerText}
                 </div>
                 <button className="flex justify-end flex-row gap-x-2 bg-teal-600 px-3.5 py-1 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]">
