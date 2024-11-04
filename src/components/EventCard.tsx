@@ -23,13 +23,13 @@ const EventCard = ({
       <div className="self-stretch justify-start items-center inline-flex">
         <div className="grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
           <div className="self-stretch justify-start items-start gap-2 inline-flex">
-            <div className="grow shrink basis-0 text-[#101828] text-base font-semibold font-['Sofia Pro'] leading-[18px] ">
+            <div className="w-full grow shrink basis-0 text-[#101828] text-base font-semibold font-['Sofia Pro'] leading-[18px] ">
               {title}
             </div>
           </div>
           <div className="self-stretch justify-start items-end gap-4 inline-flex">
             <div className="grow shrink basis-0 flex-col justify-start items-start gap-3 inline-flex">
-              <div className="self-stretch flex flex-row items-center text-[#344054] text-sm font-medium font-['Sofia Pro'] text-[14px] leading-[20px]">
+              <div className="w-full self-stretch flex flex-row items-center text-[#344054] text-sm font-medium font-['Sofia Pro'] text-[14px] leading-[20px]">
                 <Icon
                   icon="mdi:clock-outline"
                   width="12"
@@ -38,7 +38,7 @@ const EventCard = ({
                 />
                 {date}
               </div>
-              <div className="self-stretch flex flex-row items-center text-[#344054] text-sm font-medium font-['Sofia Pro'] text-[14px] leading-[20px]">
+              <div className="w-full self-stretch flex flex-row items-center text-[#344054] text-sm font-medium font-['Sofia Pro'] text-[14px] leading-[20px]">
                 <Icon
                   icon="mingcute:location-line"
                   width="12"
@@ -60,7 +60,7 @@ const EventCard = ({
                 </div>
                 <button className="flex justify-end flex-row gap-x-2 bg-teal-600 px-3.5 py-1 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]">
                   See details
-                  <Icon icon="formkit:arrowright" width="20" height="20" />
+                  <Icon icon="formkit:arrowright" width="20" height="21" />
                 </button>
               </div>
             </div>
