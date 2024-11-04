@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -14,9 +15,14 @@ export const POST = async (request: NextRequest) => {
 
     const { user, volunteerDetails } = await request.json();
 
+    // Hash the user's password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+
     const savedUser = await prisma.user.create({
       data: {
         ...user,
+        password: hashedPassword,
       },
     });
 

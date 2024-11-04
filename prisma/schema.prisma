@@ -24,6 +24,7 @@ model User {
   firstName          String             @default("")
   lastName           String             @default("")
   email              String             @default("")
+  password           String             @default("")
   volunteerDetails   VolunteerDetails?
   eventIds           String[]           @db.ObjectId
   events             Event[]            @relation(fields: [eventIds], references: [id])
