@@ -97,10 +97,11 @@ export const DELETE = async (request: NextRequest) => {
  */
 export const GET = async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id"); // Assuming the user is queried by 'id'
+  const id = searchParams.get("id");
+  const email = searchParams.get("email");
 
-  // Check if id is null
-  if (!id) {
+  // Check if id and email is null
+  if (!id && !email) {
     return NextResponse.json(
       {
         code: "BAD_REQUEST",
@@ -111,7 +112,7 @@ export const GET = async (request: NextRequest) => {
   }
   try {
     const fetchedUser = await prisma.user.findUnique({
-      where: { id },
+      where: id ? { id } : { email },
       include: { volunteerDetails: true },
     });
 

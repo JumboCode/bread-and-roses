@@ -44,6 +44,11 @@ export const getUser = async (userID: string) => {
   return fetchApi(url, "GET");
 };
 
+export const getUserByEmail = async (email: string) => {
+  const url = `/api/user?email=${email}`;
+  return fetchApi(url, "GET");
+
+}
 export const deleteUser = async (userID: string) => {
   const url = `/api/user?id=${userID}`;
   return fetchApi(url, "DELETE");

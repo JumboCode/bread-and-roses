@@ -23,7 +23,7 @@ model User {
   role               Role               @default(VOLUNTEER)
   firstName          String             @default("")
   lastName           String             @default("")
-  email              String             @default("")
+  email              String             @unique
   password           String             @default("")
   volunteerDetails   VolunteerDetails?
   eventIds           String[]           @db.ObjectId
