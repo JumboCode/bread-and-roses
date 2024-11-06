@@ -11,6 +11,8 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        'rose': "#FFF0F1",
+        'gray/500': '#667085',
       },
     },
   },

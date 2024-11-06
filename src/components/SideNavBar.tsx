@@ -1,62 +1,110 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
+import Image from 'next/image';
+import Logo from '../app/icons/br-logo.png';
+import Communicaton from '../app/icons/communication';
+import Divider from '../app/icons/divider';
 
 const SideNavBar = () => {
     return (
         <div className="h-screen w-60 border border-gray-200 fixed left-0">
+            
+            <div className="flex place-content-center my-6">
+                <Image
+                    src={Logo}
+                    width={215}
+                    height={173}
+                    alt="bread & roses logo"
+                />
+            </div>
            
-            <nav className="flex items-center gap-70 flex-1 px-6 text-lg">
+            <nav className="flex items-center gap-1 flex-1 px-6 text-lg">
                 <ul>
 
                     <li>
-                        <button className="nav-button flex gap-3 items-center">
-                            <Icon icon="tabler:home" /> Home
+                        <button className="nav-button flex gap-3 items-center h-11 text-[18px] font-normal font-medium w-full">
+                            <Icon icon="tabler:home" width="24" height="24"/> Home
                         </button>
                     </li>
 
                     <li>
-                        <button className="nav-button flex gap-3 items-center">
-                            <Icon icon="uil:calender" /> Events
+                        <button className="nav-button flex gap-3 items-center h-11 text-[18px] font-normal font-medium w-full">
+                            <Icon icon="uil:calender" width="24" height="24"/> Events
                         </button>
                     </li>
 
                     <li>
-                        <button className="nav-button flex gap-3 items-center">
-                            <Icon icon="pepicons-print:people" /> Volunteers
+                        <button className="nav-button flex gap-3 items-center h-11 text-[18px] font-normal font-medium w-full">
+                            <Icon icon="pepicons-print:people" width="24" height="24"/> Volunteers
                         </button>
                     </li>
 
                     <li>
-                        <button className="nav-button flex gap-3 items-center">
-                            <Icon icon="mynaui:envelope" /> Communication
+                        <button className="nav-button flex gap-3 items-center h-11 text-[18px] font-normal font-medium w-full">
+                            <Communicaton/>
+                            Communication
                         </button>
                     </li>
 
                     <li>
-                        <button className="nav-button flex gap-3 items-center">
-                            <Icon icon="charm:person" /> Profile
+                        <button className="nav-button flex gap-3 items-center h-11 text-[18px] font-normal font-medium w-full">
+                            <Icon icon="charm:person" width="24" height="24"/> Profile
                         </button>
                     </li>
 
                     <li>
-                        <button className="nav-button flex gap-3 items-center">
-                            <Icon icon="tabler:logout" /> Logout
+                        <button className="nav-button flex gap-3 items-center h-11 text-[18px] font-normal font-medium w-full">
+                            <Icon icon="tabler:logout" width="24" height="24"/> Logout
                         </button>
                     </li>
 
                 </ul>
+
+
             </nav>
-
-
-
-        <footer>
+            <div className="h-64">
+                
+            </div>
+            <Divider
+                items-center
+            />
             
-        </footer>
+            {/* footer */}
+            <div className="h-30 w-60 fixed bottom-0 left-0 pt-6 pr-0.5 pl-0.5 pb-6">
+                
+                <div className="flex place-content-center gap-2">
+                    <button className="">
+                        <Icon icon="gg:facebook" width="24" height="24"/> 
+                    </button>
+
+                    <button className="">
+                        <Icon icon="ph:instagram-logo" width="24" height="24"/> 
+                    </button>
+
+                    <button className="">
+                        <Icon icon="fa6-brands:x-twitter" width="24" height="24"/> 
+                    </button>
+
+                    <button className="">
+                        <Icon icon="mdi:vimeo" width="24" height="24"/> 
+                    </button>
+
+                    <button className="">
+                        <Icon icon="akar-icons:linkedin-fill" width="24" height="24"/> 
+                    </button>
+                </div>
+                
+                <div className="flex fill-gray/500">
+                    <h5 className="text-xs ">
+                        ⓒ 2024 Bread & Roses
+                    </h5>
+                </div>
+                
+                
+            </div>
+            
 
         </div>
 
-        
-        
-        
     );
 };
 
