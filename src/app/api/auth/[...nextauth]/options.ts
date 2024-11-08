@@ -1,6 +1,6 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { getUserByEmail } from "@api/user/route.client";
+import { getUserByEmailServer } from "@api/user/route";
 import { compare } from "bcryptjs";
 import { User } from "@prisma/client";
 
@@ -31,13 +31,15 @@ export const options: NextAuthOptions = {
         // Docs: https://next-auth.js.org/configuration/providers/credentials
         console.log("FETCHING USER:");
 
-        const user: User = await getUserByEmail(email);
+        const user: User = await getUserByEmailServer(email);
 
         // Check if user exists and if password matches
         console.log("PRINTING:", user.password);
         if (user && (await compare(password, user.password))) {
+          console.log("SUCCESFUL");
           return user; // Authentication successful
         } else {
+          console.log("FAIL");
           return null; // Authentication failed
         }
       },

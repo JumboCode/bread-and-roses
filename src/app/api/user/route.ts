@@ -187,3 +187,10 @@ export const PUT = async (request: NextRequest) => {
     });
   }
 };
+
+export async function getUserByEmailServer(email: string) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+  return user;
+}
