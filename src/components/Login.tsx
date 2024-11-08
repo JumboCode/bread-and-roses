@@ -1,17 +1,37 @@
-// import Divider from "@mui/material/Divider";
 "use client";
 
 import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import Image from "next/image"
 import logo1 from "../../public/logo1.png"
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(true);
-  const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [displayError, setDisplayError] = useState(false);
+
+  const CustomInputProps = {
+    endAdornment: (
+      <InputAdornment position="end">
+        <IconButton>
+          {password != "" && (showPassword ? (
+            <VisibilityIcon onClick={() => setShowPassword(false)} />
+          ) : (
+            <VisibilityOffIcon onClick={() => setShowPassword(true)} />
+          ))}
+        </IconButton>
+      </InputAdornment>
+    ),
+  };
 
   return (
     <div className="flex flex-col items-center" style={{ minHeight: "100vh" }}>
@@ -65,6 +85,11 @@ export default function LoginForm() {
             id="outlined-basic"
             label="Email address"
             variant="outlined"
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
+            error={displayError}
+            helperText={displayError && "Couldn't find your account"}
           />
           <TextField
             sx={{ width: "100%" }}
@@ -72,22 +97,16 @@ export default function LoginForm() {
             type={showPassword ? "text" : "password"}
             label="Password"
             variant="outlined"
-            // onChange={someChangeHandler}
-            slotProps={{ input: <div>???</div> }}
-            // slotProps={{ label: labelProps }}
-            // InputProps={{
-            //   endAdornment: (
-            //     <InputAdornment position="end">
-            //       <IconButton
-            //         aria-label="toggle password visibility"
-            //         onClick={handleClickShowPassword}
-            //         onMouseDown={handleMouseDownPassword}
-            //       >
-            //         {showPassword ? <Visibility /> : <VisibilityOff />}
-            //       </IconButton>
-            //     </InputAdornment>
-            //   ),
-            // }}
+            slotProps={{
+              input: CustomInputProps,
+            }}
+            onChange={(e) => {
+              if (showPassword) {
+                setPassword(e.target.value);
+              }
+            }}
+            error={displayError}
+            helperText={displayError && "Wrong Password"}
           />
           <div
             style={{ marginBottom: "20px" }}
@@ -111,7 +130,9 @@ export default function LoginForm() {
 
           <button
             style={{
-              backgroundColor: !isReadyToSubmit ? "#96E3DA" : "#138D8A",
+              backgroundColor: !(email != "" && password != "")
+                ? "#96E3DA"
+                : "#138D8A",
               color: "white",
               padding: "10px 18px 10px 18px",
               borderRadius: "8px",
@@ -120,6 +141,11 @@ export default function LoginForm() {
               fontWeight: "600",
             }}
             type="submit"
+            onClick={()=> {
+              if (email != "" && password != "") {
+                setDisplayError(true);
+              }
+            }}
           >
             Sign In
           </button>
