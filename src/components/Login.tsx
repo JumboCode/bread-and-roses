@@ -14,7 +14,7 @@ import Image from "next/image"
 import logo1 from "../../public/logo1.png"
 
 export default function LoginForm() {
-  const [showPassword, setShowPassword] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [displayError, setDisplayError] = useState(false);
