@@ -96,6 +96,7 @@ export default function LoginForm() {
             <FormControlLabel
               control={<Checkbox ria-label="Checkbox demo" />}
               label="Remember me"
+              sx={{ color: "#667085" }}
             />
 
             <button
