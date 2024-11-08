@@ -101,8 +101,9 @@ export default function LoginForm() {
               input: CustomInputProps,
             }}
             onChange={(e) => {
-              if (showPassword) {
-                setPassword(e.target.value);
+              setPassword(e.target.value);
+              if (!showPassword) {
+                e.preventDefault();
               }
             }}
             error={displayError}
@@ -156,9 +157,9 @@ export default function LoginForm() {
             style={{ color: "#667085", fontSize: "14px", marginTop: "25px" }}
           >
             Don't have an account?{" "}
-            <span style={{ color: "#145A5A", fontWeight: 600 }}>
+            <button style={{ color: "#145A5A", fontWeight: 600 }}>
               Sign up here
-            </span>
+            </button>
           </div>
         </div>
       </div>
