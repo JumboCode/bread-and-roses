@@ -23,11 +23,18 @@ export default function LoginForm() {
     endAdornment: (
       <InputAdornment position="end">
         <IconButton>
-          {password != "" && (showPassword ? (
-            <VisibilityIcon onClick={() => setShowPassword(false)} />
-          ) : (
-            <VisibilityOffIcon onClick={() => setShowPassword(true)} />
-          ))}
+          {password != "" &&
+            (showPassword ? (
+              <VisibilityIcon
+                sx={{ color: "#138D8A" }}
+                onClick={() => setShowPassword(false)}
+              />
+            ) : (
+              <VisibilityOffIcon
+                sx={{ color: "#138D8A" }}
+                onClick={() => setShowPassword(true)}
+              />
+            ))}
         </IconButton>
       </InputAdornment>
     ),
