@@ -4,14 +4,14 @@ import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from '@mui/material/IconButton';
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
 
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
-import Image from "next/image"
-import logo1 from "../../public/logo1.png"
+import Image from "next/image";
+import logo1 from "../../public/logo1.png";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -41,21 +41,9 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex flex-col items-center" style={{ minHeight: "100vh" }}>
-      <Image src={logo1} alt="Logo" />
-      <div
-        className="p-6"
-        style={{
-          border: "1px solid #D0D5DD",
-          borderRadius: "20px",
-          boxShadow: "0px 8px 8px -4px #10182808, 0px 20px 24px -4px #10182814",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          padding: "24px",
-          width: "50%",
-        }}
-      >
+    <div className="flex flex-col items-center min-h-screen">
+      <Image src={logo1} alt="Logo" height={173} width={215} />
+      <div className="p-6 border border-[#D0D5DD] rounded-[20px] shadow-[0px_8px_8px_-4px_#10182808,_0px_20px_24px_-4px_#10182814] flex justify-center items-start pt-6 w-1/2">
         <div className="flex flex-col items-center w-full">
           <div className="flex flex-col items-center">
             <div
@@ -68,24 +56,11 @@ export default function LoginForm() {
             >
               Welcome back!
             </div>
-            <div
-              style={{
-                color: "#667085",
-                fontSize: "18px",
-                fontWeight: 400,
-                marginBottom: "10px",
-              }}
-            >
+            <div className="text-[#667085] text-[18px] font-normal mb-[10px]">
               Please enter your details
             </div>
           </div>
-          <hr
-            style={{
-              width: "100%",
-              borderTop: "1px solid #D0D5DD",
-              marginBottom: "20px",
-            }}
-          />
+          <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
 
           <TextField
             sx={{ marginBottom: "10px", width: "100%" }}
@@ -116,42 +91,25 @@ export default function LoginForm() {
             error={displayError}
             helperText={displayError && "Wrong Password"}
           />
-          <div
-            style={{ marginBottom: "20px" }}
-            className="w-full flex flex-row justify-between"
-          >
+          <div className="mb-[20px] w-full flex flex-row justify-between">
             <FormControlLabel
               control={<Checkbox ria-label="Checkbox demo" />}
               label="Remember me"
               sx={{ color: "#667085" }}
             />
 
-            <button
-              style={{
-                marginLeft: "40px",
-                color: "#145A5A",
-                fontWeight: 500,
-              }}
-            >
+            <button className="ml-[40px] text-[#145A5A] font-medium">
               Forget Password
             </button>
           </div>
 
           <button
-            style={{
-              backgroundColor: !(email != "" && password != "")
-                ? "#96E3DA"
-                : "#138D8A",
-              color: "white",
-              padding: "10px 18px 10px 18px",
-              borderRadius: "8px",
-              width: "100%",
-              textAlign: "center",
-              fontWeight: "600",
-            }}
+            className={`${
+              email !== "" && password !== "" ? "bg-[#138D8A]" : "bg-[#96E3DA]"
+            } text-white py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
             type="submit"
-            onClick={()=> {
-              if (email != "" && password != "") {
+            onClick={() => {
+              if (email !== "" && password !== "") {
                 setDisplayError(true);
               }
             }}
@@ -159,12 +117,9 @@ export default function LoginForm() {
             Sign In
           </button>
 
-          <div
-            className="w-full"
-            style={{ color: "#667085", fontSize: "14px", marginTop: "25px" }}
-          >
-            Don't have an account?{" "}
-            <button style={{ color: "#145A5A", fontWeight: 600 }}>
+          <div className="w-full text-[#667085] text-[14px] mt-[25px]">
+            Don&apos;t have an account?{" "}
+            <button className="text-[#145A5A] font-semibold">
               Sign up here
             </button>
           </div>
