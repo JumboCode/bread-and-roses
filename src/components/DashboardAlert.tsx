@@ -15,11 +15,11 @@ const DashboardAlert = ({ Title, Subtext }: DashboardAlertProps) => {
             </div>
             
             {/* Main Content Box */}
-            <div className="flex flex-col shadow-md w-[1094px] h-[116px] p-[24px] px-[28px] items-start gap-[16px] rounded-tr-[8px] rounded-br-[8px] border border-[#FF8B14] bg-[#FFF] relative">
-                <div className="text-[#101828] text-lg font-bold font-['Sofia Pro'] leading-normal">
+            <div className="flex flex-col shadow-md w-[1094px] p-[24px] px-[28px] items-start gap-[16px] rounded-tr-[8px] rounded-br-[8px] border border-[#FF8B14] bg-[#FFF] relative">
+                <div className="pr-[32px] text-[#101828] text-lg font-bold font-['Sofia Pro'] leading-normal break-words">
                     {Title}
                 </div>
-                <div className="text-[#344054] text-base font-normal font-['Sofia Pro'] leading-normal">
+                <div className="text-[#344054] text-base font-normal font-['Sofia Pro'] leading-normal break-words">
                     {Subtext}
                 </div>
 
