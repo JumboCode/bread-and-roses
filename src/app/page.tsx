@@ -8,7 +8,7 @@ export default function Home() {
     <div className="flex items-center justify-center h-screen">
       {/* Example Button (ExampleButton.tsx in components folder) */}
       {/* <ExampleButton buttonText="Add User" /> */}
-      <SideNavBar/>
+      <SideNavBar role="admin"/>
     </div>
   );
 }

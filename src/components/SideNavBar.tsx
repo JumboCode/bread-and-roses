@@ -8,17 +8,30 @@ import Divider from "../app/icons/divider";
 // TODO: routing to different pages (make the pages)
 // note that the highlight of the button goes away when u click off it!
 
-const SideNavBar = () => {
+interface SideNavBarProps {
+  role: string;
+}
+
+const SideNavBar = ({role}: SideNavBarProps) => {
   const router = useRouter();
 
-  const tabs = [
-    { name: 'Home', href: '/' },
-    { name: 'Events', href: '/events' },
-    { name: 'Volunteers', href: '/volunteers' },
-    { name: 'Communication', href: '/communication' },
-    { name: 'Profile', href: '/profile' },
-    { name: 'Logout', href: '/logout' },
+  const adminTabs = [
+    { name: 'Home', icon: 'tabler:home', href: '/' },
+    { name: 'Events', icon: 'uil:calender', href: '/events' },
+    { name: 'Volunteers', icon: 'pepicons-print:people', href: '/volunteers' },
+    { name: 'Communication', icon: 'material-symbols:inbox-outline', href: '/communication' },
+    { name: 'Profile', icon: 'charm:person', href: '/profile' },
+    { name: 'Logout', icon: 'tabler:logout', href: '/logout' },
   ];
+
+  const volunteerTabs = [
+    { name: 'Home', icon: 'tabler:home', href: '/' },
+    { name: 'Events', icon: 'uil:calender', href: '/events' },
+    { name: 'Profile', icon: 'charm:person', href: '/profile' },
+    { name: 'Logout', icon: 'tabler:logout', href: '/logout' },
+  ];
+
+  const tabs = role === 'admin' ? adminTabs : volunteerTabs;
   
   return (
     <div className="h-screen w-60 border border-gray-200 fixed left-0">
@@ -26,20 +39,26 @@ const SideNavBar = () => {
         <Image src={Logo} width={215} height={173} alt="bread & roses logo" />
       </div>
 
-      <nav className="flex items-center gap-1 flex-1 px-6 text-lg">
+      {/* <nav className="flex items-center gap-1 flex-1 px-6 text-lg "> */}
 
-        {/* {tabs.map((tab) => (
-          <Link href={tab.href} key={tab.name}>
-            <button className="nav-button flex gap-3 items-center h-11 text-[18px] font-normal font-medium w-full text-darkrose bg-rose rounded-md pt-px pb-px px-3">
-              <Icon icon="tabler:home" width="24" height="24" /> Home
-            </button>
-              {tab.name}
-            </button>
-          </Link>
-        ))} */}
+    <nav className="flex items-center gap-1 flex-1 px-6 text-lg">
+        <ul className="w-full">
+          {tabs.map((tab) => (
+            <li key={tab.name} >
+              <button
+                type="button"
+                className="nav-button flex gap-3 items-center h-11 w-full text-[18px] font-normal font-medium focus:text-darkrose focus:bg-rose rounded-md pt-px pb-px px-3"
+                onClick={() => router.replace(tab.href)}
+              >
+                <Icon icon={tab.icon} width="24" height="24" /> {tab.name}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
         
-        <ul>
+        {/* <ul>
           <li>
             <button type="button" className="nav-button flex gap-3 items-center h-11 text-[18px] font-normal font-medium w-full focus:text-darkrose focus:bg-rose rounded-md pt-px pb-px px-3" onClick={() => router.replace('/')}>
               <Icon icon="tabler:home" width="24" height="24" /> Home
@@ -77,14 +96,14 @@ const SideNavBar = () => {
               <Icon icon="tabler:logout" width="24" height="24" /> Logout
             </button>
           </li>
-        </ul>
-      </nav>
-      <div className="h-64"></div>
-      <Divider items-center />
+        </ul> */}
+      {/* </nav> */}
+      {/* <Divider items-center inset-x-0 bottom-0 /> */}
 
       {/* footer */}
-      <div className="h-30 w-60 fixed bottom-0 left-0 pt-6 pr-1.5 pl-1.5 pb-6">
-        <div className="flex justify-center flex-col pl-1 gap-y-6">
+      <div className="h-30 w-60 fixed bottom-0 left-0 pr-1.5 pl-1.5 pb-6">
+      <Divider items-center/>
+        <div className="flex justify-center flex-col pl-1 gap-y-6 pt-4">
           <div className="flex gap-5">
             <button className="text-icon-color">
               <Icon icon="gg:facebook" width="24" height="24" />
