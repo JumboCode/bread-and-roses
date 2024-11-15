@@ -13,11 +13,15 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import Image from "next/image";
 import logo1 from "../../public/logo1.png";
 
+import { signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
+
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [displayError, setDisplayError] = useState(false);
+  const { data: session, status } = useSession();
 
   const CustomInputProps = {
     endAdornment: (

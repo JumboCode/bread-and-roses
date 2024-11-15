@@ -40,4 +40,7 @@ export const options: NextAuthOptions = {
       },
     }),
   ],
+  pages: {
+    signIn: "/public/signIn",
+  },
 };
