@@ -54,53 +54,77 @@ export default function SignUp() {
                 fontFamily: "Kepler Std",
               }}
             >
-              Welcome back!
+              Sign up form
             </div>
             <div className="text-[#667085] text-[18px] font-normal mb-[10px]">
-              Please enter your details
+              Already have an account? <button>Login in here</button>
             </div>
           </div>
           <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
 
-          <TextField
-            sx={{ marginBottom: "10px", width: "100%" }}
-            id="outlined-basic"
-            label="Email address"
-            variant="outlined"
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-            error={displayError}
-            helperText={displayError && "Couldn't find your account"}
-          />
-          <TextField
-            sx={{ width: "100%" }}
-            id="outlined-basic"
-            type={showPassword ? "text" : "password"}
-            label="Password"
-            variant="outlined"
-            slotProps={{
-              input: CustomInputProps,
-            }}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              if (!showPassword) {
-                e.preventDefault();
-              }
-            }}
-            error={displayError}
-            helperText={displayError && "Wrong Password"}
-          />
-          <div className="mb-[20px] w-full flex flex-row justify-between">
-            <FormControlLabel
-              control={<Checkbox ria-label="Checkbox demo" />}
-              label="Remember me"
-              sx={{ color: "#667085" }}
-            />
-
-            <button className="ml-[40px] text-[#145A5A] font-medium">
-              Forget Password
-            </button>
+          <div className="w-full">
+            <div>
+              Address *
+              <TextField
+                sx={{ marginBottom: "10px", width: "100%" }}
+                id="Address Line"
+                label="Address Line"
+                variant="outlined"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+                error={displayError}
+                helperText={displayError && "Couldn't find your account"}
+              />
+              <div className="flex flex-row items-center gap-[10px] ">
+                <TextField
+                  sx={{ marginBottom: "10px", width: "100%" }}
+                  id="City"
+                  label="City"
+                  variant="outlined"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                  error={displayError}
+                  helperText={displayError && "Couldn't find your account"}
+                />
+                <TextField
+                  sx={{ marginBottom: "10px", width: "100%" }}
+                  id="State"
+                  label="State"
+                  variant="outlined"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                  error={displayError}
+                  helperText={displayError && "Couldn't find your account"}
+                />
+              </div>
+              <div className="flex flex-row items-center gap-[10px] ">
+                <TextField
+                  sx={{ marginBottom: "10px", width: "100%" }}
+                  id="ZIP code"
+                  label="ZIP code"
+                  variant="outlined"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                  error={displayError}
+                  helperText={displayError && "Couldn't find your account"}
+                />
+                <TextField
+                  sx={{ marginBottom: "10px", width: "100%" }}
+                  id="State"
+                  label="State"
+                  variant="outlined"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                  error={displayError}
+                  helperText={displayError && "Couldn't find your account"}
+                />
+              </div>
+            </div>
           </div>
 
           <button
@@ -116,13 +140,6 @@ export default function SignUp() {
           >
             Sign In
           </button>
-
-          <div className="w-full text-[#667085] text-[14px] mt-[25px]">
-            Don&apos;t have an account?{" "}
-            <button className="text-[#145A5A] font-semibold">
-              Sign up here
-            </button>
-          </div>
         </div>
       </div>
     </div>
