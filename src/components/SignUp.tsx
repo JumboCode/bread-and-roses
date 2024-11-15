@@ -56,14 +56,76 @@ export default function SignUp() {
             >
               Sign up form
             </div>
-            <div className="text-[#667085] text-[18px] font-normal mb-[10px]">
-              Already have an account? <button>Login in here</button>
+            <div className="w-full text-[#667085] text-[14px] mt-[8px] mb-[24px]">
+              Already have an account?{" "}
+              <button className="text-[#145A5A] font-semibold">
+                Log in here
+              </button>
             </div>
           </div>
           <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
 
           <div className="w-full">
             <div>
+              <div className="w-full text-[#667085] text-[16px]">Name *</div>
+              <div className="flex flex-row items-center gap-[10px] ">
+                <TextField
+                  sx={{ marginBottom: "10px", width: "100%" }}
+                  id="First name"
+                  label="First name"
+                  variant="outlined"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                  error={displayError}
+                  helperText={displayError && "Couldn't find your account"}
+                />
+                <TextField
+                  sx={{ marginBottom: "10px", width: "100%" }}
+                  id="Last name"
+                  label="Last name"
+                  variant="outlined"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                  error={displayError}
+                  helperText={displayError && "Couldn't find your account"}
+                />
+              </div>
+              Email *
+              <TextField
+                sx={{ marginBottom: "10px", width: "100%" }}
+                id="Email"
+                label="ex: myname@gmail.com"
+                variant="outlined"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+                error={displayError}
+                helperText={displayError && "Couldn't find your account"}
+              />
+              Password *
+              <TextField
+                sx={{ marginBottom: "10px", width: "100%" }}
+                id="Password"
+                variant="outlined"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+                error={displayError}
+                helperText={displayError && "Couldn't find your account"}
+              />
+              Confirm password *
+              <TextField
+                sx={{ marginBottom: "10px", width: "100%" }}
+                id="Confirm password"
+                variant="outlined"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+                error={displayError}
+                helperText={displayError && "Couldn't find your account"}
+              />
               Address *
               <TextField
                 sx={{ marginBottom: "10px", width: "100%" }}
