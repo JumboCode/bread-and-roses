@@ -1,6 +1,6 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { getUserByEmailServer } from "@api/user/route";
+import { getUserByEmailServer } from "@api/user/utils";
 import { compare } from "bcryptjs";
 import { User } from "@prisma/client";
 

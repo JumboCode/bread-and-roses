@@ -97,8 +97,8 @@ export const DELETE = async (request: NextRequest) => {
  */
 export const GET = async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
-  const email = searchParams.get("email");
+  const id: string | undefined = searchParams.get("id") || undefined;
+  const email: string | undefined = searchParams.get("email") || undefined;
 
   // Check if id and email is null
   if (!id && !email) {
@@ -188,9 +188,3 @@ export const PUT = async (request: NextRequest) => {
   }
 };
 
-export async function getUserByEmailServer(email: string) {
-  const user = await prisma.user.findUnique({
-    where: { email },
-  });
-  return user;
-}
