@@ -22,6 +22,7 @@ const CreateUserForm = ({ setUserID }: CreateUserForm) => {
     speaksEsp: false,
     volunteerType: "",
     hoursWorked: 0,
+    password: "",
   });
 
   const handleChange = (
@@ -52,6 +53,7 @@ const CreateUserForm = ({ setUserID }: CreateUserForm) => {
           lastName: formData.lastName,
           email: formData.email,
           role: formData.role,
+          password: formData.password,
         },
         {
           ageOver14: formData.ageOver14,
@@ -218,6 +220,16 @@ const CreateUserForm = ({ setUserID }: CreateUserForm) => {
           type="number"
           name="hoursWorked"
           value={formData.hoursWorked}
+          onChange={handleChange}
+          className="input"
+        />
+      </div>
+      <div>
+        <label>Password</label>
+        <input
+          type="string"
+          name="password"
+          value={formData.password}
           onChange={handleChange}
           className="input"
         />

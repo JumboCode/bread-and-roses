@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build", 
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"
@@ -16,13 +16,17 @@
     "@mui/icons-material": "^6.1.4",
     "@mui/material": "^6.1.4",
     "@prisma/client": "^5.20.0",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "iconify": "^1.4.0",
     "next": "14.2.14",
+    "next-auth": "^4.24.10",
     "prisma": "^5.20.0",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -14,9 +15,14 @@ export const POST = async (request: NextRequest) => {
 
     const { user, volunteerDetails } = await request.json();
 
+    // Hash the user's password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+
     const savedUser = await prisma.user.create({
       data: {
         ...user,
+        password: hashedPassword,
       },
     });
 
@@ -91,10 +97,11 @@ export const DELETE = async (request: NextRequest) => {
  */
 export const GET = async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id"); // Assuming the user is queried by 'id'
+  const id: string | undefined = searchParams.get("id") || undefined;
+  const email: string | undefined = searchParams.get("email") || undefined;
 
-  // Check if id is null
-  if (!id) {
+  // Check if id and email is null
+  if (!id && !email) {
     return NextResponse.json(
       {
         code: "BAD_REQUEST",
@@ -105,7 +112,7 @@ export const GET = async (request: NextRequest) => {
   }
   try {
     const fetchedUser = await prisma.user.findUnique({
-      where: { id },
+      where: id ? { id } : { email },
       include: { volunteerDetails: true },
     });
 
