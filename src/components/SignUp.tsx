@@ -5,7 +5,10 @@ import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import InputAdornment from "@mui/material/InputAdornment";
+import FormLabel from "@mui/material/FormLabel";
 import IconButton from "@mui/material/IconButton";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
 
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -186,6 +189,52 @@ export default function SignUp() {
                   helperText={displayError && "Couldn't find your account"}
                 />
               </div>
+            </div>
+            <div>
+              <FormLabel id="driver's license">
+                Do you have a driver&apos;s license?
+              </FormLabel>
+              <RadioGroup
+                sx={{ display: "flex", flexDirection: "row", gap: "20%" }}
+                aria-labelledby="do you have a driver's license"
+                name="radio-buttons-group"
+              >
+                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                <FormControlLabel value="no" control={<Radio />} label="No" />
+              </RadioGroup>
+            </div>
+            <div>
+              <FormLabel id="Spanish">Do you speak Spanish?</FormLabel>
+              <RadioGroup
+                sx={{ display: "flex", flexDirection: "row", gap: "20%" }}
+                aria-labelledby="do you speak Spanish"
+                name="radio-buttons-group"
+              >
+                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                <FormControlLabel value="no" control={<Radio />} label="No" />
+              </RadioGroup>
+            </div>
+            <div>
+              <FormLabel id="Why">
+                Why do you want to volunteer with us?
+              </FormLabel>
+              <TextField
+                id="outlined-textarea"
+                label="Multiline Placeholder"
+                placeholder="Placeholder"
+                multiline
+              />
+            </div>
+            <div>
+              <FormLabel id="Any Questions">
+                Do you have any other questions/comments?
+              </FormLabel>
+              <TextField
+                id="outlined-textarea"
+                label="Multiline Placeholder"
+                placeholder="Placeholder"
+                multiline
+              />
             </div>
           </div>
 
