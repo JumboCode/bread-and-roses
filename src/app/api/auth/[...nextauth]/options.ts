@@ -20,7 +20,7 @@ export const options: NextAuthOptions = {
           placeholder: "your-password",
         },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials) {
           return null; // or throw an error
         }
@@ -29,7 +29,7 @@ export const options: NextAuthOptions = {
         // to verify with credentials
         // Docs: https://next-auth.js.org/configuration/providers/credentials
 
-        const user: User = await getUserByEmailServer(email);
+        const user: User | null = await getUserByEmailServer(email);
 
         // Check if user exists and if password matches
         if (user && (await compare(password, user.password))) {
