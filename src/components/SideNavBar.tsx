@@ -17,18 +17,18 @@ const SideNavBar = ({role}: SideNavBarProps) => {
 
   const adminTabs = [
     { name: 'Home', icon: 'tabler:home', href: '/' },
-    { name: 'Events', icon: 'uil:calender', href: '/events' },
-    { name: 'Volunteers', icon: 'pepicons-print:people', href: '/volunteers' },
-    { name: 'Communication', icon: 'material-symbols:inbox-outline', href: '/communication' },
-    { name: 'Profile', icon: 'charm:person', href: '/profile' },
-    { name: 'Logout', icon: 'tabler:logout', href: '/logout' },
+    { name: 'Events', icon: 'uil:calender', href: '/private/events' },
+    { name: 'Volunteers', icon: 'pepicons-print:people', href: '/private/volunteers' },
+    { name: 'Communication', icon: 'material-symbols:inbox-outline', href: '/private/communication' },
+    { name: 'Profile', icon: 'charm:person', href: '/private/profile' },
+    { name: 'Logout', icon: 'tabler:logout', href: '/private/logout' },
   ];
 
   const volunteerTabs = [
     { name: 'Home', icon: 'tabler:home', href: '/' },
-    { name: 'Events', icon: 'uil:calender', href: '/events' },
-    { name: 'Profile', icon: 'charm:person', href: '/profile' },
-    { name: 'Logout', icon: 'tabler:logout', href: '/logout' },
+    { name: 'Events', icon: 'uil:calender', href: '/private/events' },
+    { name: 'Profile', icon: 'charm:person', href: '/private/profile' },
+    { name: 'Logout', icon: 'tabler:logout', href: '/private/logout' },
   ];
 
   const tabs = role === 'admin' ? adminTabs : volunteerTabs;
@@ -47,7 +47,7 @@ const SideNavBar = ({role}: SideNavBarProps) => {
             <li key={tab.name} >
               <button
                 type="button"
-                className="nav-button flex gap-3 items-center h-11 w-full text-[18px] font-normal font-medium focus:text-darkrose focus:bg-rose rounded-md pt-px pb-px px-3"
+                className='nav-button flex gap-3 items-center h-11 w-full text-[18px] font-normal font-medium focus:text-darkrose focus:bg-rose rounded-md pt-px pb-px px-3 ${ router.pathname === tab.path ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300" }'
                 onClick={() => router.replace(tab.href)}
               >
                 <Icon icon={tab.icon} width="24" height="24" /> {tab.name}
