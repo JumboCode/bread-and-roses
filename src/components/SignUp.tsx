@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import TextField from "@mui/material/TextField";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -22,15 +22,16 @@ export default function SignUp() {
     addressLine: string;
     city: string;
     state: string;
-    zipCode: string;
-    county: string;
+    zipCode: number | string;
+    country: string;
   }
 
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [displayError, setDisplayError] = useState(false);
-  const [address, setAddress] = useState<Address>({addressLine: "",
+  const [address, setAddress] = useState<Address>({
+    addressLine: "",
     city: "",
     state: "",
     zipCode: "",
@@ -50,9 +51,47 @@ export default function SignUp() {
   );
   const [why, setWhy] = useState<string>("");
   const [comments, setComments] = useState<string>("");
+  const [isFormComplete, setIsFormComplete] = useState<boolean>(false);
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setAddress({...address, county: event.target.value})
+  const testIfFormComplete = useCallback(() => {
+    const { addressLine, city, state, zipCode } = address;
+
+    if (
+      Boolean(addressLine && city && state && zipCode !== "") &&
+      hasDriverLicense != null &&
+      speakSpanish != null &&
+      why !== ""
+    ) {
+      console.log("set true");
+      setIsFormComplete(true);
+    } else if (isFormComplete) {
+      console.log("set false");
+      setIsFormComplete(false);
+    }
+  }, [hasDriverLicense, speakSpanish, why, isFormComplete, address]);
+
+  useEffect(() => {
+    testIfFormComplete();
+  }, [
+    address.addressLine,
+    address.city,
+    address.state,
+    address.zipCode,
+    why,
+    testIfFormComplete,
+  ]);
+
+  const handleCountryChange = (event: SelectChangeEvent) => {
+    setAddress({...address, country: event.target.value});
+  };
+
+  const handleChangeAge14 = (
+    event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsOverAge14(Boolean((event.target as HTMLInputElement).value));
+  };
+  
+  const handleChangeFirstTime = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsFirstTime(Boolean((event.target as HTMLInputElement).value));
   };
 
   const handleChangeAge14 = (
@@ -303,7 +342,7 @@ export default function SignUp() {
                   variant="outlined"
                   value={address.zipCode}
                   onChange={(e) => {
-                    setAddress({ ...address, zipCode: e.target.value });
+                    setAddress({ ...address, zipCode: e.target.value == "" ? "" : Number(e.target.value) });
                   }}
                   error={displayError}
                   helperText={displayError && "Couldn't find your account"}
@@ -311,10 +350,9 @@ export default function SignUp() {
                 <Select
                   labelId="select-county"
                   sx={{ marginBottom: "10px", width: "100%" }}
-                  id="county"
-                  value={address.county}
-                  placeholder="ZIP code"
-                  onChange={handleChange}
+                  id="country"
+                  value={address.country}
+                  onChange={handleCountryChange}
                 >
                   <MenuItem value={10}>Ten</MenuItem>
                   <MenuItem value={20}>Twenty</MenuItem>
@@ -375,7 +413,9 @@ export default function SignUp() {
               <div className="text-[red]">*</div>
             </div>
             <TextField
-              onChange={(e) => setWhy(e.target.value)}
+              onChange={(e) => {
+                setWhy(e.target.value)
+              }}
               sx={{ margin: "5px 0 20px 0", width: "100%" }}
               id="why"
               rows={4}
@@ -397,7 +437,7 @@ export default function SignUp() {
 
           <button
             className={`${
-              email !== "" && password !== "" ? "bg-[#138D8A]" : "bg-[#96E3DA]"
+              isFormComplete ? "bg-[#138D8A]" : "bg-[#96E3DA]"
             } text-white py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
             type="submit"
             onClick={() => {
