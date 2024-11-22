@@ -22,7 +22,7 @@ export default function SignUp() {
     addressLine: string;
     city: string;
     state: string;
-    zipCode: number | string;
+    zipCode: string;
     country: string;
   }
 
@@ -340,7 +340,7 @@ export default function SignUp() {
                   variant="outlined"
                   value={address.zipCode}
                   onChange={(e) => {
-                    setAddress({ ...address, zipCode: e.target.value == "" ? "" : Number(e.target.value) });
+                    setAddress({ ...address, zipCode: e.target.value});
                   }}
                   error={displayError}
                   helperText={displayError && "Couldn't find your account"}
