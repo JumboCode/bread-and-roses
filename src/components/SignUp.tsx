@@ -62,10 +62,8 @@ export default function SignUp() {
       speakSpanish != null &&
       why !== ""
     ) {
-      console.log("set true");
       setIsFormComplete(true);
     } else if (isFormComplete) {
-      console.log("set false");
       setIsFormComplete(false);
     }
   }, [hasDriverLicense, speakSpanish, why, isFormComplete, address]);
