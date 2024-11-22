@@ -121,7 +121,7 @@ export default function ForgotPasswordForm() {
             <div className="w-[544px] h-[28px] text-gray-500 text-center font-normal text-[18px] leading-[28px] font-['Sofia Pro']">
               Enter your email to receive the 4 digits code.
             </div>
-            <div className="pt-2 w-[544px] border-b border-1 border-[#F2F4F7]">
+            <div className="pt-2 w-[544px] border-b border-1 border-[#E4E7EC]">
               {" "}
             </div>
             <div className="py-8">
@@ -150,7 +150,7 @@ export default function ForgotPasswordForm() {
             <div className="w-[544px] h-[28px] text-gray-500 text-center font-normal text-[18px] leading-[28px] font-['Sofia Pro']">
               Enter your 4 digits code that you received on your email.
             </div>
-            <div className="pt-2 w-[544px] border-b border-1 border-[#F2F4F7]">
+            <div className="pt-2 w-[544px] border-b border-1 border-[#E4E7EC]">
               {" "}
             </div>
             <div className="flex flex-col gap-8 py-8">
@@ -193,7 +193,7 @@ export default function ForgotPasswordForm() {
                 Set the new password for your account.
               </div>
             </div>
-            <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
+            <hr className="w-full border-t border-[#E4E7EC] mb-[20px]" />
 
             <TextField
               sx={{ marginBottom: "10px", width: "100%" }}
@@ -246,7 +246,7 @@ export default function ForgotPasswordForm() {
                 Your password has been reset successfully.
               </div>
             </div>
-            <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
+            <hr className="w-full border-t border-[#E4E7EC] mb-[20px]" />
 
             <button className="w-[544px] justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]">
               Back to Log in
