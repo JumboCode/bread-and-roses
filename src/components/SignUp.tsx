@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import TextField from "@mui/material/TextField";
-import Checkbox from "@mui/material/Checkbox";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import InputAdornment from "@mui/material/InputAdornment";
 import FormLabel from "@mui/material/FormLabel";
@@ -17,10 +18,46 @@ import Image from "next/image";
 import logo1 from "../../public/logo1.png";
 
 export default function SignUp() {
+  interface Address {
+    addressLine: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    county: string;
+  }
+
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [displayError, setDisplayError] = useState(false);
+  const [address, setAddress] = useState<Address>({addressLine: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    county: ""});
+  const [hasDriverLicense, setHasDriverLicense] = useState<boolean | null>(
+    null
+  );
+  const [speakSpanish, setSpeakSpanish] = useState<boolean | null>(
+    null
+  );
+  const [why, setWhy] = useState<string>("");
+  const [comments, setComments] = useState<string>("");
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setAddress({...address, county: event.target.value})
+  };
+
+  const handleChangeDriverLicense = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setHasDriverLicense(Boolean((event.target as HTMLInputElement).value));
+  };
+
+    const handleChangeSpeakSpanish = (
+      event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+      setSpeakSpanish(Boolean((event.target as HTMLInputElement).value));
+    };
+
 
   const CustomInputProps = {
     endAdornment: (
@@ -129,15 +166,19 @@ export default function SignUp() {
                 error={displayError}
                 helperText={displayError && "Couldn't find your account"}
               />
-              Address *
+              <div className="flex flex-row">
+                Address
+                <div className="text-[red]">*</div>
+              </div>
               <TextField
                 sx={{ marginBottom: "10px", width: "100%" }}
-                id="Address Line"
-                label="Address Line"
-                variant="outlined"
+                id="Address"
+                value={address.addressLine}
                 onChange={(e) => {
-                  setEmail(e.target.value);
+                  setAddress({ ...address, addressLine: e.target.value });
                 }}
+                placeholder="Address Line"
+                variant="outlined"
                 error={displayError}
                 helperText={displayError && "Couldn't find your account"}
               />
@@ -145,21 +186,23 @@ export default function SignUp() {
                 <TextField
                   sx={{ marginBottom: "10px", width: "100%" }}
                   id="City"
-                  label="City"
-                  variant="outlined"
+                  value={address.city}
                   onChange={(e) => {
-                    setEmail(e.target.value);
+                    setAddress({ ...address, city: e.target.value });
                   }}
+                  variant="outlined"
+                  placeholder="City"
                   error={displayError}
                   helperText={displayError && "Couldn't find your account"}
                 />
                 <TextField
                   sx={{ marginBottom: "10px", width: "100%" }}
                   id="State"
-                  label="State"
+                  placeholder="State"
                   variant="outlined"
+                  value={address.state}
                   onChange={(e) => {
-                    setEmail(e.target.value);
+                    setAddress({ ...address, state: e.target.value });
                   }}
                   error={displayError}
                   helperText={displayError && "Couldn't find your account"}
@@ -169,44 +212,70 @@ export default function SignUp() {
                 <TextField
                   sx={{ marginBottom: "10px", width: "100%" }}
                   id="ZIP code"
-                  label="ZIP code"
+                  placeholder="ZIP code"
                   variant="outlined"
+                  value={address.zipCode}
                   onChange={(e) => {
-                    setEmail(e.target.value);
+                    setAddress({ ...address, zipCode: e.target.value });
                   }}
                   error={displayError}
                   helperText={displayError && "Couldn't find your account"}
                 />
-                <TextField
+                <Select
+                  labelId="select-county"
                   sx={{ marginBottom: "10px", width: "100%" }}
-                  id="State"
-                  label="State"
-                  variant="outlined"
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                  error={displayError}
-                  helperText={displayError && "Couldn't find your account"}
-                />
+                  id="county"
+                  value={address.county}
+                  placeholder="ZIP code"
+                  onChange={handleChange}
+                >
+                  <MenuItem value={10}>Ten</MenuItem>
+                  <MenuItem value={20}>Twenty</MenuItem>
+                  <MenuItem value={30}>Thirty</MenuItem>
+                </Select>
               </div>
             </div>
             <div>
-              <FormLabel id="driver's license">
+              <div className="flex flex-row">
                 Do you have a driver&apos;s license?
-              </FormLabel>
+                <div className="text-[red]">*</div>
+              </div>
               <RadioGroup
-                sx={{ display: "flex", flexDirection: "row", gap: "20%" }}
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "20%",
+                  margin: "5px 0 15px 0",
+                }}
+                onChange={handleChangeDriverLicense}
                 aria-labelledby="do you have a driver's license"
                 name="radio-buttons-group"
               >
-                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                <FormControlLabel value="no" control={<Radio />} label="No" />
+                <FormControlLabel
+                  value="true"
+                  control={<Radio />}
+                  label="Yes"
+                />
+                <FormControlLabel
+                  value="false"
+                  control={<Radio />}
+                  label="No"
+                />
               </RadioGroup>
             </div>
             <div>
-              <FormLabel id="Spanish">Do you speak Spanish?</FormLabel>
+              <div className="flex flex-row">
+                Do you speak Spanish?
+                <div className="text-[red]">*</div>
+              </div>
               <RadioGroup
-                sx={{ display: "flex", flexDirection: "row", gap: "20%" }}
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "20%",
+                  margin: "5px 0 15px 0",
+                }}
+                onChange={handleChangeSpeakSpanish}
                 aria-labelledby="do you speak Spanish"
                 name="radio-buttons-group"
               >
@@ -214,25 +283,26 @@ export default function SignUp() {
                 <FormControlLabel value="no" control={<Radio />} label="No" />
               </RadioGroup>
             </div>
-            <div>
-              <FormLabel id="Why">
-                Why do you want to volunteer with us?
-              </FormLabel>
-              <TextField
-                id="outlined-textarea"
-                label="Multiline Placeholder"
-                placeholder="Placeholder"
-                multiline
-              />
+            <div className="flex flex-row">
+              Why do you want to volunteer with us?
+              <div className="text-[red]">*</div>
             </div>
+            <TextField
+              onChange={(e) => setWhy(e.target.value)}
+              sx={{ margin: "5px 0 20px 0", width: "100%" }}
+              id="why"
+              rows={4}
+              multiline
+            />
             <div>
-              <FormLabel id="Any Questions">
+              <FormLabel id="Any Questions" sx={{ color: "black" }}>
                 Do you have any other questions/comments?
               </FormLabel>
               <TextField
-                id="outlined-textarea"
-                label="Multiline Placeholder"
-                placeholder="Placeholder"
+                sx={{ margin: "5px 0 20px 0", width: "100%" }}
+                onChange={(e) => setComments(e.target.value)}
+                id="questions/comments"
+                rows={4}
                 multiline
               />
             </div>
