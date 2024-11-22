@@ -35,7 +35,14 @@ export default function SignUp() {
     state: "",
     zipCode: "",
     county: ""});
-  const [hasDriverLicense, setHasDriverLicense] = useState<boolean | null>(
+  
+  const [isOverAge14, setIsOverAge14] = useState<boolean | null>(
+    null
+  );
+    const [isFirstTime, setIsFirstTime] = useState<boolean | null>(
+    null
+  );
+    const [hasDriverLicense, setHasDriverLicense] = useState<boolean | null>(
     null
   );
   const [speakSpanish, setSpeakSpanish] = useState<boolean | null>(
@@ -46,6 +53,15 @@ export default function SignUp() {
 
   const handleChange = (event: SelectChangeEvent) => {
     setAddress({...address, county: event.target.value})
+  };
+
+  const handleChangeAge14 = (
+    event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsOverAge14(Boolean((event.target as HTMLInputElement).value));
+  };
+  
+  const handleChangeFirstTime = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsFirstTime(Boolean((event.target as HTMLInputElement).value));
   };
 
   const handleChangeDriverLicense = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,7 +123,10 @@ export default function SignUp() {
 
           <div className="w-full">
             <div>
-              <div className="w-full text-[#667085] text-[16px]">Name *</div>
+              <div className="flex flex-row">
+                Name
+                <div className="text-[red]">*</div>
+              </div>
               <div className="flex flex-row items-center gap-[10px] ">
                 <TextField
                   sx={{ marginBottom: "10px", width: "100%" }}
@@ -132,7 +151,10 @@ export default function SignUp() {
                   helperText={displayError && "Couldn't find your account"}
                 />
               </div>
-              Email *
+              <div className="flex flex-row">
+                Email
+                <div className="text-[red]">*</div>
+              </div>
               <TextField
                 sx={{ marginBottom: "10px", width: "100%" }}
                 id="Email"
@@ -144,7 +166,10 @@ export default function SignUp() {
                 error={displayError}
                 helperText={displayError && "Couldn't find your account"}
               />
-              Password *
+              <div className="flex flex-row">
+                Password
+                <div className="text-[red]">*</div>
+              </div>
               <TextField
                 sx={{ marginBottom: "10px", width: "100%" }}
                 id="Password"
@@ -155,7 +180,10 @@ export default function SignUp() {
                 error={displayError}
                 helperText={displayError && "Couldn't find your account"}
               />
-              Confirm password *
+              <div className="flex flex-row">
+                Confirm Password
+                <div className="text-[red]">*</div>
+              </div>
               <TextField
                 sx={{ marginBottom: "10px", width: "100%" }}
                 id="Confirm password"
@@ -166,6 +194,65 @@ export default function SignUp() {
                 error={displayError}
                 helperText={displayError && "Couldn't find your account"}
               />
+              <div>
+                <div className="flex flex-row">
+                  Are you 14 or over?
+                  <div className="text-[red]">*</div>
+                </div>
+                <div className="text-[#667085] text-[14px]">
+                  Note: we require volunteers to be at least 14 to work with us.
+                </div>
+                <RadioGroup
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: "20%",
+                    margin: "5px 0 15px 0",
+                  }}
+                  onChange={handleChangeAge14}
+                  aria-labelledby="are you 14 or over"
+                  name="radio-buttons-group"
+                >
+                  <FormControlLabel
+                    value="true"
+                    control={<Radio />}
+                    label="Yes"
+                  />
+                  <FormControlLabel
+                    value="false"
+                    control={<Radio />}
+                    label="No"
+                  />
+                </RadioGroup>
+              </div>
+              <div>
+                <div className="flex flex-row">
+                  Is this the first time you volunteer with us?
+                  <div className="text-[red]">*</div>
+                </div>
+                <RadioGroup
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: "20%",
+                    margin: "5px 0 15px 0",
+                  }}
+                  onChange={handleChangeFirstTime}
+                  aria-labelledby="first time volunteer"
+                  name="radio-buttons-group"
+                >
+                  <FormControlLabel
+                    value="true"
+                    control={<Radio />}
+                    label="Yes"
+                  />
+                  <FormControlLabel
+                    value="false"
+                    control={<Radio />}
+                    label="No"
+                  />
+                </RadioGroup>
+              </div>
               <div className="flex flex-row">
                 Address
                 <div className="text-[red]">*</div>
