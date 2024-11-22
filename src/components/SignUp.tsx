@@ -35,7 +35,7 @@ export default function SignUp() {
     city: "",
     state: "",
     zipCode: "",
-    county: ""});
+    country: ""});
   
   const [isOverAge14, setIsOverAge14] = useState<boolean | null>(
     null
@@ -348,7 +348,7 @@ export default function SignUp() {
                   helperText={displayError && "Couldn't find your account"}
                 />
                 <Select
-                  labelId="select-county"
+                  labelId="select-country"
                   sx={{ marginBottom: "10px", width: "100%" }}
                   id="country"
                   value={address.country}
