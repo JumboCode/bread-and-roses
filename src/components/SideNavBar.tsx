@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Logo from "../app/icons/br-logo.png";
 import Divider from "../app/icons/divider";
+import { usePathname } from "next/navigation";
 
 // TODO: routing to different pages (make the pages)
 // note that the highlight of the button goes away when u click off it!
@@ -15,6 +16,8 @@ interface SideNavBarProps {
 const SideNavBar = ({role}: SideNavBarProps) => {
   const router = useRouter();
 
+  const pathname = usePathname();
+ 
   const adminTabs = [
     { name: 'Home', icon: 'tabler:home', href: '/' },
     { name: 'Events', icon: 'uil:calender', href: '/private/events' },
@@ -47,7 +50,7 @@ const SideNavBar = ({role}: SideNavBarProps) => {
             <li key={tab.name} >
               <button
                 type="button"
-                className='nav-button flex gap-3 items-center h-11 w-full text-[18px] font-normal font-medium focus:text-darkrose focus:bg-rose rounded-md pt-px pb-px px-3 ${ router.pathname === tab.path ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300" }'
+                className={`nav-button flex gap-3 items-center h-11 w-full text-[18px] font-normal font-medium focus:text-darkrose focus:bg-rose rounded-md pt-px pb-px px-3 ${ pathname === tab.href ? "text-darkrose bg-rose" : "" }`}
                 onClick={() => router.replace(tab.href)}
               >
                 <Icon icon={tab.icon} width="24" height="24" /> {tab.name}
