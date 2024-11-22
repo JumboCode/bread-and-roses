@@ -111,9 +111,21 @@ export default function ForgotPasswordForm() {
       <Image src={"/logo1.png"} alt="Logo" height={173} width={215} />
       <div className="w-[592px] h-auto p-6 bg-white rounded-lg shadow border-1 border-[#e4e7ec] flex-col justify-start items-start inline-flex items-center">
         <div>
-          <div className="w-[544px] h-[44px] text-[#9A0F28] text-center font-semibold text-[36px] leading-[44px] font-['Kepler Std']">
-            Forgot password
-          </div>
+          {step <= 2 && (
+            <div className="w-[544px] h-[44px] text-[#9A0F28] text-center font-semibold text-[36px] leading-[44px] font-['Kepler Std']">
+              Forgot password
+            </div>
+          )}
+          {step === 3 && (
+            <div className="w-[544px] h-[44px] text-[#9A0F28] text-center font-semibold text-[36px] leading-[44px] font-['Kepler Std']">
+              New Password
+            </div>
+          )}
+          {step === 4 && (
+            <div className="w-[544px] h-[44px] text-[#9A0F28] text-center font-semibold text-[36px] leading-[44px] font-['Kepler Std']">
+              Successful
+            </div>
+          )}
         </div>
 
         {step === 1 && (
@@ -255,9 +267,11 @@ export default function ForgotPasswordForm() {
         )}
       </div>
       {step === 2 && (
-        <div className="mt-4 text-gray-500 text-center text-sm font-normal">
+        <div className="mt-4 text-gray-500 text-center text-sm font-['Sofia Pro']">
           Didn't receive a code?
-          <button className="px-1 text-teal-600 font-semibold">Resend</button>
+          <button className="px-1 text-teal-600 font-semibold font-['Sofia Pro']">
+            Resend
+          </button>
         </div>
       )}
     </div>
