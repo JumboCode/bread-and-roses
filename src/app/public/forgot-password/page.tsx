@@ -1,9 +1,9 @@
-import ForgotPassword from "@components/ForgotPassword";
+import ForgotPasswordForm from "@components/ForgotPassword";
 
-const Forgot = () => {
+const ForgotPassword = () => {
   return (
     <div>
-      <ForgotPassword />
+      <ForgotPasswordForm />
     </div>
   );
 };
