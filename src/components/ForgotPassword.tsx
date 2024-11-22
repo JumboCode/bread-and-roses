@@ -25,7 +25,7 @@ export default function ForgotPasswordForm() {
   const handleEmailSubmit = () => {
     // include more logic here like having @ and stuff
     // somehow check if email address is in backend? or include some conditional to only move on if found
-    if (email === "") {
+    if (email.trim() === "") {
       setError("Please enter a valid email address.");
     } else {
       setError("");
@@ -35,7 +35,11 @@ export default function ForgotPasswordForm() {
   };
 
   const handlePasswordSubmit = () => {
-    if (confirmPassword !== newPassword) {
+    if (
+      confirmPassword !== newPassword ||
+      newPassword.trim() === "" ||
+      confirmPassword.trim() === ""
+    ) {
       setPasswordError(true);
     } else {
       setPasswordError(false);
@@ -64,6 +68,12 @@ export default function ForgotPasswordForm() {
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && !code[index] && index > 0) {
       inputs.current[index - 1].focus();
+    }
+  };
+
+  const handleKeyDownSpace = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.code === "Space") {
+      e.preventDefault();
     }
   };
 
@@ -211,7 +221,7 @@ export default function ForgotPasswordForm() {
               sx={{ marginBottom: "10px", width: "100%" }}
               id="outlined-basic"
               type={showNewPassword ? "text" : "password"}
-              InputProps={CustomInputProps("newPassword")}
+              onKeyDown={handleKeyDownSpace}
               label="New Password"
               variant="outlined"
               slotProps={{
@@ -224,13 +234,12 @@ export default function ForgotPasswordForm() {
                 }
               }}
               error={passwordError}
-              //helperText={passwordError && "Passwords do not match"}
             />
             <TextField
               sx={{ marginBottom: "10px", width: "100%" }}
               id="outlined-basic"
               type={showConfirmPassword ? "text" : "password"}
-              InputProps={CustomInputProps("newPassword")}
+              onKeyDown={handleKeyDownSpace}
               label="Confirm New Password"
               variant="outlined"
               slotProps={{
