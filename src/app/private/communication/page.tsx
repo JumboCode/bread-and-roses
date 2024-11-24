@@ -1,11 +1,9 @@
-"use client";
+import React from "react";
 
-import SideNavBar from "@components/SideNavBar";
-
-export default function Home() {
+export default function CommunicationPage() {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <SideNavBar role="admin"/>
+    <div>
+      <h1>Communication Page</h1>
     </div>
   );
 }

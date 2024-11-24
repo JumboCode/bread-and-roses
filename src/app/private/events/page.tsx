@@ -1,11 +1,9 @@
-"use client";
+import React from "react";
 
-import SideNavBar from "@components/SideNavBar";
-
-export default function Events() {
+export default function EventsPage() {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <SideNavBar role="admin"/>
+    <div>
+      <h1>Events Page</h1>
     </div>
   );
 }

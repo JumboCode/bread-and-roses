@@ -1,11 +1,9 @@
-"use client";
+import React from "react";
 
-import SideNavBar from "@components/SideNavBar";
-
-export default function Profile() {
+export default function ProfilePage() {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <SideNavBar role="admin"/>
+    <div>
+      <h1>Profile Page</h1>
     </div>
   );
 }

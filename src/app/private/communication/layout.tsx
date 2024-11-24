@@ -1,11 +1,11 @@
 import React from "react";
 
-interface IAdminHomeLayoutProps {
+interface IACommunicationLayoutProps {
   children: React.ReactNode;
 }
 
-const AdminHomeLayout = ({ children }: IAdminHomeLayoutProps) => {
+const CommunicationLayout = ({ children }: IACommunicationLayoutProps) => {
   return <div> {children} </div>;
 };
 
-export default AdminHomeLayout;
+export default CommunicationLayout;

@@ -1,11 +1,11 @@
 import React from "react";
 
-interface IAdminHomeLayoutProps {
+interface IVolunteersLayoutProps {
   children: React.ReactNode;
 }
 
-const AdminHomeLayout = ({ children }: IAdminHomeLayoutProps) => {
+const VolunteersLayout = ({ children }: IVolunteersLayoutProps) => {
   return <div> {children} </div>;
 };
 
-export default AdminHomeLayout;
+export default VolunteersLayout;

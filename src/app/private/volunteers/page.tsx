@@ -1,11 +1,9 @@
-"use client";
+import React from "react";
 
-import SideNavBar from "@components/SideNavBar";
-
-export default function Page() {
+export default function VolunteersPage() {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <SideNavBar role="admin"/>
+    <div>
+      <h1>Volunteers Page</h1>
     </div>
   );
 }

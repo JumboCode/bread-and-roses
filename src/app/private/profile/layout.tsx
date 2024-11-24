@@ -1,11 +1,11 @@
 import React from "react";
 
-interface IAdminHomeLayoutProps {
+interface IProfileLayoutProps {
   children: React.ReactNode;
 }
 
-const AdminHomeLayout = ({ children }: IAdminHomeLayoutProps) => {
+const ProfileLayout = ({ children }: IProfileLayoutProps) => {
   return <div> {children} </div>;
 };
 
-export default AdminHomeLayout;
+export default ProfileLayout;

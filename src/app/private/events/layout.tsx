@@ -1,11 +1,11 @@
 import React from "react";
 
-interface IAdminHomeLayoutProps {
+interface IEventsLayoutProps {
   children: React.ReactNode;
 }
 
-const AdminHomeLayout = ({ children }: IAdminHomeLayoutProps) => {
+const EventsLayout = ({ children }: IEventsLayoutProps) => {
   return <div> {children} </div>;
 };
 
-export default AdminHomeLayout;
+export default EventsLayout;
