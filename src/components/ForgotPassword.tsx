@@ -4,6 +4,7 @@ import React, { useState, useRef } from "react";
 import Image from "next/image";
 import TextField from "@mui/material/TextField";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { useRouter } from "next/navigation";
 
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
@@ -11,6 +12,8 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
 export default function ForgotPasswordForm() {
+  const router = useRouter();
+
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -18,16 +21,20 @@ export default function ForgotPasswordForm() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [code, setCode] = useState(["", "", "", ""]);
+  const [codeError, setCodeError] = useState(false);
+  const [codeBackendError, setCodeBackendError] = useState(false);
   const inputs = useRef([]);
   const [error, setError] = useState("");
   const [passwordError, setPasswordError] = useState(false);
   const [counter, setCounter] = React.useState(30);
 
   const handleEmailSubmit = () => {
-    // include more logic here like having @ and stuff
-    // somehow check if email address is in backend? or include some conditional to only move on if found
-    if (email.trim() === "") {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailFound = true; // Placeholder, replace with backend logic
+    if (!emailRegex.test(email.trim())) {
       setError("Please enter a valid email address.");
+    } else if (!emailFound) {
+      setError("Couldn't find your account");
     } else {
       setError("");
       setStep(2);
@@ -49,9 +56,18 @@ export default function ForgotPasswordForm() {
   };
 
   const handleCodeSubmit = () => {
-    // include more logic here like having @ and stuff
-    // somehow check if email address is in backend? or include some conditional to only move on if found
-    setStep(3);
+    const isCodeCorrect = true; // Placeholder, replace with backend logic
+    if (code.some((digit) => digit === "")) {
+      setCodeError(true);
+      setCodeBackendError(false);
+    } else if (!isCodeCorrect) {
+      setCodeBackendError(true);
+      setCodeError(false);
+    } else {
+      setCodeError(false);
+      setCodeBackendError(false);
+      setStep(3);
+    }
   };
 
   const handleCodeChange = (value, index) => {
@@ -60,6 +76,11 @@ export default function ForgotPasswordForm() {
     const newCode = [...code];
     newCode[index] = value;
     setCode(newCode);
+
+    if (codeError || codeBackendError) {
+      setCodeError(false);
+      setCodeBackendError(false);
+    }
 
     if (value && index < 3) {
       inputs.current[index + 1].focus();
@@ -119,7 +140,7 @@ export default function ForgotPasswordForm() {
 
   return (
     <div className="flex flex-col items-center w-full">
-      <div className="flex flex-col justify-center items-center min-h-screen w-4/5 max-w-3xl">
+      <div className="flex flex-col justify-center items-center min-h-screen w-full max-w-xl">
         <div className="w-full">
           {step === 2 && (
             <button
@@ -147,11 +168,11 @@ export default function ForgotPasswordForm() {
           />
         </div>
         <div className="w-full h-auto p-6 bg-white rounded-lg shadow border-1 border-[#e4e7ec] flex-col justify-start items-start inline-flex items-center">
-          <div className="text-[#9A0F28] text-center font-semibold text-2xl font-['Kepler Std']">
+          <div className="text-[#9A0F28] text-center font-semibold text-2xl font-['Kepler Std'] ">
             {step <= 2
               ? "Forgot password"
               : step === 3
-              ? "New Password"
+              ? "New password"
               : step === 4
               ? "Successful"
               : "Enter Code"}
@@ -173,7 +194,10 @@ export default function ForgotPasswordForm() {
                   variant="outlined"
                   onChange={(e) => {
                     setEmail(e.target.value);
+                    setError("");
                   }}
+                  error={Boolean(error)}
+                  helperText={error}
                 />
               </div>
               <div className="w-full">
@@ -202,11 +226,14 @@ export default function ForgotPasswordForm() {
                       value={value}
                       onChange={(e) =>
                         handleCodeChange(e.target.value.slice(-1), index)
-                      } // Only allow one digit
+                      }
                       onKeyDown={(e) => handleKeyDown(e, index)}
                       inputRef={(el) => (inputs.current[index] = el)}
                       maxLength="1"
-                      className="w-[50px] h-[56px] text-center text-lg border border-gray-300 rounded-lg"
+                      error={codeError}
+                      className={`w-[50px] h-[56px] text-center text-lg ${
+                        codeError ? "border-rose-600" : "border-gray-300"
+                      } rounded-lg`}
                     />
                   ))}
                 </div>
@@ -286,9 +313,19 @@ export default function ForgotPasswordForm() {
                   Your password has been reset successfully.
                 </div>
               </div>
-              <hr className="w-full border-t border-[#E4E7EC] mb-[20px]" />
+              <hr className="w-full border-t border-[#E4E7EC]" />
 
-              <button className="w-full justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]">
+              <Icon
+                icon="fluent:checkmark-circle-12-filled"
+                width="85"
+                height="85"
+                className="text-teal-800 my-8"
+              />
+
+              <button
+                className="w-full justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]"
+                onClick={() => router.push("/public/login")}
+              >
                 Back to Log in
               </button>
             </>
