@@ -333,7 +333,7 @@ export default function ForgotPasswordForm() {
         </div>
         {step === 2 && (
           <div className="mt-4 text-gray-500 text-center text-sm font-['Sofia Pro']">
-            Didn't receive a code?
+            Didn&#39;t receive a code?
             <button className="px-1 text-teal-600 font-semibold font-['Sofia Pro']">
               Resend
             </button>
