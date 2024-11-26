@@ -23,7 +23,7 @@ export default function ForgotPasswordForm() {
   const [code, setCode] = useState(["", "", "", ""]);
   const [codeError, setCodeError] = useState(false);
   const [codeBackendError, setCodeBackendError] = useState(false);
-  const inputs = useRef([]);
+  const inputs = useRef<(HTMLInputElement | null)[]>([]);
   const [error, setError] = useState("");
   const [passwordError, setPasswordError] = useState(false);
   const [counter, setCounter] = React.useState(30);
@@ -70,7 +70,7 @@ export default function ForgotPasswordForm() {
     }
   };
 
-  const handleCodeChange = (value, index) => {
+  const handleCodeChange = (value: string, index: number) => {
     if (!/^\d$/.test(value) && value !== "") return;
 
     const newCode = [...code];
@@ -82,14 +82,19 @@ export default function ForgotPasswordForm() {
       setCodeBackendError(false);
     }
 
-    if (value && index < 3) {
-      inputs.current[index + 1].focus();
+    if (value && index < 3 && inputs.current[index + 1]) {
+      inputs.current[index + 1]?.focus();
     }
   };
 
-  const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace" && !code[index] && index > 0) {
-      inputs.current[index - 1].focus();
+  const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
+    if (
+      e.key === "Backspace" &&
+      !code[index] &&
+      index > 0 &&
+      inputs.current[index - 1]
+    ) {
+      (inputs.current[index - 1] as HTMLInputElement)?.focus();
     }
   };
 
@@ -100,9 +105,15 @@ export default function ForgotPasswordForm() {
   };
 
   React.useEffect(() => {
-    const timer =
-      counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
-    return () => clearInterval(timer);
+    let timer: NodeJS.Timeout | undefined;
+    if (counter > 0) {
+      timer = setInterval(() => setCounter((prev) => prev - 1), 1000);
+    }
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
   }, [counter]);
 
   const CustomInputProps = (inputType: "newPassword" | "confirmPassword") => {
@@ -229,11 +240,11 @@ export default function ForgotPasswordForm() {
                       }
                       onKeyDown={(e) => handleKeyDown(e, index)}
                       inputRef={(el) => (inputs.current[index] = el)}
-                      maxLength="1"
                       error={codeError}
                       className={`w-[50px] h-[56px] text-center text-lg ${
                         codeError ? "border-rose-600" : "border-gray-300"
                       } rounded-lg`}
+                      inputProps={{ maxLength: 1 }}
                     />
                   ))}
                 </div>
