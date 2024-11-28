@@ -10,9 +10,9 @@ const SearchBar = ({ Title, Subtext }: SearchBarProps) => {
     return (
         <div className="flex items-start relative">
             {/* Main Content Box */}
-            <div className="w-full flex flex-col shadow-md w-[1094px] p-[24px] px-[28px] items-start gap-[16px] rounded-tr-[8px] rounded-tl-[8px] rounded-br-[8px] rounded-bl-[8px] border border-[#Grey/500] bg-[#FFF] relative">
+            <div className="w-full flex justify-center flex-col shadow-md h-[44px] w-[480px] items-start gap-[16px] rounded-tr-[8px] rounded-tl-[8px] rounded-br-[8px] rounded-bl-[8px] border border-[#Grey/500] bg-[#FFF] relative">
                 {/* Close Icon positioned in the top-right corner */}
-                <div className="justify-start">
+                <div className="flex justify-start">
                     <Icon icon="material-symbols-light:search" width="24" height="24" style={{ color: 'grey/500' }} />
                 </div>
             </div>
