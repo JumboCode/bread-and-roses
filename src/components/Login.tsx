@@ -22,9 +22,9 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [displayError, setDisplayError] = useState(false);
+  const [emailDisplayError, setEmailDisplayError] = useState(false);
+  const [passwordDisplayError, setPasswordDisplayError] = useState(false);
   const router = useRouter();
-  const [error, setError] = useState("");
   const { status } = useSession();
 
   useEffect(() => {
@@ -43,8 +43,12 @@ export default function LoginForm() {
     });
 
     if (res?.error) {
-      setError(res.error);
-      console.log(res.error)
+      if (res?.error == "Invalid password") {
+        setPasswordDisplayError(true);
+        setTimeout(() => setPasswordDisplayError(false), 3000);
+      } else if (res?.error == "Invalid user")
+        setEmailDisplayError(true);
+        setTimeout(() => setEmailDisplayError(false), 3000);
     } else {
       window.location.href = "/";
     }
@@ -101,8 +105,8 @@ export default function LoginForm() {
             onChange={(e) => {
               setEmail(e.target.value);
             }}
-            error={displayError}
-            helperText={displayError && "Couldn't find your account"}
+            error={emailDisplayError}
+            helperText={emailDisplayError && "Couldn't find your account"}
           />
           <TextField
             sx={{ width: "100%" }}
@@ -119,8 +123,8 @@ export default function LoginForm() {
                 e.preventDefault();
               }
             }}
-            error={displayError}
-            helperText={displayError && "Wrong Password"}
+            error={passwordDisplayError}
+            helperText={passwordDisplayError && "Wrong Password"}
           />
           <div className="mb-[20px] w-full flex flex-row justify-between">
             <FormControlLabel
@@ -141,7 +145,6 @@ export default function LoginForm() {
             type="submit"
             onClick={(e) => {
               if (email !== "" && password !== "") {
-                setDisplayError(false);
                 handleSubmit(e);
               }
             }}
