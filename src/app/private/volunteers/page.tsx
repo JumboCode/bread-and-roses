@@ -6,7 +6,7 @@ export default function VolunteersPage() {
     <div>
       <h1> Volunteer Home</h1>
       <SearchBar Title="hi" Subtext="yo" />
-      <VolunteerTable></VolunteerTable>
+      <VolunteerTable showPagination={true}></VolunteerTable>
     </div>
   );
 }

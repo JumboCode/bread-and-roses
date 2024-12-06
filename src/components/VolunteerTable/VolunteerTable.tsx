@@ -1,15 +1,24 @@
+'use client';
+
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import TablePagination from "@mui/material/TablePagination";
 import Avatar from "@mui/material/Avatar";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import IconButton from "@mui/material/IconButton";
+import Checkbox from "@mui/material/Checkbox";
+import React, { useState } from "react";
 
 import profilePic from "../../../public/profile.png";
+
+interface VolunteerTableProps {
+    showPagination: boolean;
+}
 
 function createData(
   name: string,
@@ -37,9 +46,31 @@ const rows = [
   createData("Name1", 0, "email1", "location1"),
   createData("Name2", 1, "email2", "location2"),
   createData("Name3", 2, "email3", "location2"),
+  createData("Name4", 0, "email1", "location1"),
+  createData("Name5", 1, "email2", "location2"),
+  createData("Name6", 2, "email3", "location2"),
+  createData("Name7", 0, "email1", "location1"),
+  createData("Name8", 1, "email2", "location2"),
+  createData("Name9", 2, "email3", "location2"),
+  createData("Name10", 0, "email1", "location1"),
+  createData("Name11", 1, "email2", "location2"),
+  createData("Name12", 2, "email3", "location2"),
+  createData("Name13", 0, "email1", "location1"),
+  createData("Name14", 1, "email2", "location2"),
+  createData("Name15", 2, "email3", "location2"),
 ];
 
-export default function VolunteerTable() {
+export default function VolunteerTable({ showPagination }: VolunteerTableProps) {
+    const [page, setPage] = useState(0); // Current page
+    const [rowsPerPage] = useState(8); // Set rows per page to 8
+
+    const handleChangePage = (event: unknown, newPage: number) => {
+        setPage(newPage);
+    };
+
+  // Pagination Logic
+  const paginatedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
     <TableContainer
       sx={{
@@ -107,7 +138,7 @@ export default function VolunteerTable() {
           </TableRow>
         </TableHead>
         <TableBody sx={{ borderColor: "pink" }}>
-          {rows.map((row) => (
+          {paginatedRows.map((row) => (
             <TableRow
               key={row.name}
               sx={{
@@ -182,6 +213,16 @@ export default function VolunteerTable() {
           ))}
         </TableBody>
       </Table>
+      {showPagination && (
+        <TablePagination
+          component="div"
+          count={rows.length}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          rowsPerPageOptions={[8]}
+        />
+      )}
     </TableContainer>
   );
 }
