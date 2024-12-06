@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -15,13 +15,40 @@ import logo1 from "../../public/logo1.png";
 
 import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [displayError, setDisplayError] = useState(false);
-  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const { status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/"); // Change to your desired redirect path
+    }
+  }, [status, router]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (res?.error) {
+      setError(res.error);
+      console.log(res.error)
+    } else {
+      window.location.href = "/";
+    }
+  };
 
   const CustomInputProps = {
     endAdornment: (
@@ -112,9 +139,10 @@ export default function LoginForm() {
               email !== "" && password !== "" ? "bg-[#138D8A]" : "bg-[#96E3DA]"
             } text-white py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
             type="submit"
-            onClick={() => {
+            onClick={(e) => {
               if (email !== "" && password !== "") {
-                setDisplayError(true);
+                setDisplayError(false);
+                handleSubmit(e);
               }
             }}
           >
