@@ -10,6 +10,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { sendForgotCode, updatePassword } from "@api/password/route.client";
+import { verifyCode } from "@api/verify-code/route.client";
 
 export default function ForgotPasswordForm() {
   const router = useRouter();
@@ -21,51 +23,57 @@ export default function ForgotPasswordForm() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [code, setCode] = useState(["", "", "", ""]);
-  const [codeError, setCodeError] = useState(false);
-  const [codeBackendError, setCodeBackendError] = useState(false);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
   const [error, setError] = useState("");
-  const [passwordError, setPasswordError] = useState(false);
-  const [counter, setCounter] = React.useState(30);
+  const [counter, setCounter] = React.useState(60);
 
-  const handleEmailSubmit = () => {
+  const handleEmailSubmit = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const emailFound = true; // Placeholder, replace with backend logic
     if (!emailRegex.test(email.trim())) {
       setError("Please enter a valid email address.");
-    } else if (!emailFound) {
+      return;
+    }
+
+    const codeResponse = await sendForgotCode(email);
+
+    if (codeResponse.message === "Email not found") {
       setError("Couldn't find your account");
+    } else if (codeResponse.code === "ERROR") {
+      setError(codeResponse.message);
     } else {
       setError("");
       setStep(2);
-      setCounter(30);
+      setCounter(60);
     }
   };
 
-  const handlePasswordSubmit = () => {
+  const handlePasswordSubmit = async () => {
     if (
       confirmPassword !== newPassword ||
       newPassword.trim() === "" ||
       confirmPassword.trim() === ""
     ) {
-      setPasswordError(true);
+      setError("Passwords do not match or empty password");
     } else {
-      setPasswordError(false);
+      const updatedMessage = await updatePassword(email, newPassword);
+      if (updatedMessage.code === "ERROR") {
+        setError(updatedMessage.message);
+        return;
+      }
+      setError("");
       setStep(4);
     }
   };
 
-  const handleCodeSubmit = () => {
-    const isCodeCorrect = true; // Placeholder, replace with backend logic
+  const handleCodeSubmit = async () => {
+    const verifyReponse = await verifyCode(email, code.join(""));
+
     if (code.some((digit) => digit === "")) {
-      setCodeError(true);
-      setCodeBackendError(false);
-    } else if (!isCodeCorrect) {
-      setCodeBackendError(true);
-      setCodeError(false);
+      setError("Please enter all 4 digits");
+    } else if (verifyReponse.code === "ERROR") {
+      setError("Invalid code or expired code");
     } else {
-      setCodeError(false);
-      setCodeBackendError(false);
+      setError("");
       setStep(3);
     }
   };
@@ -77,13 +85,26 @@ export default function ForgotPasswordForm() {
     newCode[index] = value;
     setCode(newCode);
 
-    if (codeError || codeBackendError) {
-      setCodeError(false);
-      setCodeBackendError(false);
+    if (error) {
+      setError("");
     }
 
     if (value && index < 3 && inputs.current[index + 1]) {
       inputs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleCodeResend = async () => {
+    setCounter(60);
+    setError("");
+    setCode(["", "", "", ""]);
+
+    const codeResponse = await sendForgotCode(email);
+
+    if (codeResponse.message === "Email not found") {
+      setError("Couldn't find your account");
+    } else if (codeResponse.code === "ERROR") {
+      setError(codeResponse.message);
     }
   };
 
@@ -95,9 +116,6 @@ export default function ForgotPasswordForm() {
       inputs.current[index - 1]
     ) {
       (inputs.current[index - 1] as HTMLInputElement)?.focus();
-    }
-    if (e.key === "Enter") {
-      handleCodeSubmit();
     }
   };
 
@@ -131,36 +149,22 @@ export default function ForgotPasswordForm() {
     return {
       endAdornment: (
         <InputAdornment position="end">
-          {inputType === "newPassword" && newPassword !== "" && (
-            <IconButton>
-              {showNewPassword ? (
-                <VisibilityIcon
-                  sx={{ color: "#138D8A" }}
-                  onClick={toggleVisibility}
-                />
-              ) : (
-                <VisibilityOffIcon
-                  sx={{ color: "#138D8A" }}
-                  onClick={toggleVisibility}
-                />
-              )}
-            </IconButton>
-          )}
-          {inputType === "confirmPassword" && confirmPassword !== "" && (
-            <IconButton>
-              {showConfirmPassword ? (
-                <VisibilityIcon
-                  sx={{ color: "#138D8A" }}
-                  onClick={toggleVisibility}
-                />
-              ) : (
-                <VisibilityOffIcon
-                  sx={{ color: "#138D8A" }}
-                  onClick={toggleVisibility}
-                />
-              )}
-            </IconButton>
-          )}
+          <IconButton>
+            {newPassword !== "" &&
+            (inputType === "newPassword"
+              ? showNewPassword
+              : showConfirmPassword) ? (
+              <VisibilityIcon
+                sx={{ color: "#138D8A" }}
+                onClick={toggleVisibility}
+              />
+            ) : (
+              <VisibilityOffIcon
+                sx={{ color: "#138D8A" }}
+                onClick={toggleVisibility}
+              />
+            )}
+          </IconButton>
         </InputAdornment>
       ),
     };
@@ -195,7 +199,7 @@ export default function ForgotPasswordForm() {
             className=""
           />
         </div>
-        <div className="w-full h-auto p-6 bg-white rounded-lg shadow-xl border-1 border-[#e4e7ec] flex-col justify-start inline-flex items-center">
+        <div className="w-full h-auto p-6 bg-white rounded-lg shadow border-1 border-[#e4e7ec] flex-col justify-start inline-flex items-center">
           <div className="text-[#9A0F28] text-center font-semibold text-2xl font-['Kepler Std'] ">
             {step <= 2
               ? "Forgot password"
@@ -224,12 +228,7 @@ export default function ForgotPasswordForm() {
                     setEmail(e.target.value);
                     setError("");
                   }}
-                  onKeyUp={(e) => {
-                    if (e.key === "Enter") {
-                      handleEmailSubmit();
-                    }
-                  }}
-                  error={Boolean(error)}
+                  error={error !== ""}
                   helperText={error}
                 />
               </div>
@@ -251,7 +250,7 @@ export default function ForgotPasswordForm() {
               <div className="pt-2 w-full border-b border-1 border-[#E4E7EC]">
                 {" "}
               </div>
-              <div className="flex flex-col gap-8 py-8">
+              <div className="flex flex-col py-8">
                 <div className="flex space-x-2">
                   {code.map((value, index) => (
                     <TextField
@@ -262,15 +261,22 @@ export default function ForgotPasswordForm() {
                       }
                       onKeyDown={(e) => handleKeyDown(e, index)}
                       inputRef={(el) => (inputs.current[index] = el)}
-                      error={codeError}
+                      error={error !== ""}
                       className={`w-[50px] h-[56px] text-center text-lg ${
-                        codeError ? "border-rose-600" : "border-gray-300"
+                        error !== "" ? "border-rose-600" : "border-gray-300"
                       } rounded-lg`}
-                      inputProps={{ maxLength: 1, className: "text-center" }}
+                      slotProps={{
+                        htmlInput: {
+                          maxLength: 1,
+                        },
+                      }}
                     />
                   ))}
                 </div>
-                <div className="flex justify-center text-rose-600 text-center font-normal text-[18px] leading-[28px] font-['Sofia Pro']">
+                {error !== "" && (
+                  <div className="text-center text-rose-600 mt-2">{error}</div>
+                )}
+                <div className="flex justify-center text-rose-600 text-center font-normal text-[18px] leading-[28px] font-['Sofia Pro'] mt-4">
                   {String(Math.floor(counter / 60)).padStart(2, "0")}:
                   {String(counter % 60).padStart(2, "0")}
                 </div>
@@ -312,12 +318,7 @@ export default function ForgotPasswordForm() {
                     e.preventDefault();
                   }
                 }}
-                onKeyUp={(e) => {
-                  if (e.key === "Enter") {
-                    handlePasswordSubmit();
-                  }
-                }}
-                error={passwordError}
+                error={error !== ""}
               />
               <TextField
                 sx={{ marginBottom: "10px", width: "100%" }}
@@ -332,13 +333,8 @@ export default function ForgotPasswordForm() {
                 onChange={(e) => {
                   setConfirmPassword(e.target.value);
                 }}
-                onKeyUp={(e) => {
-                  if (e.key === "Enter") {
-                    handlePasswordSubmit();
-                  }
-                }}
-                error={passwordError}
-                helperText={passwordError && "Passwords do not match"}
+                error={error !== ""}
+                helperText={error}
               />
 
               <button
@@ -377,7 +373,10 @@ export default function ForgotPasswordForm() {
         {step === 2 && (
           <div className="mt-4 text-gray-500 text-center text-sm font-['Sofia Pro']">
             Didn&#39;t receive a code?
-            <button className="px-1 text-teal-600 font-semibold font-['Sofia Pro']">
+            <button
+              className="px-1 text-teal-600 font-semibold font-['Sofia Pro']"
+              onClick={handleCodeResend}
+            >
               Resend
             </button>
           </div>
