@@ -228,6 +228,11 @@ export default function ForgotPasswordForm() {
                     setEmail(e.target.value);
                     setError("");
                   }}
+                  onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                      handleEmailSubmit();
+                    }
+                  }}
                   error={error !== ""}
                   helperText={error}
                 />
@@ -312,6 +317,11 @@ export default function ForgotPasswordForm() {
                 slotProps={{
                   input: CustomInputProps("newPassword"),
                 }}
+                onKeyUp={(e) => {
+                  if (e.key === "Enter") {
+                    handleEmailSubmit();
+                  }
+                }}
                 onChange={(e) => {
                   setNewPassword(e.target.value);
                   if (!showNewPassword) {
@@ -329,6 +339,11 @@ export default function ForgotPasswordForm() {
                 variant="outlined"
                 slotProps={{
                   input: CustomInputProps("confirmPassword"),
+                }}
+                onKeyUp={(e) => {
+                  if (e.key === "Enter") {
+                    handleEmailSubmit();
+                  }
                 }}
                 onChange={(e) => {
                   setConfirmPassword(e.target.value);
