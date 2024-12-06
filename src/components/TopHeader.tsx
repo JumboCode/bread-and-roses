@@ -14,7 +14,7 @@ const TopHeader = ({ userType }: TopHeaderProps) => {
   const [isEnglish, setIsEnglish] = React.useState(true);
 
   return (
-    <div className="absolute top-0 flex flex-row w-screen border border-gray-200 py-5 px-6 place-content-between">
+    <div className="absolute fixed top-0 flex flex-row w-[calc(100%-15rem)] border border-gray-200 py-5 px-6 place-content-between">
       <button className="flex flex-row gap-x-2 bg-teal-600 p-2.5 px-3 text-white rounded-md place-items-center">
         <Icon icon={icon} width="20" height="20" />
         {buttonText}
