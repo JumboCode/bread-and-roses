@@ -264,6 +264,11 @@ export default function ForgotPasswordForm() {
                       onChange={(e) =>
                         handleCodeChange(e.target.value.slice(-1), index)
                       }
+                      onKeyUp={(e) => {
+                        if (e.key === "Enter") {
+                          handleCodeSubmit();
+                        }
+                      }}
                       onKeyDown={(e) => handleKeyDown(e, index)}
                       inputRef={(el) => (inputs.current[index] = el)}
                       error={error !== ""}
@@ -273,13 +278,14 @@ export default function ForgotPasswordForm() {
                       slotProps={{
                         htmlInput: {
                           maxLength: 1,
+                          style: { textAlign: "center" },
                         },
                       }}
                     />
                   ))}
                 </div>
                 {error !== "" && (
-                  <div className="text-center text-rose-600 mt-2">{error}</div>
+                  <div className="text-center text-rose-500 mt-2">{error}</div>
                 )}
                 <div className="flex justify-center text-rose-600 text-center font-normal text-[18px] leading-[28px] font-['Sofia Pro'] mt-4">
                   {String(Math.floor(counter / 60)).padStart(2, "0")}:
@@ -319,7 +325,7 @@ export default function ForgotPasswordForm() {
                 }}
                 onKeyUp={(e) => {
                   if (e.key === "Enter") {
-                    handleEmailSubmit();
+                    handlePasswordSubmit();
                   }
                 }}
                 onChange={(e) => {
@@ -342,7 +348,7 @@ export default function ForgotPasswordForm() {
                 }}
                 onKeyUp={(e) => {
                   if (e.key === "Enter") {
-                    handleEmailSubmit();
+                    handlePasswordSubmit();
                   }
                 }}
                 onChange={(e) => {
