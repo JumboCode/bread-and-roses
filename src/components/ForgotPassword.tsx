@@ -96,6 +96,9 @@ export default function ForgotPasswordForm() {
     ) {
       (inputs.current[index - 1] as HTMLInputElement)?.focus();
     }
+    if (e.key === "Enter") {
+      handleCodeSubmit();
+    }
   };
 
   const handleKeyDownSpace = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -128,22 +131,36 @@ export default function ForgotPasswordForm() {
     return {
       endAdornment: (
         <InputAdornment position="end">
-          <IconButton>
-            {newPassword !== "" &&
-            (inputType === "newPassword"
-              ? showNewPassword
-              : showConfirmPassword) ? (
-              <VisibilityIcon
-                sx={{ color: "#138D8A" }}
-                onClick={toggleVisibility}
-              />
-            ) : (
-              <VisibilityOffIcon
-                sx={{ color: "#138D8A" }}
-                onClick={toggleVisibility}
-              />
-            )}
-          </IconButton>
+          {inputType === "newPassword" && newPassword !== "" && (
+            <IconButton>
+              {showNewPassword ? (
+                <VisibilityIcon
+                  sx={{ color: "#138D8A" }}
+                  onClick={toggleVisibility}
+                />
+              ) : (
+                <VisibilityOffIcon
+                  sx={{ color: "#138D8A" }}
+                  onClick={toggleVisibility}
+                />
+              )}
+            </IconButton>
+          )}
+          {inputType === "confirmPassword" && confirmPassword !== "" && (
+            <IconButton>
+              {showConfirmPassword ? (
+                <VisibilityIcon
+                  sx={{ color: "#138D8A" }}
+                  onClick={toggleVisibility}
+                />
+              ) : (
+                <VisibilityOffIcon
+                  sx={{ color: "#138D8A" }}
+                  onClick={toggleVisibility}
+                />
+              )}
+            </IconButton>
+          )}
         </InputAdornment>
       ),
     };
@@ -178,7 +195,7 @@ export default function ForgotPasswordForm() {
             className=""
           />
         </div>
-        <div className="w-full h-auto p-6 bg-white rounded-lg shadow border-1 border-[#e4e7ec] flex-col justify-start items-start inline-flex items-center">
+        <div className="w-full h-auto p-6 bg-white rounded-lg shadow-xl border-1 border-[#e4e7ec] flex-col justify-start inline-flex items-center">
           <div className="text-[#9A0F28] text-center font-semibold text-2xl font-['Kepler Std'] ">
             {step <= 2
               ? "Forgot password"
@@ -206,6 +223,11 @@ export default function ForgotPasswordForm() {
                   onChange={(e) => {
                     setEmail(e.target.value);
                     setError("");
+                  }}
+                  onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                      handleEmailSubmit();
+                    }
                   }}
                   error={Boolean(error)}
                   helperText={error}
@@ -244,7 +266,7 @@ export default function ForgotPasswordForm() {
                       className={`w-[50px] h-[56px] text-center text-lg ${
                         codeError ? "border-rose-600" : "border-gray-300"
                       } rounded-lg`}
-                      inputProps={{ maxLength: 1 }}
+                      inputProps={{ maxLength: 1, className: "text-center" }}
                     />
                   ))}
                 </div>
@@ -290,6 +312,11 @@ export default function ForgotPasswordForm() {
                     e.preventDefault();
                   }
                 }}
+                onKeyUp={(e) => {
+                  if (e.key === "Enter") {
+                    handlePasswordSubmit();
+                  }
+                }}
                 error={passwordError}
               />
               <TextField
@@ -304,6 +331,11 @@ export default function ForgotPasswordForm() {
                 }}
                 onChange={(e) => {
                   setConfirmPassword(e.target.value);
+                }}
+                onKeyUp={(e) => {
+                  if (e.key === "Enter") {
+                    handlePasswordSubmit();
+                  }
                 }}
                 error={passwordError}
                 helperText={passwordError && "Passwords do not match"}
