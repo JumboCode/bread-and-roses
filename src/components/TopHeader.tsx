@@ -1,3 +1,4 @@
+"use client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React from "react";
 
@@ -14,7 +15,7 @@ const TopHeader = ({ userType }: TopHeaderProps) => {
   const [isEnglish, setIsEnglish] = React.useState(true);
 
   return (
-    <div className="absolute top-0 flex flex-row w-screen border border-gray-200 py-5 px-6 place-content-between">
+    <div className="w-[calc(100vw-theme(width.60))] top-0 flex flex-row border-l-0 border-gray-200 border py-5 px-6 place-content-between sticky z-10 bg-white">
       <button className="flex flex-row gap-x-2 bg-teal-600 p-2.5 px-3 text-white rounded-md place-items-center">
         <Icon icon={icon} width="20" height="20" />
         {buttonText}
