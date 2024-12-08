@@ -11,7 +11,7 @@ const HomeLayout = ({ children }: IHomeLayoutProps) => {
       <SideNavBar role="admin" />
       <div className="flex-1 ml-60">
         <TopHeader userType="admin" />
-        {children}
+        <div className="py-6 px-7">{children}</div>
       </div>
     </div>
   );
