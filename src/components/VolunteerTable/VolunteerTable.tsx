@@ -34,9 +34,9 @@ function getUserRole(userType: number): string {
 }
 
 const rows = [
-  createData("Name1", 0, "email1", "location1"),
-  createData("Name2", 1, "email2", "location2"),
-  createData("Name3", 2, "email3", "location2"),
+  createData("An Tran", 2, "atran14@tufts.edu", "Medford, MA"),
+  createData("Johnny Tan", 1, "johnny.tan@tufts.edu", "Medford, MA"),
+  createData("Won Kim", 0, "won.kim642510@tufts.edu", "Somerville, MA"),
 ];
 
 export default function VolunteerTable() {
