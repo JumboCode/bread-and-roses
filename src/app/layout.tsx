@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${sofiaPro.variable} antialiased`}>
+      <body className={`${sofiaPro.variable} antialiased overscroll-none`}>
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

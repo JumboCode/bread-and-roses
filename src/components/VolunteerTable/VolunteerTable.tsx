@@ -62,6 +62,11 @@ export default function VolunteerTable({
 
     updateRowsPerPage();
   }, []);
+  // const rows = [
+  //   createData("An Tran", 2, "atran14@tufts.edu", "Medford, MA"),
+  //   createData("Johnny Tan", 1, "johnny.tan@tufts.edu", "Medford, MA"),
+  //   createData("Won Kim", 0, "won.kim642510@tufts.edu", "Somerville, MA"),
+  // ];
 
   return (
     <TableContainer
