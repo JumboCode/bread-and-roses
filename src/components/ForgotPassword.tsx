@@ -384,7 +384,7 @@ export default function ForgotPasswordForm() {
 
               <button
                 className="w-full justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]"
-                onClick={() => router.push("/public/login")}
+                onClick={() => router.push("/public/signIn")}
               >
                 Back to Log in
               </button>

@@ -89,7 +89,7 @@ export default function LoginForm() {
                 fontFamily: "Kepler Std",
               }}
             >
-              Welcome back!
+              Welcome!
             </div>
             <div className="text-[#667085] text-[18px] font-normal mb-[10px]">
               Please enter your details
@@ -144,7 +144,7 @@ export default function LoginForm() {
             />
 
             <button className="ml-[40px] text-[#145A5A] font-medium">
-              Forget Password
+              Forgot password?
             </button>
           </div>
 
