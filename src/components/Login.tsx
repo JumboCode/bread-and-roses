@@ -17,7 +17,6 @@ import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
@@ -46,9 +45,10 @@ export default function LoginForm() {
       if (res?.error == "Invalid password") {
         setPasswordDisplayError(true);
         setTimeout(() => setPasswordDisplayError(false), 3000);
-      } else if (res?.error == "Invalid user")
+      } else if (res?.error == "Invalid user") {
         setEmailDisplayError(true);
         setTimeout(() => setEmailDisplayError(false), 3000);
+      }
     } else {
       window.location.href = "/";
     }
@@ -105,6 +105,11 @@ export default function LoginForm() {
             onChange={(e) => {
               setEmail(e.target.value);
             }}
+            onKeyUp={(e) => {
+              if (e.key === "Enter" && email !== "" && password !== "") {
+                handleSubmit(e);
+              }
+            }}
             error={emailDisplayError}
             helperText={emailDisplayError && "Couldn't find your account"}
           />
@@ -121,6 +126,11 @@ export default function LoginForm() {
               setPassword(e.target.value);
               if (!showPassword) {
                 e.preventDefault();
+              }
+            }}
+            onKeyUp={(e) => {
+              if (e.key === "Enter" && email !== "" && password !== "") {
+                handleSubmit(e);
               }
             }}
             error={passwordDisplayError}
