@@ -1,3 +1,35 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --font-primary: var(--font-sofia-pro), Arial, Helvetica, sans-serif;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-primary);
+}
+
+@font-face {
+  font-family: "Sofia Pro";
+  src: url("./fonts/Sofia Pro Regular.woff") format("woff");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .font-Sofia-Pro {
+    font-family: "Sofia Pro", sans-serif;
+  }
+} */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,16 +37,20 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-primary: var(--font-sofia-pro), Arial, Helvetica, sans-serif;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-primary);
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .font-primary {
+    font-family: var(--font-primary);
   }
 }
