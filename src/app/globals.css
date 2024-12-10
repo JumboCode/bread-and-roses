@@ -37,13 +37,14 @@ body {
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --font-primary: var(--font-sofia-pro), Arial, Helvetica, sans-serif;
+  --font-sofia-pro: "Sofia Pro", sans-serif;
+  /* --font-primary: var(--font-sofia-pro), Arial, Helvetica, sans-serif; */
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-primary);
+  font-family: var(--font-sofia-pro);
 }
 
 @layer utilities {
