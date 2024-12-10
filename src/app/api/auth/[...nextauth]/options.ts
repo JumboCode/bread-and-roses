@@ -30,14 +30,20 @@ export const options: NextAuthOptions = {
         // Docs: https://next-auth.js.org/configuration/providers/credentials
 
         const user: User | null = await getUserByEmailServer(email);
-
+        
         // Check if user exists and if password matches
+        if (!user) {
+          throw new Error("Invalid user");
+        }
         if (user && (await compare(password, user.password))) {
           return user; // Authentication successful
         } else {
-          return null; // Authentication failed
+          throw new Error("Invalid password");
         }
       },
     }),
   ],
+  pages: {
+    signIn: "/public/signIn",
+  },
 };
