@@ -18,6 +18,11 @@ import Image from "next/image";
 import logo1 from "../../public/logo1.png";
 
 export default function SignUp() {
+  interface Name {
+    first: string;
+    last: string;
+  }
+
   interface Address {
     addressLine: string;
     city: string;
@@ -25,6 +30,11 @@ export default function SignUp() {
     zipCode: string;
     country: string;
   }
+
+  const [name, setName] = useState<Name>({
+    first: "",
+    last: "",
+  });
 
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
@@ -35,29 +45,26 @@ export default function SignUp() {
     city: "",
     state: "",
     zipCode: "",
-    country: ""});
-  
-  const [isOverAge14, setIsOverAge14] = useState<boolean | null>(
+    country: "",
+  });
+
+  const [isOverAge14, setIsOverAge14] = useState<boolean | null>(null);
+  const [isFirstTime, setIsFirstTime] = useState<boolean | null>(null);
+  const [hasDriverLicense, setHasDriverLicense] = useState<boolean | null>(
     null
   );
-    const [isFirstTime, setIsFirstTime] = useState<boolean | null>(
-    null
-  );
-    const [hasDriverLicense, setHasDriverLicense] = useState<boolean | null>(
-    null
-  );
-  const [speakSpanish, setSpeakSpanish] = useState<boolean | null>(
-    null
-  );
+  const [speakSpanish, setSpeakSpanish] = useState<boolean | null>(null);
   const [why, setWhy] = useState<string>("");
   const [comments, setComments] = useState<string>("");
   const [isFormComplete, setIsFormComplete] = useState<boolean>(false);
 
   const testIfFormComplete = useCallback(() => {
+    const { first, last } = name;
     const { addressLine, city, state, zipCode } = address;
 
     if (
-      Boolean(addressLine && city && state && zipCode !== "") &&
+      Boolean(first && last) &&
+      Boolean(addressLine && city && state && zipCode) &&
       hasDriverLicense != null &&
       speakSpanish != null &&
       why !== ""
@@ -66,11 +73,13 @@ export default function SignUp() {
     } else if (isFormComplete) {
       setIsFormComplete(false);
     }
-  }, [hasDriverLicense, speakSpanish, why, isFormComplete, address]);
+  }, [name, hasDriverLicense, speakSpanish, why, isFormComplete, address]);
 
   useEffect(() => {
     testIfFormComplete();
   }, [
+    name.first,
+    name.last,
     address.addressLine,
     address.city,
     address.state,
@@ -80,37 +89,30 @@ export default function SignUp() {
   ]);
 
   const handleCountryChange = (event: SelectChangeEvent) => {
-    setAddress({...address, country: event.target.value});
+    setAddress({ ...address, country: event.target.value });
   };
 
-  const handleChangeAge14 = (
-    event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeAge14 = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsOverAge14(Boolean((event.target as HTMLInputElement).value));
   };
-  
-  const handleChangeFirstTime = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleChangeFirstTime = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setIsFirstTime(Boolean((event.target as HTMLInputElement).value));
   };
 
-  const handleChangeAge14 = (
-    event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsOverAge14(Boolean((event.target as HTMLInputElement).value));
-  };
-  
-  const handleChangeFirstTime = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsFirstTime(Boolean((event.target as HTMLInputElement).value));
-  };
-
-  const handleChangeDriverLicense = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeDriverLicense = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setHasDriverLicense(Boolean((event.target as HTMLInputElement).value));
   };
 
-    const handleChangeSpeakSpanish = (
-      event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-      setSpeakSpanish(Boolean((event.target as HTMLInputElement).value));
-    };
-
+  const handleChangeSpeakSpanish = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setSpeakSpanish(Boolean((event.target as HTMLInputElement).value));
+  };
 
   const CustomInputProps = {
     endAdornment: (
@@ -340,7 +342,7 @@ export default function SignUp() {
                   variant="outlined"
                   value={address.zipCode}
                   onChange={(e) => {
-                    setAddress({ ...address, zipCode: e.target.value});
+                    setAddress({ ...address, zipCode: e.target.value });
                   }}
                   error={displayError}
                   helperText={displayError && "Couldn't find your account"}
@@ -412,7 +414,7 @@ export default function SignUp() {
             </div>
             <TextField
               onChange={(e) => {
-                setWhy(e.target.value)
+                setWhy(e.target.value);
               }}
               sx={{ margin: "5px 0 20px 0", width: "100%" }}
               id="why"
@@ -444,7 +446,7 @@ export default function SignUp() {
               }
             }}
           >
-            Sign In
+            Sign Up
           </button>
         </div>
       </div>
