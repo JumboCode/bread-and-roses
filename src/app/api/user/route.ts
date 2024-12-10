@@ -33,6 +33,14 @@ export const POST = async (request: NextRequest) => {
       },
     });
 
+    await prisma.code.create({
+      data: {
+        codeString: "",
+        expire: new Date(),
+        userId: savedUser.id,
+      },
+    });
+
     return NextResponse.json({
       code: "SUCCESS",
       message: `User created with email: ${savedUser.email}`,
