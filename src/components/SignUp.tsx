@@ -172,19 +172,6 @@ export default function SignUp() {
       return;
     }
 
-    const formData = {
-      name,
-      email,
-      password,
-      address,
-      isOverAge14,
-      isFirstTime,
-      hasDriverLicense,
-      speakSpanish,
-      why,
-      comments,
-    };
-
     try {
       const response = await addUser(
         {
