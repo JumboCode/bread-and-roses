@@ -185,8 +185,6 @@ export default function SignUp() {
       comments,
     };
 
-    console.log(formData);
-
     try {
       const response = await addUser(
         {
