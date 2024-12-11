@@ -2,7 +2,7 @@ import LoginForm from "@components/Login";
 
 const Login = () => {
   return (
-    <div style={{padding: '3rem'}}>
+    <div style={{ padding: "3rem" }}>
       <LoginForm />
     </div>
   );

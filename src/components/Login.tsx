@@ -164,7 +164,10 @@ export default function LoginForm() {
 
           <div className="w-full text-[#667085] text-[14px] mt-[25px]">
             Don&apos;t have an account?{" "}
-            <button className="text-[#145A5A] font-semibold">
+            <button
+              className="text-[#145A5A] font-semibold"
+              onClick={() => router.push("/public/signUp")}
+            >
               Sign up here
             </button>
           </div>

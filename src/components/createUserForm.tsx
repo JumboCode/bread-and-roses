@@ -57,15 +57,18 @@ const CreateUserForm = ({ setUserID }: CreateUserForm) => {
         },
         {
           ageOver14: formData.ageOver14,
+          firstTime: false,
           country: formData.country,
           address: formData.address,
           city: formData.city,
           state: formData.state,
-          zipCode: formData.zipCode ? parseInt(formData.zipCode) : null,
+          zipCode: formData.zipCode,
           hasLicense: formData.hasLicense,
           speaksEsp: formData.speaksEsp,
           volunteerType: formData.volunteerType,
           hoursWorked: formData.hoursWorked,
+          whyJoin: "",
+          comments: "",
         }
       );
       setUserID(response.data.id);
