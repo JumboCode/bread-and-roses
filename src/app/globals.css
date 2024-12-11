@@ -19,6 +19,6 @@ body {
     text-wrap: balance;
   }
   .font-primary {
-    font-family: var(--font-primary);
+    font-family: var(--font-sofia-pro);
   }
 }
