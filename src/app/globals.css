@@ -5,16 +5,20 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-sofia-pro: "Sofia Pro", sans-serif;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sofia-pro);
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .font-primary {
+    font-family: var(--font-sofia-pro);
   }
 }

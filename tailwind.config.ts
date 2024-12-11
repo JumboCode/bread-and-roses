@@ -11,11 +11,14 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        'darkrose': "#9A0F28",
-        'rose': "#FFF0F1",
-        'gray/500': '#667085',
-        'icon-color': "#667085",
+        darkrose: "#9A0F28",
+        rose: "#FFF0F1",
+        "gray/500": "#667085",
+        "icon-color": "#667085",
       },
+    },
+    fontFamily: {
+      sofiaPro: ["var(--Sofia Pro)", "sans-serif"],
     },
   },
   plugins: [],
