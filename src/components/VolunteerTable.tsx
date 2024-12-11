@@ -6,24 +6,22 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Avatar from "@mui/material/Avatar";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import IconButton from "@mui/material/IconButton";
 import Checkbox from "@mui/material/Checkbox";
 import React, { useEffect, useRef, useState } from "react";
-
-import profilePic from "../../../public/profile.png";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { User } from "@prisma/client";
 import { Box, Button, Typography } from "@mui/material";
+import UserAvatar from "@components/UserAvatar";
 
 interface VolunteerTableProps {
   showPagination: boolean;
   fromVolunteerPage: boolean;
   users: User[] | undefined;
-  selected: string[];
-  setSelected: React.Dispatch<React.SetStateAction<string[]>>;
+  selected?: string[];
+  setSelected?: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export default function VolunteerTable({
@@ -38,35 +36,34 @@ export default function VolunteerTable({
   const tableContainerRef = useRef<HTMLDivElement | null>(null);
 
   const handleCheckboxChange = (name: string) => {
-    setSelected((prevSelected) =>
-      prevSelected.includes(name)
-        ? prevSelected.filter((item) => item !== name)
-        : [...prevSelected, name]
-    );
+    if (setSelected) {
+      setSelected((prevSelected) =>
+        prevSelected.includes(name)
+          ? prevSelected.filter((item) => item !== name)
+          : [...prevSelected, name]
+      );
+    }
   };
 
-  const isRowSelected = (name: string) => selected.includes(name);
+  const isRowSelected = (name: string) => selected?.includes(name);
 
   const paginatedRows =
     users?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) || [];
 
   useEffect(() => {
     const updateRowsPerPage = () => {
-      if (tableContainerRef.current) {
+      if (tableContainerRef.current && fromVolunteerPage) {
         const containerHeight = tableContainerRef.current.clientHeight;
-        const rowHeight = 73;
+        const rowHeight = 74.5;
         const calculatedRows = Math.floor(containerHeight / rowHeight);
         setRowsPerPage(calculatedRows > 0 ? calculatedRows : 1);
+      } else {
+        setRowsPerPage(3);
       }
     };
 
     updateRowsPerPage();
-  }, []);
-  // const rows = [
-  //   createData("An Tran", 2, "atran14@tufts.edu", "Medford, MA"),
-  //   createData("Johnny Tan", 1, "johnny.tan@tufts.edu", "Medford, MA"),
-  //   createData("Won Kim", 0, "won.kim642510@tufts.edu", "Somerville, MA"),
-  // ];
+  }, [fromVolunteerPage]);
 
   return (
     <TableContainer
@@ -90,19 +87,22 @@ export default function VolunteerTable({
               <TableCell padding="checkbox">
                 <Checkbox
                   checked={paginatedRows.every((row) =>
-                    selected.includes(row.id)
+                    selected?.includes(row.id)
                   )}
                   onChange={() => {
                     const currentPageIds = paginatedRows.map((row) => row.id);
                     if (
-                      paginatedRows.every((row) => selected.includes(row.id))
+                      paginatedRows.every((row) =>
+                        selected?.includes(row.id)
+                      ) &&
+                      setSelected
                     ) {
                       setSelected((prevSelected) =>
                         prevSelected.filter(
                           (id) => !currentPageIds.includes(id)
                         )
                       );
-                    } else {
+                    } else if (setSelected) {
                       setSelected((prevSelected) => [
                         ...prevSelected,
                         ...currentPageIds.filter(
@@ -256,7 +256,10 @@ export default function VolunteerTable({
                 scope="row"
               >
                 <div className="flex items-center gap-4">
-                  <Avatar alt={row.firstName} src={profilePic.src} />
+                  <UserAvatar
+                    firstName={row.firstName}
+                    lastName={row.lastName}
+                  />
                   {row.firstName + " " + row.lastName}
                 </div>
               </TableCell>
@@ -281,7 +284,7 @@ export default function VolunteerTable({
                 }}
                 align="left"
               >
-                [location here]
+                Location Coming Soon!
               </TableCell>
               <TableCell
                 sx={{

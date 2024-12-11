@@ -127,7 +127,7 @@ export const GET = async (request: NextRequest) => {
     try {
       const users = await prisma.user.findMany({
         where: { role: role === "ADMIN" ? "ADMIN" : "VOLUNTEER" },
-        include: { volunteerDetails: true },
+        include: { volunteerDetails: role === "VOLUNTEER" },
       });
 
       if (!users || users.length === 0) {

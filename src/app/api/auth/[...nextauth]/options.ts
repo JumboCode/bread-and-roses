@@ -44,11 +44,9 @@ export const options: NextAuthOptions = {
 
         let volunteerDetails = null;
         if (user.role !== "ADMIN") {
-          console.log("HERE!");
           volunteerDetails = await prisma.volunteerDetails.findUnique({
             where: { userId: user.id },
           });
-          console.log(volunteerDetails);
         }
 
         return {
@@ -67,7 +65,6 @@ export const options: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      console.log({ token, user });
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -81,7 +78,6 @@ export const options: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      console.log({ session, token });
       session.user.id = token.id;
       session.user.role = token.role;
       session.user.firstName = token.firstName;

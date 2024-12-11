@@ -6,12 +6,21 @@ import Logo from "../app/icons/br-logo.png";
 import Divider from "../app/icons/divider";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { Role } from "@prisma/client";
+import { VolunteerDetails } from "../types/next-auth";
 
 interface SideNavBarProps {
-  role: string;
+  user: {
+    id: string;
+    role: "VOLUNTEER" | "ADMIN";
+    firstName: string;
+    lastName: string;
+    email: string;
+    volunteerDetails?: VolunteerDetails | null;
+  };
 }
 
-const SideNavBar = ({ role }: SideNavBarProps) => {
+const SideNavBar = ({ user }: SideNavBarProps) => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -39,10 +48,10 @@ const SideNavBar = ({ role }: SideNavBarProps) => {
     { name: "Logout", icon: "tabler:logout", href: "" },
   ];
 
-  const tabs = role === "admin" ? adminTabs : volunteerTabs;
+  const tabs = user.role === Role.ADMIN ? adminTabs : volunteerTabs;
 
   return (
-    <div className="h-screen w-60 border border-gray-200 fixed left-0">
+    <div className="h-screen w-60 border-t border-r border-gray-200 fixed left-0">
       <div className="flex place-content-center my-6 ">
         <Image
           className="cursor-pointer"

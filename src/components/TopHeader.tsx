@@ -1,24 +1,48 @@
+"use client";
+
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { Role } from "@prisma/client";
 import React from "react";
+import { VolunteerDetails } from "../types/next-auth";
+import UserAvatar from "./UserAvatar";
+import { usePathname } from "next/navigation";
 
 interface TopHeaderProps {
-  userType: string;
+  user: {
+    id: string;
+    role: "VOLUNTEER" | "ADMIN";
+    firstName: string;
+    lastName: string;
+    email: string;
+    volunteerDetails?: VolunteerDetails | null;
+  };
 }
 
-const TopHeader = ({ userType }: TopHeaderProps) => {
+const TopHeader = ({ user }: TopHeaderProps) => {
+  const pathname = usePathname();
+
   // different button text and icon depending on if the user is a volunteer or admin
-  const buttonText = userType === "admin" ? "Create new event" : "Check in";
+  const buttonText = user.role === Role.ADMIN ? "Add Event" : "Check in";
   const icon =
-    userType === "admin" ? "ic:baseline-plus" : "mdi:checkbox-outline";
+    user.role === Role.ADMIN ? "ic:baseline-plus" : "mdi:checkbox-outline";
 
   const [isEnglish, setIsEnglish] = React.useState(true);
 
+  const getTitle = () => {
+    const pathSegments = pathname.split("/");
+    return pathSegments[2].charAt(0).toUpperCase() + pathSegments[2].slice(1);
+  };
+
   return (
-    <div className="absolute fixed top-0 flex flex-row w-[calc(100%-15rem)] border border-gray-200 py-5 px-6 place-content-between">
-      <button className="flex flex-row gap-x-2 bg-teal-600 p-2.5 px-3 text-white rounded-md place-items-center">
-        <Icon icon={icon} width="20" height="20" />
-        {buttonText}
-      </button>
+    <div className="w-[calc(100vw-theme(width.60))] top-0 flex items-center border-gray-200 border-y py-5 px-6 place-content-between sticky z-10 bg-white">
+      {pathname === "/private" || pathname === "/private/events" ? (
+        <button className="flex gap-x-2 font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center">
+          <Icon icon={icon} width="20" height="20" />
+          <div className="mt-0.5">{buttonText}</div>
+        </button>
+      ) : (
+        <div className="text-gray-500 text-lg">{getTitle()}</div>
+      )}
       <div className="flex flex-row justify-self-end place-items-center gap-x-2">
         <h1 className={`${!isEnglish ? "text-teal-600" : ""} font-medium`}>
           SP
@@ -41,13 +65,15 @@ const TopHeader = ({ userType }: TopHeaderProps) => {
           </label>
         </div>
 
-        <h1 className={`${isEnglish ? "text-teal-600" : ""} font-medium`}>
+        <h1 className={`${isEnglish ? "text-teal-600" : ""} font-medium mr-2`}>
           EN
         </h1>
-        <Icon icon="gg:profile" width="40" height="40" className="mx-2" />
+        <UserAvatar firstName={user.firstName} lastName={user.lastName} />
         <div>
-          <h1 className="font-bold"> An Tran </h1>
-          <h2 className="text-gray-500"> {userType} </h2>
+          <h1 className="font-bold">
+            {user.firstName} {user.lastName}
+          </h1>
+          <h2 className="text-gray-500">{user.role.toLowerCase()}</h2>
         </div>
       </div>
     </div>

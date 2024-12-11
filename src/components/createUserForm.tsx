@@ -72,7 +72,6 @@ const CreateUserForm = ({ setUserID }: CreateUserForm) => {
         }
       );
       setUserID(response.data.id);
-      console.log("User added successfully:", response);
     } catch (error) {
       console.error("Error adding user:", error);
     }

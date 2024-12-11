@@ -11,6 +11,7 @@ import logo1 from "../../public/logo1.png";
 import { addUser } from "@api/user/route.client";
 import { Role } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 export default function SignUp() {
   interface Name {
@@ -26,6 +27,8 @@ export default function SignUp() {
   }
 
   const router = useRouter();
+
+  const [success, setSuccess] = useState(false);
 
   const [name, setName] = useState<Name>({ first: "", last: "" });
   const [password, setPassword] = useState("");
@@ -197,321 +200,374 @@ export default function SignUp() {
           comments: comments,
         }
       );
-      console.log("User added successfully:", response);
+      setSuccess(true);
     } catch (error) {
       console.error("Error adding user:", error);
     }
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen">
-      <Image src={logo1} alt="Logo" height={173} width={215} />
-      <div className="p-6 border border-[#D0D5DD] rounded-[20px] shadow-[0px_8px_8px_-4px_#10182808,_0px_20px_24px_-4px_#10182814] flex justify-center items-start pt-6 w-1/2">
-        <div className="flex flex-col items-center w-full">
-          <div className="flex flex-col items-center">
-            <div
-              style={{
-                color: "#9A0F28",
-                fontSize: "36px",
-                fontWeight: 600,
-                fontFamily: "Kepler Std",
-              }}
-            >
-              Create an account
+    <div
+      className={`flex flex-col items-center w-full ${success ? "" : "my-10"}`}
+    >
+      <div
+        className={
+          "flex flex-col justify-center items-center min-h-screen w-full"
+        }
+      >
+        <Image src={logo1} alt="Logo" height={173} width={215} />
+        <div className="p-6 border border-[#D0D5DD] rounded-[20px] shadow-[0px_8px_8px_-4px_#10182808,_0px_20px_24px_-4px_#10182814] flex justify-center items-start pt-6 w-1/2">
+          <div className="flex flex-col items-center w-full">
+            <div className="flex flex-col items-center">
+              <div
+                style={{
+                  color: "#9A0F28",
+                  fontSize: "36px",
+                  fontWeight: 600,
+                  fontFamily: "Kepler Std",
+                }}
+              >
+                {success ? "Successful" : "Create an account"}
+              </div>
+              {success ? (
+                <div className="w-full text-[#667085] text-[18px] mt-[8px] mb-[24px]">
+                  Your account has been created successfully
+                </div>
+              ) : (
+                <div className="w-full text-[#667085] text-[18px] mt-[8px] mb-[24px]">
+                  Already have an account?{" "}
+                  <button
+                    className="text-[#145A5A] font-semibold"
+                    onClick={() => router.push("/public/signIn")}
+                  >
+                    Log in here
+                  </button>
+                </div>
+              )}
             </div>
-            <div className="w-full text-[#667085] text-[14px] mt-[8px] mb-[24px]">
-              Already have an account?{" "}
+            <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
+
+            <div className="w-full">
+              {success ? (
+                <div className="flex items-center justify-center">
+                  <Icon
+                    icon="fluent:checkmark-circle-12-filled"
+                    width="85"
+                    height="85"
+                    className="text-[#33BDB5] mb-8"
+                  />
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <div className="flex flex-row font-semibold">
+                      Name
+                      <div className="text-[red]">*</div>
+                    </div>
+                    <div className="flex flex-row items-center gap-[10px] ">
+                      <TextField
+                        sx={{ marginBottom: "10px", width: "100%" }}
+                        id="First name"
+                        label="First name"
+                        variant="outlined"
+                        onChange={(e) => {
+                          setName({ ...name, first: e.target.value });
+                        }}
+                      />
+                      <TextField
+                        sx={{ marginBottom: "10px", width: "100%" }}
+                        id="Last name"
+                        label="Last name"
+                        variant="outlined"
+                        onChange={(e) => {
+                          setName({ ...name, last: e.target.value });
+                        }}
+                      />
+                    </div>
+                    <div className="flex flex-row font-semibold">
+                      Email
+                      <div className="text-[red]">*</div>
+                    </div>
+                    <TextField
+                      sx={{ marginBottom: "10px", width: "100%" }}
+                      id="Email"
+                      label="ex: myname@gmail.com"
+                      variant="outlined"
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                      }}
+                      error={emailError !== ""}
+                      helperText={emailError}
+                    />
+                    <div className="flex flex-row font-semibold">
+                      Password
+                      <div className="text-[red]">*</div>
+                    </div>
+                    <TextField
+                      sx={{ marginBottom: "10px", width: "100%" }}
+                      id="Password"
+                      variant="outlined"
+                      type="text"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                      }}
+                      error={passwordError !== ""}
+                      helperText={passwordError}
+                    />
+                    <div className="flex flex-row font-semibold">
+                      Confirm Password
+                      <div className="text-[red]">*</div>
+                    </div>
+                    <TextField
+                      sx={{ marginBottom: "10px", width: "100%" }}
+                      id="Confirm password"
+                      variant="outlined"
+                      type="text"
+                      value={confirmPassword}
+                      onChange={(e) => {
+                        setConfirmPassword(e.target.value);
+                      }}
+                      error={passwordError !== ""}
+                      helperText={passwordError}
+                    />
+                    <div>
+                      <div className="flex flex-row font-semibold">
+                        Are you 14 or over?
+                        <div className="text-[red]">*</div>
+                      </div>
+                      <div className="text-[#667085] text-[14px]">
+                        Note: we require volunteers to be at least 14 to work
+                        with us.
+                      </div>
+                      <RadioGroup
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          gap: "20%",
+                          margin: "5px 0 15px 0",
+                        }}
+                        onChange={(e) =>
+                          setIsOverAge14(e.target.value === "true")
+                        }
+                        aria-labelledby="are you 14 or over"
+                        name="radio-buttons-group"
+                      >
+                        <FormControlLabel
+                          value="true"
+                          control={<Radio />}
+                          label="Yes"
+                        />
+                        <FormControlLabel
+                          value="false"
+                          control={<Radio />}
+                          label="No"
+                        />
+                      </RadioGroup>
+                    </div>
+                    <div>
+                      <div className="flex flex-row font-semibold">
+                        Is this the first time you&apos;re volunteering with us?
+                        <div className="text-[red]">*</div>
+                      </div>
+                      <RadioGroup
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          gap: "20%",
+                          margin: "5px 0 15px 0",
+                        }}
+                        onChange={(e) =>
+                          setIsFirstTime(e.target.value === "true")
+                        }
+                        aria-labelledby="first time volunteer"
+                        name="radio-buttons-group"
+                      >
+                        <FormControlLabel
+                          value="true"
+                          control={<Radio />}
+                          label="Yes"
+                        />
+                        <FormControlLabel
+                          value="false"
+                          control={<Radio />}
+                          label="No"
+                        />
+                      </RadioGroup>
+                    </div>
+                    <div className="flex flex-row font-semibold">
+                      Address
+                      <div className="text-[red]">*</div>
+                    </div>
+                    <TextField
+                      sx={{ marginBottom: "10px", width: "100%" }}
+                      id="Address"
+                      label="Address Line"
+                      variant="outlined"
+                      value={address.addressLine}
+                      onChange={(e) => {
+                        setAddress({ ...address, addressLine: e.target.value });
+                      }}
+                    />
+                    <div className="flex flex-row items-center gap-[10px] ">
+                      <TextField
+                        sx={{ marginBottom: "10px", width: "100%" }}
+                        id="City"
+                        label="City"
+                        value={address.city}
+                        onChange={(e) => {
+                          setAddress({ ...address, city: e.target.value });
+                        }}
+                        variant="outlined"
+                      />
+                      <TextField
+                        sx={{ marginBottom: "10px", width: "100%" }}
+                        id="State"
+                        label="State"
+                        variant="outlined"
+                        value={address.state}
+                        onChange={(e) => {
+                          setAddress({ ...address, state: e.target.value });
+                        }}
+                      />
+                    </div>
+                    <div className="flex flex-row items-center gap-[10px] ">
+                      <TextField
+                        sx={{ marginBottom: "10px", width: "100%" }}
+                        id="Zip Code"
+                        label="Zip Code"
+                        variant="outlined"
+                        value={address.zipCode}
+                        onChange={(e) => {
+                          setAddress({ ...address, zipCode: e.target.value });
+                        }}
+                        error={zipError}
+                      />
+                      <TextField
+                        sx={{ marginBottom: "10px", width: "100%" }}
+                        id="Country"
+                        variant="outlined"
+                        value="United States"
+                        slotProps={{
+                          input: {
+                            readOnly: true,
+                          },
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex flex-row font-semibold">
+                      Do you have a driver&apos;s license?
+                      <div className="text-[red]">*</div>
+                    </div>
+                    <RadioGroup
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: "20%",
+                        margin: "5px 0 15px 0",
+                      }}
+                      onChange={(e) =>
+                        setHasDriverLicense(e.target.value === "true")
+                      }
+                      aria-labelledby="do you have a driver's license"
+                      name="radio-buttons-group"
+                    >
+                      <FormControlLabel
+                        value="true"
+                        control={<Radio />}
+                        label="Yes"
+                      />
+                      <FormControlLabel
+                        value="false"
+                        control={<Radio />}
+                        label="No"
+                      />
+                    </RadioGroup>
+                  </div>
+                  <div>
+                    <div className="flex flex-row font-semibold">
+                      Do you speak Spanish?
+                      <div className="text-[red]">*</div>
+                    </div>
+                    <RadioGroup
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: "20%",
+                        margin: "5px 0 15px 0",
+                      }}
+                      onChange={(e) =>
+                        setSpeakSpanish(e.target.value === "yes")
+                      }
+                      aria-labelledby="do you speak Spanish"
+                      name="radio-buttons-group"
+                    >
+                      <FormControlLabel
+                        value="yes"
+                        control={<Radio />}
+                        label="Yes"
+                      />
+                      <FormControlLabel
+                        value="no"
+                        control={<Radio />}
+                        label="No"
+                      />
+                    </RadioGroup>
+                  </div>
+                  <div className="flex flex-row font-semibold">
+                    Why do you want to volunteer with us?
+                    <div className="text-[red]">*</div>
+                  </div>
+                  <TextField
+                    onChange={(e) => {
+                      setWhy(e.target.value);
+                    }}
+                    sx={{ margin: "5px 0 20px 0", width: "100%" }}
+                    id="why"
+                    rows={4}
+                    multiline
+                  />
+                  <div>
+                    <FormLabel
+                      id="Any Questions"
+                      sx={{ color: "black", fontWeight: 600 }}
+                    >
+                      Do you have any other questions/comments?
+                    </FormLabel>
+                    <TextField
+                      sx={{ margin: "5px 0 20px 0", width: "100%" }}
+                      onChange={(e) => setComments(e.target.value)}
+                      id="questions/comments"
+                      rows={4}
+                      multiline
+                    />
+                  </div>{" "}
+                </>
+              )}
+            </div>
+
+            {success ? (
               <button
-                className="text-[#145A5A] font-semibold"
+                className="w-full justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]"
                 onClick={() => router.push("/public/signIn")}
               >
-                Log in here
+                Back to Log in
               </button>
-            </div>
+            ) : (
+              <button
+                className={`${
+                  isFormComplete ? "bg-[#138D8A]" : "bg-[#96E3DA]"
+                } text-white py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
+                type="submit"
+                onClick={handleSubmit}
+                disabled={!isFormComplete}
+              >
+                Sign Up
+              </button>
+            )}
           </div>
-          <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
-
-          <div className="w-full">
-            <div>
-              <div className="flex flex-row font-semibold">
-                Name
-                <div className="text-[red]">*</div>
-              </div>
-              <div className="flex flex-row items-center gap-[10px] ">
-                <TextField
-                  sx={{ marginBottom: "10px", width: "100%" }}
-                  id="First name"
-                  label="First name"
-                  variant="outlined"
-                  onChange={(e) => {
-                    setName({ ...name, first: e.target.value });
-                  }}
-                />
-                <TextField
-                  sx={{ marginBottom: "10px", width: "100%" }}
-                  id="Last name"
-                  label="Last name"
-                  variant="outlined"
-                  onChange={(e) => {
-                    setName({ ...name, last: e.target.value });
-                  }}
-                />
-              </div>
-              <div className="flex flex-row font-semibold">
-                Email
-                <div className="text-[red]">*</div>
-              </div>
-              <TextField
-                sx={{ marginBottom: "10px", width: "100%" }}
-                id="Email"
-                label="ex: myname@gmail.com"
-                variant="outlined"
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-                error={emailError !== ""}
-                helperText={emailError}
-              />
-              <div className="flex flex-row font-semibold">
-                Password
-                <div className="text-[red]">*</div>
-              </div>
-              <TextField
-                sx={{ marginBottom: "10px", width: "100%" }}
-                id="Password"
-                variant="outlined"
-                type="text"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-                error={passwordError !== ""}
-                helperText={passwordError}
-              />
-              <div className="flex flex-row font-semibold">
-                Confirm Password
-                <div className="text-[red]">*</div>
-              </div>
-              <TextField
-                sx={{ marginBottom: "10px", width: "100%" }}
-                id="Confirm password"
-                variant="outlined"
-                type="text"
-                value={confirmPassword}
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value);
-                }}
-                error={passwordError !== ""}
-                helperText={passwordError}
-              />
-              <div>
-                <div className="flex flex-row font-semibold">
-                  Are you 14 or over?
-                  <div className="text-[red]">*</div>
-                </div>
-                <div className="text-[#667085] text-[14px]">
-                  Note: we require volunteers to be at least 14 to work with us.
-                </div>
-                <RadioGroup
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    gap: "20%",
-                    margin: "5px 0 15px 0",
-                  }}
-                  onChange={(e) => setIsOverAge14(e.target.value === "true")}
-                  aria-labelledby="are you 14 or over"
-                  name="radio-buttons-group"
-                >
-                  <FormControlLabel
-                    value="true"
-                    control={<Radio />}
-                    label="Yes"
-                  />
-                  <FormControlLabel
-                    value="false"
-                    control={<Radio />}
-                    label="No"
-                  />
-                </RadioGroup>
-              </div>
-              <div>
-                <div className="flex flex-row font-semibold">
-                  Is this the first time you volunteer with us?
-                  <div className="text-[red]">*</div>
-                </div>
-                <RadioGroup
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    gap: "20%",
-                    margin: "5px 0 15px 0",
-                  }}
-                  onChange={(e) => setIsFirstTime(e.target.value === "true")}
-                  aria-labelledby="first time volunteer"
-                  name="radio-buttons-group"
-                >
-                  <FormControlLabel
-                    value="true"
-                    control={<Radio />}
-                    label="Yes"
-                  />
-                  <FormControlLabel
-                    value="false"
-                    control={<Radio />}
-                    label="No"
-                  />
-                </RadioGroup>
-              </div>
-              <div className="flex flex-row font-semibold">
-                Address
-                <div className="text-[red]">*</div>
-              </div>
-              <TextField
-                sx={{ marginBottom: "10px", width: "100%" }}
-                id="Address"
-                label="Address Line"
-                variant="outlined"
-                value={address.addressLine}
-                onChange={(e) => {
-                  setAddress({ ...address, addressLine: e.target.value });
-                }}
-              />
-              <div className="flex flex-row items-center gap-[10px] ">
-                <TextField
-                  sx={{ marginBottom: "10px", width: "100%" }}
-                  id="City"
-                  label="City"
-                  value={address.city}
-                  onChange={(e) => {
-                    setAddress({ ...address, city: e.target.value });
-                  }}
-                  variant="outlined"
-                />
-                <TextField
-                  sx={{ marginBottom: "10px", width: "100%" }}
-                  id="State"
-                  label="State"
-                  variant="outlined"
-                  value={address.state}
-                  onChange={(e) => {
-                    setAddress({ ...address, state: e.target.value });
-                  }}
-                />
-              </div>
-              <div className="flex flex-row items-center gap-[10px] ">
-                <TextField
-                  sx={{ marginBottom: "10px", width: "100%" }}
-                  id="Zip Code"
-                  label="Zip Code"
-                  variant="outlined"
-                  value={address.zipCode}
-                  onChange={(e) => {
-                    setAddress({ ...address, zipCode: e.target.value });
-                  }}
-                  error={zipError}
-                />
-                <TextField
-                  sx={{ marginBottom: "10px", width: "100%" }}
-                  id="Country"
-                  variant="outlined"
-                  value="United States"
-                  slotProps={{
-                    input: {
-                      readOnly: true,
-                    },
-                  }}
-                />
-              </div>
-            </div>
-            <div>
-              <div className="flex flex-row font-semibold">
-                Do you have a driver&apos;s license?
-                <div className="text-[red]">*</div>
-              </div>
-              <RadioGroup
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "20%",
-                  margin: "5px 0 15px 0",
-                }}
-                onChange={(e) => setHasDriverLicense(e.target.value === "true")}
-                aria-labelledby="do you have a driver's license"
-                name="radio-buttons-group"
-              >
-                <FormControlLabel
-                  value="true"
-                  control={<Radio />}
-                  label="Yes"
-                />
-                <FormControlLabel
-                  value="false"
-                  control={<Radio />}
-                  label="No"
-                />
-              </RadioGroup>
-            </div>
-            <div>
-              <div className="flex flex-row font-semibold">
-                Do you speak Spanish?
-                <div className="text-[red]">*</div>
-              </div>
-              <RadioGroup
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "20%",
-                  margin: "5px 0 15px 0",
-                }}
-                onChange={(e) => setSpeakSpanish(e.target.value === "yes")}
-                aria-labelledby="do you speak Spanish"
-                name="radio-buttons-group"
-              >
-                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                <FormControlLabel value="no" control={<Radio />} label="No" />
-              </RadioGroup>
-            </div>
-            <div className="flex flex-row font-semibold">
-              Why do you want to volunteer with us?
-              <div className="text-[red]">*</div>
-            </div>
-            <TextField
-              onChange={(e) => {
-                setWhy(e.target.value);
-              }}
-              sx={{ margin: "5px 0 20px 0", width: "100%" }}
-              id="why"
-              rows={4}
-              multiline
-            />
-            <div>
-              <FormLabel
-                id="Any Questions"
-                sx={{ color: "black", fontWeight: 600 }}
-              >
-                Do you have any other questions/comments?
-              </FormLabel>
-              <TextField
-                sx={{ margin: "5px 0 20px 0", width: "100%" }}
-                onChange={(e) => setComments(e.target.value)}
-                id="questions/comments"
-                rows={4}
-                multiline
-              />
-            </div>
-          </div>
-
-          <button
-            className={`${
-              isFormComplete ? "bg-[#138D8A]" : "bg-[#96E3DA]"
-            } text-white py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
-            type="submit"
-            onClick={handleSubmit}
-            disabled={!isFormComplete}
-          >
-            Sign Up
-          </button>
         </div>
       </div>
     </div>

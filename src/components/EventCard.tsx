@@ -62,7 +62,7 @@ const EventCard = ({
   const dateText = `${startTime} - ${endTime} / ${month} ${dayWithSuffix}, ${year}`;
 
   return (
-    <div className="w-[360px] h-auto px-5 py-5 bg-white rounded-lg shadow border-1 border-[#e4e7ec] flex-col justify-start items-start gap-4 inline-flex">
+    <div className="w-[360px] h-auto px-5 py-5 bg-white rounded-lg shadow border border-[#e4e7ec] flex-col justify-start items-start gap-4 inline-flex">
       <div className="self-stretch justify-start items-center inline-flex">
         <div className="grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
           <div className="self-stretch justify-start items-start gap-2 inline-flex">
@@ -95,7 +95,7 @@ const EventCard = ({
               </div>
               <div className="self-stretch justify-start items-center inline-flex">
                 <div
-                  className={`w-[153px] h-[20px] grow shrink basis-0 text-[#475466] text-sm font-medium font-['Sofia Pro'] pr-3 text-[14px] font-semibold leading-[20px] ${
+                  className={`w-[153px] h-[20px] grow shrink basis-0 text-[#475466] text-sm pr-3 text-[14px] font-semibold leading-[20px] ${
                     isFull ? "text-[#E61932]" : "text-[#558D22]"
                   }`}
                 >

@@ -1,6 +1,6 @@
 "use client";
 
-import VolunteerTable from "@components/VolunteerTable/VolunteerTable";
+import VolunteerTable from "@components/VolunteerTable";
 import SearchBar from "@components/SearchBar";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -52,7 +52,6 @@ export default function VolunteersPage() {
             : []
         );
         setSelected([]);
-        console.log("All users deleted successfully", responses);
       } else {
         console.error("Not all deletions succeeded");
       }
