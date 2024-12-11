@@ -38,7 +38,7 @@ model VolunteerDetails {
   address            String             @default("")
   city               String             @default("")
   state              String             @default("")
-  zipCode            Int?
+  zipCode            String             @default("")
   hasLicense         Boolean            @default(false)
   speaksEsp          Boolean            @default(false)
   volunteerType      String             @default("")
