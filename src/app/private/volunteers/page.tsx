@@ -14,6 +14,7 @@ export default function VolunteersPage() {
   const [users, setUsers] = React.useState<User[]>();
   const [selected, setSelected] = React.useState<string[]>([]);
   const [searchText, setSearchText] = React.useState("");
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   React.useEffect(() => {
     const fetchUsers = async () => {
@@ -36,9 +37,9 @@ export default function VolunteersPage() {
       user.email.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  const deleteUsers = async (selectedIds: string[]) => {
+  const deleteUsers = async () => {
     try {
-      const deletePromises = selectedIds.map((id) => deleteUser(id));
+      const deletePromises = selected.map((id) => deleteUser(id));
       const responses = await Promise.all(deletePromises);
       const allDeleted = responses.every(
         (response) => response.code === "SUCCESS"
@@ -47,7 +48,7 @@ export default function VolunteersPage() {
       if (allDeleted) {
         setUsers((prevUsers) =>
           prevUsers
-            ? prevUsers.filter((user) => !selectedIds.includes(user.id))
+            ? prevUsers.filter((user) => !selected.includes(user.id))
             : []
         );
         setSelected([]);
@@ -55,6 +56,7 @@ export default function VolunteersPage() {
       } else {
         console.error("Not all deletions succeeded");
       }
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Error deleting users:", error);
     }
@@ -87,7 +89,7 @@ export default function VolunteersPage() {
                   backgroundColor: "var(--Rose-700, #C11429)",
                 },
               }}
-              onClick={() => deleteUsers(selected)}
+              onClick={() => setIsModalOpen(true)}
             >
               <DeleteOutlineIcon sx={{ width: 20, color: "whitesmoke" }} />
               <div>Delete</div>
@@ -123,6 +125,54 @@ export default function VolunteersPage() {
           </div>
           <div className="text-[#344054] font-['Kepler_Std'] text-3xl font-semibold mt-8">
             No volunteers found!
+          </div>
+        </div>
+      )}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-[#101828] opacity-40"></div>
+          <div className="bg-white p-6 rounded-2xl shadow-lg z-10 max-w-[512px]">
+            <div className="text-[#101828] text-center font-['Kepler_Std'] text-4xl font-semibold">
+              Are you sure you want to delete {selected.length}{" "}
+              {selected.length === 1 ? "user" : "users"}?
+            </div>
+            <div className="text-[#667085] text-center text-lg mt-2">
+              You will not be able to recover {selected.length === 1 ? "a" : ""}{" "}
+              deleted {selected.length === 1 ? "profile" : "profiles"}.
+            </div>
+            <div className="flex justify-end gap-5 mt-8">
+              <Button
+                variant="outlined"
+                sx={{
+                  borderRadius: "8px",
+                  border: "1px solid var(--Grey-300, #D0D5DD)",
+                  padding: "10px 18px",
+                  color: "var(--Teal-800, #145A5A)",
+                  fontWeight: 600,
+                  textTransform: "none",
+                  fontSize: 16,
+                }}
+                onClick={() => setIsModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="outlined"
+                sx={{
+                  borderRadius: "8px",
+                  padding: "10px 18px",
+                  backgroundColor: "var(--Teal-600, #138D8A)",
+                  color: "white",
+                  fontWeight: 600,
+                  textTransform: "none",
+                  fontSize: 16,
+                  "&:hover": { backgroundColor: "var(--Teal-700, #1D7A7A)" },
+                }}
+                onClick={deleteUsers}
+              >
+                Delete
+              </Button>
+            </div>
           </div>
         </div>
       )}

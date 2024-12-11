@@ -61,7 +61,7 @@ const CreateUserForm = ({ setUserID }: CreateUserForm) => {
           address: formData.address,
           city: formData.city,
           state: formData.state,
-          zipCode: formData.zipCode ? parseInt(formData.zipCode) : null,
+          zipCode: formData.zipCode,
           hasLicense: formData.hasLicense,
           speaksEsp: formData.speaksEsp,
           volunteerType: formData.volunteerType,
