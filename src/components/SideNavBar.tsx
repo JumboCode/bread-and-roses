@@ -65,7 +65,7 @@ const SideNavBar = ({ role }: SideNavBarProps) => {
                 }`}
                 onClick={() =>
                   tab.name === "Logout"
-                    ? signOut({ callbackUrl: "/public/signin" })
+                    ? signOut({ callbackUrl: "/public/signIn" })
                     : router.replace(tab.href)
                 }
               >

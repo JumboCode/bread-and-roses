@@ -143,7 +143,10 @@ export default function LoginForm() {
               sx={{ color: "#667085" }}
             />
 
-            <button className="ml-[40px] text-[#145A5A] font-medium">
+            <button
+              className="ml-[40px] text-[#145A5A] font-medium"
+              onClick={() => router.push("/public/forgot-password")}
+            >
               Forgot password?
             </button>
           </div>
