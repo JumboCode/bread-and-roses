@@ -1,4 +1,4 @@
-import { User, VolunteerDetails } from "@prisma/client";
+import { Role, User, VolunteerDetails } from "@prisma/client";
 
 type CreateUserInput = Omit<User, "id" | "events" | "eventIds">;
 type CreateVolunteerDetailsInput = Omit<
@@ -47,8 +47,13 @@ export const getUser = async (userID: string) => {
 export const getUserByEmail = async (email: string) => {
   const url = `/api/user?email=${email}`;
   return fetchApi(url, "GET");
+};
 
-}
+export const getUsersByRole = async (role: Role) => {
+  const url = `/api/user?role=${role}`;
+  return fetchApi(url, "GET");
+};
+
 export const deleteUser = async (userID: string) => {
   const url = `/api/user?id=${userID}`;
   return fetchApi(url, "DELETE");
