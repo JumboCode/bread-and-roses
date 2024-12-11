@@ -5,6 +5,7 @@ import Image from "next/image";
 import Logo from "../app/icons/br-logo.png";
 import Divider from "../app/icons/divider";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 interface SideNavBarProps {
   role: string;
@@ -28,14 +29,14 @@ const SideNavBar = ({ role }: SideNavBarProps) => {
       href: "/private/communication",
     },
     { name: "Profile", icon: "charm:person", href: "/private/profile" },
-    { name: "Logout", icon: "tabler:logout", href: "/private/logout" }, // @TODO
+    { name: "Logout", icon: "tabler:logout", href: "" },
   ];
 
   const volunteerTabs = [
     { name: "Home", icon: "tabler:home", href: "/private" },
     { name: "Events", icon: "uil:calender", href: "/private/events" },
     { name: "Profile", icon: "charm:person", href: "/private/profile" },
-    { name: "Logout", icon: "tabler:logout", href: "/private/logout" }, // @TODO
+    { name: "Logout", icon: "tabler:logout", href: "" },
   ];
 
   const tabs = role === "admin" ? adminTabs : volunteerTabs;
@@ -62,7 +63,11 @@ const SideNavBar = ({ role }: SideNavBarProps) => {
                 className={`nav-button flex gap-3 items-center h-11 w-full text-[18px] font-medium focus:text-darkrose focus:bg-rose rounded-md pt-px pb-px px-3 ${
                   pathname === tab.href ? "text-darkrose bg-rose" : ""
                 }`}
-                onClick={() => router.replace(tab.href)}
+                onClick={() =>
+                  tab.name === "Logout"
+                    ? signOut({ callbackUrl: "/public/signin" })
+                    : router.replace(tab.href)
+                }
               >
                 <Icon icon={tab.icon} width="24" height="24" /> {tab.name}
               </button>
