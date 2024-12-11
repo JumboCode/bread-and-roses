@@ -76,6 +76,10 @@ export const DELETE = async (request: NextRequest) => {
   }
 
   try {
+    await prisma.code.delete({
+      where: { userId: id },
+    });
+
     await prisma.volunteerDetails.delete({
       where: { userId: id },
     });
@@ -107,9 +111,9 @@ export const GET = async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const id: string | undefined = searchParams.get("id") || undefined;
   const email: string | undefined = searchParams.get("email") || undefined;
+  const role: string | undefined = searchParams.get("role") || undefined;
 
-  // Check if id and email is null
-  if (!id && !email) {
+  if (!id && !email && !role) {
     return NextResponse.json(
       {
         code: "BAD_REQUEST",
@@ -118,6 +122,37 @@ export const GET = async (request: NextRequest) => {
       { status: 400 }
     );
   }
+
+  if (role) {
+    try {
+      const users = await prisma.user.findMany({
+        where: { role: role === "ADMIN" ? "ADMIN" : "VOLUNTEER" },
+        include: { volunteerDetails: true },
+      });
+
+      if (!users || users.length === 0) {
+        return NextResponse.json(
+          {
+            code: "NOT_FOUND",
+            message: "No users found",
+          },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({
+        code: "SUCCESS",
+        data: users,
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      return NextResponse.json({
+        code: "ERROR",
+        message: error,
+      });
+    }
+  }
+
   try {
     const fetchedUser = await prisma.user.findUnique({
       where: id ? { id } : { email },
