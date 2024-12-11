@@ -34,15 +34,18 @@ model User {
 model VolunteerDetails {
   id                 String             @id @default(auto()) @map("_id") @db.ObjectId
   ageOver14          Boolean            @default(false)
+  firstTime          Boolean            @default(false)
   country            String             @default("")
   address            String             @default("")
   city               String             @default("")
   state              String             @default("")
-  zipCode            Int?
+  zipCode            String             @default("")
   hasLicense         Boolean            @default(false)
   speaksEsp          Boolean            @default(false)
   volunteerType      String             @default("")
   hoursWorked        Int                @default(0)
+  whyJoin            String             @default("")
+  comments           String             @default("")
   user               User               @relation(fields: [userId], references: [id])
   userId             String             @unique @db.ObjectId
 }

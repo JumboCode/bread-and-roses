@@ -2,20 +2,15 @@
 
 import { useState, useEffect, useCallback } from "react";
 import TextField from "@mui/material/TextField";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import InputAdornment from "@mui/material/InputAdornment";
 import FormLabel from "@mui/material/FormLabel";
-import IconButton from "@mui/material/IconButton";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
-
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-
 import Image from "next/image";
 import logo1 from "../../public/logo1.png";
+import { addUser } from "@api/user/route.client";
+import { Role } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 export default function SignUp() {
   interface Name {
@@ -28,25 +23,23 @@ export default function SignUp() {
     city: string;
     state: string;
     zipCode: string;
-    country: string;
   }
 
-  const [name, setName] = useState<Name>({
-    first: "",
-    last: "",
-  });
+  const router = useRouter();
 
-  const [showPassword, setShowPassword] = useState(false);
+  const [name, setName] = useState<Name>({ first: "", last: "" });
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [displayError, setDisplayError] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [address, setAddress] = useState<Address>({
     addressLine: "",
     city: "",
     state: "",
     zipCode: "",
-    country: "",
   });
+  const [zipError, setZipError] = useState(false);
 
   const [isOverAge14, setIsOverAge14] = useState<boolean | null>(null);
   const [isFirstTime, setIsFirstTime] = useState<boolean | null>(null);
@@ -59,80 +52,170 @@ export default function SignUp() {
   const [isFormComplete, setIsFormComplete] = useState<boolean>(false);
 
   const testIfFormComplete = useCallback(() => {
-    const { first, last } = name;
-    const { addressLine, city, state, zipCode } = address;
-
     if (
-      Boolean(first && last) &&
-      Boolean(addressLine && city && state && zipCode) &&
-      hasDriverLicense != null &&
-      speakSpanish != null &&
+      name.first !== "" &&
+      name.last !== "" &&
+      email !== "" &&
+      password !== "" &&
+      confirmPassword !== "" &&
+      isOverAge14 !== null &&
+      isFirstTime !== null &&
+      address.addressLine !== "" &&
+      address.city !== "" &&
+      address.state !== "" &&
+      address.zipCode !== "" &&
+      hasDriverLicense !== null &&
+      speakSpanish !== null &&
       why !== ""
     ) {
       setIsFormComplete(true);
-    } else if (isFormComplete) {
+    } else {
       setIsFormComplete(false);
     }
-  }, [name, hasDriverLicense, speakSpanish, why, isFormComplete, address]);
+  }, [
+    name,
+    address,
+    email,
+    password,
+    confirmPassword,
+    isOverAge14,
+    isFirstTime,
+    hasDriverLicense,
+    speakSpanish,
+    why,
+  ]);
 
   useEffect(() => {
     testIfFormComplete();
   }, [
     name.first,
     name.last,
+    email,
+    password,
+    confirmPassword,
+    isOverAge14,
+    isFirstTime,
     address.addressLine,
     address.city,
     address.state,
     address.zipCode,
+    hasDriverLicense,
+    speakSpanish,
     why,
     testIfFormComplete,
   ]);
 
-  const handleCountryChange = (event: SelectChangeEvent) => {
-    setAddress({ ...address, country: event.target.value });
+  const validateEmail = () => {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(email)) {
+      setEmailError("Please enter a valid email address");
+      return false;
+    }
+    setEmailError("");
+    return true;
   };
 
-  const handleChangeAge14 = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsOverAge14(Boolean((event.target as HTMLInputElement).value));
+  const validatePassword = () => {
+    if (password !== confirmPassword) {
+      setPasswordError("Passwords do not match");
+      return false;
+    }
+    setPasswordError("");
+    return true;
   };
 
-  const handleChangeFirstTime = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setIsFirstTime(Boolean((event.target as HTMLInputElement).value));
+  const validateZip = () => {
+    const zip = address.zipCode.trim();
+
+    const isValid = /^\d+$/.test(zip);
+
+    if (!isValid) {
+      setZipError(true);
+      return false;
+    }
+
+    setZipError(false);
+    return true;
   };
 
-  const handleChangeDriverLicense = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setHasDriverLicense(Boolean((event.target as HTMLInputElement).value));
+  const validateForm = () => {
+    const isEmailValid = validateEmail();
+    const isPasswordValid = validatePassword();
+    const isZipValid = validateZip();
+
+    if (!isEmailValid || !isPasswordValid || !isZipValid) {
+      return false;
+    }
+
+    return true;
   };
 
-  const handleChangeSpeakSpanish = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setSpeakSpanish(Boolean((event.target as HTMLInputElement).value));
-  };
+  const handleSubmit = async () => {
+    setName({
+      first: name.first.trim(),
+      last: name.last.trim(),
+    });
+    setEmail(email.trim());
+    setPassword(password.trim());
+    setConfirmPassword(confirmPassword.trim());
+    setAddress({
+      ...address,
+      addressLine: address.addressLine.trim(),
+      city: address.city.trim(),
+      state: address.state.trim(),
+      zipCode: address.zipCode.trim(),
+    });
+    setWhy(why.trim());
+    setComments(comments.trim());
 
-  const CustomInputProps = {
-    endAdornment: (
-      <InputAdornment position="end">
-        <IconButton>
-          {password != "" &&
-            (showPassword ? (
-              <VisibilityIcon
-                sx={{ color: "#138D8A" }}
-                onClick={() => setShowPassword(false)}
-              />
-            ) : (
-              <VisibilityOffIcon
-                sx={{ color: "#138D8A" }}
-                onClick={() => setShowPassword(true)}
-              />
-            ))}
-        </IconButton>
-      </InputAdornment>
-    ),
+    if (!validateForm()) {
+      return;
+    }
+
+    const formData = {
+      name,
+      email,
+      password,
+      address,
+      isOverAge14,
+      isFirstTime,
+      hasDriverLicense,
+      speakSpanish,
+      why,
+      comments,
+    };
+
+    console.log(formData);
+
+    try {
+      const response = await addUser(
+        {
+          firstName: name.first,
+          lastName: name.last,
+          email: email,
+          role: Role.VOLUNTEER,
+          password: password,
+        },
+        {
+          ageOver14: isOverAge14 ?? false,
+          firstTime: isFirstTime ?? false,
+          country: "United States",
+          address: address.addressLine,
+          city: address.city,
+          state: address.state,
+          zipCode: address.zipCode,
+          hasLicense: hasDriverLicense ?? false,
+          speaksEsp: speakSpanish ?? false,
+          volunteerType: "",
+          hoursWorked: 0,
+          whyJoin: why,
+          comments: comments,
+        }
+      );
+      console.log("User added successfully:", response);
+    } catch (error) {
+      console.error("Error adding user:", error);
+    }
   };
 
   return (
@@ -149,11 +232,14 @@ export default function SignUp() {
                 fontFamily: "Kepler Std",
               }}
             >
-              Sign up form
+              Create an account
             </div>
             <div className="w-full text-[#667085] text-[14px] mt-[8px] mb-[24px]">
               Already have an account?{" "}
-              <button className="text-[#145A5A] font-semibold">
+              <button
+                className="text-[#145A5A] font-semibold"
+                onClick={() => router.push("/public/signIn")}
+              >
                 Log in here
               </button>
             </div>
@@ -162,7 +248,7 @@ export default function SignUp() {
 
           <div className="w-full">
             <div>
-              <div className="flex flex-row">
+              <div className="flex flex-row font-semibold">
                 Name
                 <div className="text-[red]">*</div>
               </div>
@@ -173,10 +259,8 @@ export default function SignUp() {
                   label="First name"
                   variant="outlined"
                   onChange={(e) => {
-                    setEmail(e.target.value);
+                    setName({ ...name, first: e.target.value });
                   }}
-                  error={displayError}
-                  helperText={displayError && "Couldn't find your account"}
                 />
                 <TextField
                   sx={{ marginBottom: "10px", width: "100%" }}
@@ -184,13 +268,11 @@ export default function SignUp() {
                   label="Last name"
                   variant="outlined"
                   onChange={(e) => {
-                    setEmail(e.target.value);
+                    setName({ ...name, last: e.target.value });
                   }}
-                  error={displayError}
-                  helperText={displayError && "Couldn't find your account"}
                 />
               </div>
-              <div className="flex flex-row">
+              <div className="flex flex-row font-semibold">
                 Email
                 <div className="text-[red]">*</div>
               </div>
@@ -202,10 +284,10 @@ export default function SignUp() {
                 onChange={(e) => {
                   setEmail(e.target.value);
                 }}
-                error={displayError}
-                helperText={displayError && "Couldn't find your account"}
+                error={emailError !== ""}
+                helperText={emailError}
               />
-              <div className="flex flex-row">
+              <div className="flex flex-row font-semibold">
                 Password
                 <div className="text-[red]">*</div>
               </div>
@@ -213,13 +295,15 @@ export default function SignUp() {
                 sx={{ marginBottom: "10px", width: "100%" }}
                 id="Password"
                 variant="outlined"
+                type="text"
+                value={password}
                 onChange={(e) => {
-                  setEmail(e.target.value);
+                  setPassword(e.target.value);
                 }}
-                error={displayError}
-                helperText={displayError && "Couldn't find your account"}
+                error={passwordError !== ""}
+                helperText={passwordError}
               />
-              <div className="flex flex-row">
+              <div className="flex flex-row font-semibold">
                 Confirm Password
                 <div className="text-[red]">*</div>
               </div>
@@ -227,14 +311,16 @@ export default function SignUp() {
                 sx={{ marginBottom: "10px", width: "100%" }}
                 id="Confirm password"
                 variant="outlined"
+                type="text"
+                value={confirmPassword}
                 onChange={(e) => {
-                  setEmail(e.target.value);
+                  setConfirmPassword(e.target.value);
                 }}
-                error={displayError}
-                helperText={displayError && "Couldn't find your account"}
+                error={passwordError !== ""}
+                helperText={passwordError}
               />
               <div>
-                <div className="flex flex-row">
+                <div className="flex flex-row font-semibold">
                   Are you 14 or over?
                   <div className="text-[red]">*</div>
                 </div>
@@ -248,7 +334,7 @@ export default function SignUp() {
                     gap: "20%",
                     margin: "5px 0 15px 0",
                   }}
-                  onChange={handleChangeAge14}
+                  onChange={(e) => setIsOverAge14(e.target.value === "true")}
                   aria-labelledby="are you 14 or over"
                   name="radio-buttons-group"
                 >
@@ -265,7 +351,7 @@ export default function SignUp() {
                 </RadioGroup>
               </div>
               <div>
-                <div className="flex flex-row">
+                <div className="flex flex-row font-semibold">
                   Is this the first time you volunteer with us?
                   <div className="text-[red]">*</div>
                 </div>
@@ -276,7 +362,7 @@ export default function SignUp() {
                     gap: "20%",
                     margin: "5px 0 15px 0",
                   }}
-                  onChange={handleChangeFirstTime}
+                  onChange={(e) => setIsFirstTime(e.target.value === "true")}
                   aria-labelledby="first time volunteer"
                   name="radio-buttons-group"
                 >
@@ -292,76 +378,69 @@ export default function SignUp() {
                   />
                 </RadioGroup>
               </div>
-              <div className="flex flex-row">
+              <div className="flex flex-row font-semibold">
                 Address
                 <div className="text-[red]">*</div>
               </div>
               <TextField
                 sx={{ marginBottom: "10px", width: "100%" }}
                 id="Address"
+                label="Address Line"
+                variant="outlined"
                 value={address.addressLine}
                 onChange={(e) => {
                   setAddress({ ...address, addressLine: e.target.value });
                 }}
-                placeholder="Address Line"
-                variant="outlined"
-                error={displayError}
-                helperText={displayError && "Couldn't find your account"}
               />
               <div className="flex flex-row items-center gap-[10px] ">
                 <TextField
                   sx={{ marginBottom: "10px", width: "100%" }}
                   id="City"
+                  label="City"
                   value={address.city}
                   onChange={(e) => {
                     setAddress({ ...address, city: e.target.value });
                   }}
                   variant="outlined"
-                  placeholder="City"
-                  error={displayError}
-                  helperText={displayError && "Couldn't find your account"}
                 />
                 <TextField
                   sx={{ marginBottom: "10px", width: "100%" }}
                   id="State"
-                  placeholder="State"
+                  label="State"
                   variant="outlined"
                   value={address.state}
                   onChange={(e) => {
                     setAddress({ ...address, state: e.target.value });
                   }}
-                  error={displayError}
-                  helperText={displayError && "Couldn't find your account"}
                 />
               </div>
               <div className="flex flex-row items-center gap-[10px] ">
                 <TextField
                   sx={{ marginBottom: "10px", width: "100%" }}
-                  id="ZIP code"
-                  placeholder="ZIP code"
+                  id="Zip Code"
+                  label="Zip Code"
                   variant="outlined"
                   value={address.zipCode}
                   onChange={(e) => {
                     setAddress({ ...address, zipCode: e.target.value });
                   }}
-                  error={displayError}
-                  helperText={displayError && "Couldn't find your account"}
+                  error={zipError}
                 />
-                <Select
-                  labelId="select-country"
+                <TextField
                   sx={{ marginBottom: "10px", width: "100%" }}
-                  id="country"
-                  value={address.country}
-                  onChange={handleCountryChange}
-                >
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
-                </Select>
+                  id="Country"
+                  variant="outlined"
+                  value="United States"
+                  slotProps={{
+                    input: {
+                      readOnly: true,
+                    },
+                  }}
+                />
               </div>
             </div>
             <div>
-              <div className="flex flex-row">
+              <div className="flex flex-row font-semibold">
                 Do you have a driver&apos;s license?
                 <div className="text-[red]">*</div>
               </div>
@@ -372,7 +451,7 @@ export default function SignUp() {
                   gap: "20%",
                   margin: "5px 0 15px 0",
                 }}
-                onChange={handleChangeDriverLicense}
+                onChange={(e) => setHasDriverLicense(e.target.value === "true")}
                 aria-labelledby="do you have a driver's license"
                 name="radio-buttons-group"
               >
@@ -389,7 +468,7 @@ export default function SignUp() {
               </RadioGroup>
             </div>
             <div>
-              <div className="flex flex-row">
+              <div className="flex flex-row font-semibold">
                 Do you speak Spanish?
                 <div className="text-[red]">*</div>
               </div>
@@ -400,7 +479,7 @@ export default function SignUp() {
                   gap: "20%",
                   margin: "5px 0 15px 0",
                 }}
-                onChange={handleChangeSpeakSpanish}
+                onChange={(e) => setSpeakSpanish(e.target.value === "yes")}
                 aria-labelledby="do you speak Spanish"
                 name="radio-buttons-group"
               >
@@ -408,7 +487,7 @@ export default function SignUp() {
                 <FormControlLabel value="no" control={<Radio />} label="No" />
               </RadioGroup>
             </div>
-            <div className="flex flex-row">
+            <div className="flex flex-row font-semibold">
               Why do you want to volunteer with us?
               <div className="text-[red]">*</div>
             </div>
@@ -422,7 +501,10 @@ export default function SignUp() {
               multiline
             />
             <div>
-              <FormLabel id="Any Questions" sx={{ color: "black" }}>
+              <FormLabel
+                id="Any Questions"
+                sx={{ color: "black", fontWeight: 600 }}
+              >
                 Do you have any other questions/comments?
               </FormLabel>
               <TextField
@@ -440,11 +522,8 @@ export default function SignUp() {
               isFormComplete ? "bg-[#138D8A]" : "bg-[#96E3DA]"
             } text-white py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
             type="submit"
-            onClick={() => {
-              if (email !== "" && password !== "") {
-                setDisplayError(true);
-              }
-            }}
+            onClick={handleSubmit}
+            disabled={!isFormComplete}
           >
             Sign Up
           </button>
