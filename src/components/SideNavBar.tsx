@@ -50,6 +50,33 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
 
   const tabs = user.role === Role.ADMIN ? adminTabs : volunteerTabs;
 
+  const mediaTabs = [
+    {
+      name: "Facebook",
+      icon: "gg:facebook",
+      link: "https://www.facebook.com/breadandroseslawrence/",
+    },
+    {
+      name: "Instagram",
+      icon: "ph:instagram-logo",
+      link: "https://www.instagram.com/breadandroseslawrence/",
+    },
+    {
+      name: "Twitter",
+      icon: "fa6-brands:x-twitter",
+      link: "https://x.com/breadandroses58",
+    },
+    {
+      name: "Vimeo",
+      icon: "mdi:vimeo",
+      link: "https://vimeo.com/breadandroses",
+    },
+    {
+      name: "LinkedIn",
+      icon: "akar-icons:linkedin-fill",
+      link: "https://www.linkedin.com/company/breadandrosescommunitykitchen/",
+    },
+  ];
   return (
     <div className="h-screen w-60 border-t border-r border-gray-200 fixed bg-white z-20 left-0">
       <div className="flex place-content-center my-6 ">
@@ -90,25 +117,13 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
         <Divider items-center />
         <div className="flex justify-center flex-col pl-1 gap-y-6 pt-4">
           <div className="flex gap-5">
-            <button className="text-icon-color">
-              <Icon icon="gg:facebook" width="24" height="24" />
-            </button>
-
-            <button className="text-icon-color">
-              <Icon icon="ph:instagram-logo" width="24" height="24" />
-            </button>
-
-            <button className="text-icon-color">
-              <Icon icon="fa6-brands:x-twitter" width="24" height="24" />
-            </button>
-
-            <button className="text-icon-color">
-              <Icon icon="mdi:vimeo" width="24" height="24" />
-            </button>
-
-            <button className="text-icon-color">
-              <Icon icon="akar-icons:linkedin-fill" width="24" height="24" />
-            </button>
+            {mediaTabs.map((tab, index) => {
+              return (
+                <a href={tab.link} target="_blank" rel="noreferrer">
+                  <Icon icon={tab.icon} width="24" height="24" />
+                </a>
+              );
+            })}
           </div>
 
           <div className="flex text-gray-500">

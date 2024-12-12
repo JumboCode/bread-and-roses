@@ -6,6 +6,7 @@ import React from "react";
 import { VolunteerDetails } from "../types/next-auth";
 import UserAvatar from "./UserAvatar";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 interface TopHeaderProps {
   user: {
@@ -68,13 +69,15 @@ const TopHeader = ({ user }: TopHeaderProps) => {
         <h1 className={`${isEnglish ? "text-teal-600" : ""} font-medium mr-2`}>
           EN
         </h1>
-        <UserAvatar firstName={user.firstName} lastName={user.lastName} />
-        <div>
-          <h1 className="font-bold">
-            {user.firstName} {user.lastName}
-          </h1>
-          <h2 className="text-gray-500">{user.role.toLowerCase()}</h2>
-        </div>
+        <Link className="flex flex-row gap-3" href="/private/profile">
+          <UserAvatar firstName={user.firstName} lastName={user.lastName} />
+          <div>
+            <h1 className="font-bold">
+              {user.firstName} {user.lastName}
+            </h1>
+            <h2 className="text-gray-500">{user.role.toLowerCase()}</h2>
+          </div>
+        </Link>
       </div>
     </div>
   );
