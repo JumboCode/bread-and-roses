@@ -51,7 +51,7 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
   const tabs = user.role === Role.ADMIN ? adminTabs : volunteerTabs;
 
   return (
-    <div className="h-screen w-60 border-t border-r border-gray-200 fixed left-0">
+    <div className="h-screen w-60 border-t border-r border-gray-200 fixed bg-white z-20 left-0">
       <div className="flex place-content-center my-6 ">
         <Image
           className="cursor-pointer"
