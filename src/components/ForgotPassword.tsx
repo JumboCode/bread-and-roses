@@ -176,7 +176,7 @@ export default function ForgotPasswordForm() {
         <div className="w-full">
           {step === 2 && (
             <button
-              className="flex justify-start items-center text-teal-800 font-inter font-semibold px-2 gap-2"
+              className="flex justify-start items-center text-teal-800 font-semibold px-2 gap-2"
               onClick={() => setStep(1)}
             >
               <Icon
@@ -200,7 +200,7 @@ export default function ForgotPasswordForm() {
           />
         </div>
         <div className="w-full h-auto p-6 bg-white rounded-lg shadow border-1 border-[#e4e7ec] flex-col justify-start inline-flex items-center">
-          <div className="text-[#9A0F28] text-center font-semibold text-2xl font-['Kepler Std'] ">
+          <div className="text-[#9A0F28] text-center font-semibold text-4xl font-['Kepler_Std'] mb-2">
             {step <= 2
               ? "Forgot password"
               : step === 3
@@ -212,7 +212,7 @@ export default function ForgotPasswordForm() {
 
           {step === 1 && (
             <>
-              <div className="w-full text-gray-500 text-center font-normal text-lg font-['Sofia Pro']">
+              <div className="w-full text-gray-500 text-center font-normal text-lg">
                 Enter your email to receive the 4 digits code.
               </div>
               <div className="pt-2 w-full border-b border-1 border-[#E4E7EC]">
@@ -249,7 +249,7 @@ export default function ForgotPasswordForm() {
           )}
           {step === 2 && (
             <>
-              <div className="w-full text-gray-500 text-center font-normal text-[18px] leading-[28px] font-['Sofia Pro']">
+              <div className="w-full text-gray-500 text-center font-normal text-[18px] leading-[28px]">
                 Enter your 4 digits code that you received on your email.
               </div>
               <div className="pt-2 w-full border-b border-1 border-[#E4E7EC]">
@@ -273,7 +273,7 @@ export default function ForgotPasswordForm() {
                       inputRef={(el) => (inputs.current[index] = el)}
                       error={error !== ""}
                       className={`w-[50px] h-[56px] text-center text-lg ${
-                        error !== "" ? "border-rose-600" : "border-gray-300"
+                        error !== "" ? "border-[#E61932]" : "border-gray-300"
                       } rounded-lg`}
                       slotProps={{
                         htmlInput: {
@@ -285,9 +285,9 @@ export default function ForgotPasswordForm() {
                   ))}
                 </div>
                 {error !== "" && (
-                  <div className="text-center text-rose-500 mt-2">{error}</div>
+                  <div className="text-center text-[#E61932] mt-2">{error}</div>
                 )}
-                <div className="flex justify-center text-rose-600 text-center font-normal text-[18px] leading-[28px] font-['Sofia Pro'] mt-4">
+                <div className="flex justify-center text-[#E61932] text-center font-normal text-[18px] leading-[28px] mt-4">
                   {String(Math.floor(counter / 60)).padStart(2, "0")}:
                   {String(counter % 60).padStart(2, "0")}
                 </div>
@@ -379,7 +379,7 @@ export default function ForgotPasswordForm() {
                 icon="fluent:checkmark-circle-12-filled"
                 width="85"
                 height="85"
-                className="text-teal-800 my-8"
+                className="text-[#33BDB5] my-8"
               />
 
               <button
@@ -392,10 +392,10 @@ export default function ForgotPasswordForm() {
           )}
         </div>
         {step === 2 && (
-          <div className="mt-4 text-gray-500 text-center text-sm font-['Sofia Pro']">
+          <div className="mt-4 text-gray-500 text-center text-sm">
             Didn&#39;t receive a code?
             <button
-              className="px-1 text-teal-600 font-semibold font-['Sofia Pro']"
+              className="px-1 text-teal-600 font-semibold"
               onClick={handleCodeResend}
             >
               Resend

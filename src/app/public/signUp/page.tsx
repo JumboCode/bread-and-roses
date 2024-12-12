@@ -1,11 +1,7 @@
 import SignUp from "@components/SignUp";
 
 const SignUpPage = () => {
-  return (
-    <div style={{ padding: "3rem" }}>
-      <SignUp />
-    </div>
-  );
+  return <SignUp />;
 };
 
 export default SignUpPage;
