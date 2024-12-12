@@ -119,7 +119,7 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
           <div className="flex gap-5">
             {mediaTabs.map((tab, index) => {
               return (
-                <a href={tab.link} target="_blank" rel="noreferrer">
+                <a href={tab.link} target="_blank" rel="noreferrer" key={index}>
                   <Icon icon={tab.icon} width="24" height="24" />
                 </a>
               );
