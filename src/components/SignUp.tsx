@@ -176,7 +176,7 @@ export default function SignUp() {
     }
 
     try {
-      const response = await addUser(
+      await addUser(
         {
           firstName: name.first,
           lastName: name.last,
