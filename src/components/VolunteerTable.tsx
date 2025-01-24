@@ -12,14 +12,14 @@ import IconButton from "@mui/material/IconButton";
 import Checkbox from "@mui/material/Checkbox";
 import React, { useEffect, useRef, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { User } from "@prisma/client";
 import { Box, Button, Typography } from "@mui/material";
 import UserAvatar from "@components/UserAvatar";
+import { UserWithVolunteerDetail } from "../app/types";
 
 interface VolunteerTableProps {
   showPagination: boolean;
   fromVolunteerPage: boolean;
-  users: User[] | undefined;
+  users: UserWithVolunteerDetail[] | undefined;
   selected?: string[];
   setSelected?: React.Dispatch<React.SetStateAction<string[]>>;
 }
@@ -284,7 +284,14 @@ export default function VolunteerTable({
                 }}
                 align="left"
               >
-                Location Coming Soon!
+                {row?.volunteerDetails?.address &&
+                  row?.volunteerDetails?.address +
+                    ", " +
+                    row?.volunteerDetails?.city +
+                    ", " +
+                    row?.volunteerDetails?.state +
+                    " " +
+                    row?.volunteerDetails?.zipCode}
               </TableCell>
               <TableCell
                 sx={{

@@ -4,17 +4,18 @@ import { useSession } from "next-auth/react";
 import StatsCard from "@components/StatsCard";
 import EventCard from "@components/EventCard";
 import VolunteerTable from "@components/VolunteerTable";
-import { Role, User } from "@prisma/client";
+import { Role } from "@prisma/client";
 import React from "react";
 import { getUsersByRole } from "@api/user/route.client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
+import { UserWithVolunteerDetail } from "../types";
 
 export default function HomePage() {
   const router = useRouter();
 
   const { data: session } = useSession();
-  const [users, setUsers] = React.useState<User[]>();
+  const [users, setUsers] = React.useState<UserWithVolunteerDetail[]>();
 
   React.useEffect(() => {
     const fetchUsers = async () => {
@@ -55,14 +56,24 @@ export default function HomePage() {
               ? "Total volunteers"
               : "Personal volunteer hours"
           }
-          value="50"
+          value={
+            session.user.role === Role.ADMIN ? (users ? users.length : 0) : 9999 // dummy data for place holding
+          }
           icon="pepicons-pencil:people"
           date="October 5th, 2024"
         />
         {session.user.role === Role.ADMIN ? (
           <StatsCard
             heading="Total volunteer hours"
-            value="200"
+            value={
+              users
+                ? users.reduce(
+                    (sum, user) =>
+                      sum + (user.volunteerDetails?.hoursWorked || 0),
+                    0
+                  )
+                : 0
+            }
             icon="tabler:clock-check"
             date="October 5th, 2024"
           />
