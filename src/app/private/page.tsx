@@ -4,18 +4,20 @@ import { useSession } from "next-auth/react";
 import StatsCard from "@components/StatsCard";
 import EventCard from "@components/EventCard";
 import VolunteerTable from "@components/VolunteerTable";
-import { Role } from "@prisma/client";
+import { Role, Event } from "@prisma/client";
 import React from "react";
 import { getUsersByRole } from "@api/user/route.client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
 import { UserWithVolunteerDetail } from "../types";
+import { fetchEvent } from "../api/event/route.client";
 
 export default function HomePage() {
   const router = useRouter();
 
   const { data: session } = useSession();
   const [users, setUsers] = React.useState<UserWithVolunteerDetail[]>();
+  const [events, setEvents] = React.useState<Event[]>();
 
   React.useEffect(() => {
     const fetchUsers = async () => {
@@ -27,7 +29,17 @@ export default function HomePage() {
       }
     };
 
+    const fetchEvents = async () => {
+      try {
+        const response = await fetchEvent();
+        setEvents(response.data);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+
     fetchUsers();
+    fetchEvents();
   }, []);
 
   if (!session) {
@@ -84,7 +96,13 @@ export default function HomePage() {
               ? "Total events"
               : "Events attended"
           }
-          value="10"
+          value={
+            session.user.role === Role.ADMIN
+              ? events
+                ? events.length
+                : 0
+              : 9999 // dummy data for place holding
+          }
           icon="mdi:calendar-outline"
           date="December 11th, 2024"
         />

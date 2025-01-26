@@ -40,3 +40,14 @@ export const deleteEvent = async (id: string) => {
 
   return json;
 };
+
+export const fetchEvent = async () => {
+  const response = await fetch("/api/event", {
+    method: "GET",
+  });
+
+  const json = await response.json();
+
+  return json;
+};
+

@@ -72,3 +72,37 @@ export const DELETE = async (request: NextRequest) => {
     });
   }
 };
+
+export const GET = async () => {
+  // currently implemented for fetching all events
+  // need to add filtering
+  try {
+    const fetchedEvents = await prisma.event.findMany(); // Use findMany to fetch all events
+
+    if (!fetchedEvents || fetchedEvents.length === 0) {
+      return NextResponse.json(
+        {
+          code: "NOT_FOUND",
+          message: "No events found",
+        },
+        { status: 404 }
+      );
+    }
+
+    console.log("Fetched Events:", fetchedEvents);
+
+    return NextResponse.json({
+      code: "SUCCESS",
+      data: fetchedEvents,
+    });
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    return NextResponse.json(
+      {
+        code: "ERROR",
+        message: "An error occurred while fetching events",
+      },
+      { status: 500 }
+    );
+  }
+};
