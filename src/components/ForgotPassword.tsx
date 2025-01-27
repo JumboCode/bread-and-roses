@@ -241,7 +241,7 @@ export default function ForgotPasswordForm() {
                   }}
                   onKeyUp={(e) => {
                     if (e.key === "Enter") {
-                      throttledEmailSubmit;
+                      throttledEmailSubmit();
                     }
                   }}
                   error={error !== ""}
@@ -336,7 +336,7 @@ export default function ForgotPasswordForm() {
                 }}
                 onKeyUp={(e) => {
                   if (e.key === "Enter") {
-                    throttledPasswordSubmit;
+                    throttledPasswordSubmit();
                   }
                 }}
                 onChange={(e) => {
@@ -359,7 +359,7 @@ export default function ForgotPasswordForm() {
                 }}
                 onKeyUp={(e) => {
                   if (e.key === "Enter") {
-                    throttledPasswordSubmit;
+                    throttledPasswordSubmit();
                   }
                 }}
                 onChange={(e) => {
