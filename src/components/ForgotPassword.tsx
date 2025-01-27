@@ -12,6 +12,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { sendForgotCode, updatePassword } from "@api/password/route.client";
 import { verifyCode } from "@api/verify-code/route.client";
+import useApiThrottle from "../hooks/useThrottle";
 
 export default function ForgotPasswordForm() {
   const router = useRouter();
@@ -47,6 +48,10 @@ export default function ForgotPasswordForm() {
     }
   };
 
+  const { fn: throttledEmailSubmit } = useApiThrottle({
+    fn: handleEmailSubmit,
+  });
+
   const handlePasswordSubmit = async () => {
     if (
       confirmPassword !== newPassword ||
@@ -64,6 +69,10 @@ export default function ForgotPasswordForm() {
       setStep(4);
     }
   };
+
+  const { fn: throttledPasswordSubmit } = useApiThrottle({
+    fn: handlePasswordSubmit,
+  });
 
   const handleCodeSubmit = async () => {
     const verifyReponse = await verifyCode(email, code.join(""));
@@ -107,6 +116,8 @@ export default function ForgotPasswordForm() {
       setError(codeResponse.message);
     }
   };
+
+  const { fn: throttledCodeResend } = useApiThrottle({ fn: handleCodeResend });
 
   const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
     if (
@@ -230,7 +241,7 @@ export default function ForgotPasswordForm() {
                   }}
                   onKeyUp={(e) => {
                     if (e.key === "Enter") {
-                      handleEmailSubmit();
+                      throttledEmailSubmit;
                     }
                   }}
                   error={error !== ""}
@@ -239,7 +250,7 @@ export default function ForgotPasswordForm() {
               </div>
               <div className="w-full">
                 <button
-                  onClick={handleEmailSubmit}
+                  onClick={throttledEmailSubmit}
                   className="w-full justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]"
                 >
                   Continue
@@ -325,7 +336,7 @@ export default function ForgotPasswordForm() {
                 }}
                 onKeyUp={(e) => {
                   if (e.key === "Enter") {
-                    handlePasswordSubmit();
+                    throttledPasswordSubmit;
                   }
                 }}
                 onChange={(e) => {
@@ -348,7 +359,7 @@ export default function ForgotPasswordForm() {
                 }}
                 onKeyUp={(e) => {
                   if (e.key === "Enter") {
-                    handlePasswordSubmit();
+                    throttledPasswordSubmit;
                   }
                 }}
                 onChange={(e) => {
@@ -359,7 +370,7 @@ export default function ForgotPasswordForm() {
               />
 
               <button
-                onClick={handlePasswordSubmit}
+                onClick={throttledPasswordSubmit}
                 className="w-full justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold"
               >
                 Continue
@@ -396,7 +407,7 @@ export default function ForgotPasswordForm() {
             Didn&#39;t receive a code?
             <button
               className="px-1 text-teal-600 font-semibold"
-              onClick={handleCodeResend}
+              onClick={throttledCodeResend}
             >
               Resend
             </button>
