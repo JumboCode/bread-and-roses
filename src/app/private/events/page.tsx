@@ -11,9 +11,6 @@ export default function EventsPage() {
         <div className="relative w-full h-[50vh]">
           <InitialCalendar />
         </div>
-        <div className="text-[#344054] font-['Kepler_Std'] text-3xl font-semibold mt-8">
-          Coming Soon!
-        </div>
       </div>
     </div>
   );

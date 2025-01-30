@@ -1,20 +1,33 @@
 "use client";
 
 import React from "react";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import "react-day-picker/style.css";
 
 export function InitialCalendar() {
   const [selected, setSelected] = React.useState<Date>();
+  const customDays = ['m', 't', 'w', 't', 'f', 's', 's'];
+  const defaultClassNames = getDefaultClassNames();
 
   return (
     <DayPicker
       mode="single"
       selected={selected}
       onSelect={setSelected}
-      footer={
-        selected ? `Selected: ${selected.toLocaleDateString()}` : "Pick a day."
-      }
+      showOutsideDays
+      formatters={{
+        formatWeekdayName: (weekday) => customDays[weekday.getDay()],
+        formatCaption: (month) => month.toLocaleDateString('en-US', {month: 'long'}), // displays only the month
+        // formatDay: (day) => day.getDay().toString().padStart(2, '0'),
+      }}
+      classNames={{
+        //is the figma showing date selected or day that it is ? 
+        selected: 'bg-teal-500 border-teal-500 text-white rounded-full',
+        month: 'font-size-sm text-gray-800',
+        //how to change color of icon inside buttons? 
+        button_previous:'bg-slate-50 border-2 border-gray-400 rounded-md',
+        button_next: 'bg-teal-700 border-2 border-teal-700 rounded-md',
+      }}
     />
   );
-}
+} 
