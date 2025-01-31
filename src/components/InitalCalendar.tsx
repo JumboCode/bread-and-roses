@@ -10,6 +10,7 @@ export function InitialCalendar() {
   const defaultClassNames = getDefaultClassNames();
 
   return (
+    <div className="border-2 rounded-md w-80 size-fit py-4 px-2">
     <DayPicker
       mode="single"
       selected={selected}
@@ -25,9 +26,13 @@ export function InitialCalendar() {
         selected: 'bg-teal-500 border-teal-500 text-white rounded-full',
         month: 'font-size-sm text-gray-800',
         //how to change color of icon inside buttons? 
-        button_previous:'bg-slate-50 border-2 border-gray-400 rounded-md',
-        button_next: 'bg-teal-700 border-2 border-teal-700 rounded-md',
+        button_previous:'bg-white border-2 border-gray-400 rounded-md [&>svg]:fill-teal-700',
+        button_next: 'bg-teal-700 border-2 border-teal-700 rounded-md [&>svg]:fill-white ml-2',
+        // chevron: 'fill-white',
+        today: 'text-teal-500',
+        outside: 'text-gray-400',
       }}
     />
+    </div>
   );
 } 
