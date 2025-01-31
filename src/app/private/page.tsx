@@ -4,29 +4,40 @@ import { useSession } from "next-auth/react";
 import StatsCard from "@components/StatsCard";
 import EventCard from "@components/EventCard";
 import VolunteerTable from "@components/VolunteerTable";
-import { Role, User } from "@prisma/client";
+import { Role, Event } from "@prisma/client";
 import React from "react";
 import { getUsersByRole } from "@api/user/route.client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
+import { UserWithVolunteerDetail } from "../types";
+import { fetchEvent } from "../api/event/route.client";
 
 export default function HomePage() {
   const router = useRouter();
 
   const { data: session } = useSession();
-  const [users, setUsers] = React.useState<User[]>();
+  const [users, setUsers] = React.useState<UserWithVolunteerDetail[]>([]);
+  const [events, setEvents] = React.useState<Event[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
 
   React.useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchData = async () => {
       try {
-        const response = await getUsersByRole(Role.VOLUNTEER);
-        setUsers(response.data);
+        const [usersResponse, eventsResponse] = await Promise.all([
+          getUsersByRole(Role.VOLUNTEER),
+          fetchEvent(),
+        ]);
+
+        setUsers(usersResponse.data);
+        setEvents(eventsResponse.data);
       } catch (error) {
-        console.error("Error fetching volunteers:", error);
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchUsers();
+    fetchData();
   }, []);
 
   if (!session) {
@@ -49,33 +60,49 @@ export default function HomePage() {
       </div>
 
       <div className="flex flex-nowrap gap-x-7 pt-8">
+        {session.user.role === Role.ADMIN && (
+          <StatsCard
+            heading="Total volunteers"
+            value={!loading ? users.length : "..."}
+            icon="pepicons-pencil:people"
+            date="October 5th, 2024" // NOTE: Date will soon be moved
+          />
+        )}
         <StatsCard
           heading={
             session.user.role === Role.ADMIN
-              ? "Total volunteers"
+              ? "Total volunteer hours"
               : "Personal volunteer hours"
           }
-          value="50"
-          icon="pepicons-pencil:people"
-          date="October 5th, 2024"
+          value={
+            !loading
+              ? session.user.role === Role.ADMIN && users
+                ? users.reduce(
+                    (sum, user) =>
+                      sum + (user.volunteerDetails?.hoursWorked || 0),
+                    0
+                  )
+                : session.user.volunteerDetails?.hoursWorked || 0
+              : "..."
+          }
+          icon="tabler:clock-check"
+          date="October 5th, 2024" // NOTE: Date will soon be moved
         />
-        {session.user.role === Role.ADMIN ? (
-          <StatsCard
-            heading="Total volunteer hours"
-            value="200"
-            icon="tabler:clock-check"
-            date="October 5th, 2024"
-          />
-        ) : null}
         <StatsCard
           heading={
             session.user.role === Role.ADMIN
               ? "Total events"
               : "Events attended"
           }
-          value="10"
+          value={
+            !loading
+              ? session.user.role === Role.ADMIN
+                ? events.length
+                : 9999 // @TODO: Replace with actual user's events in the future
+              : "..."
+          }
           icon="mdi:calendar-outline"
-          date="December 11th, 2024"
+          date="December 11th, 2024" // NOTE: Date will soon be moved
         />
       </div>
 
