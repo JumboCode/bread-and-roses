@@ -16,30 +16,28 @@ export default function HomePage() {
   const router = useRouter();
 
   const { data: session } = useSession();
-  const [users, setUsers] = React.useState<UserWithVolunteerDetail[]>();
-  const [events, setEvents] = React.useState<Event[]>();
+  const [users, setUsers] = React.useState<UserWithVolunteerDetail[]>([]);
+  const [events, setEvents] = React.useState<Event[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
 
   React.useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchData = async () => {
       try {
-        const response = await getUsersByRole(Role.VOLUNTEER);
-        setUsers(response.data);
+        const [usersResponse, eventsResponse] = await Promise.all([
+          getUsersByRole(Role.VOLUNTEER),
+          fetchEvent(),
+        ]);
+
+        setUsers(usersResponse.data);
+        setEvents(eventsResponse.data);
       } catch (error) {
-        console.error("Error fetching volunteers:", error);
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    const fetchEvents = async () => {
-      try {
-        const response = await fetchEvent();
-        setEvents(response.data);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-      }
-    };
-
-    fetchUsers();
-    fetchEvents();
+    fetchData();
   }, []);
 
   if (!session) {
@@ -62,34 +60,34 @@ export default function HomePage() {
       </div>
 
       <div className="flex flex-nowrap gap-x-7 pt-8">
+        {session.user.role === Role.ADMIN && (
+          <StatsCard
+            heading="Total volunteers"
+            value={!loading ? users.length : "..."}
+            icon="pepicons-pencil:people"
+            date="October 5th, 2024" // NOTE: Date will soon be moved
+          />
+        )}
         <StatsCard
           heading={
             session.user.role === Role.ADMIN
-              ? "Total volunteers"
+              ? "Total volunteer hours"
               : "Personal volunteer hours"
           }
           value={
-            session.user.role === Role.ADMIN ? (users ? users.length : 0) : 9999 // dummy data for place holding
-          }
-          icon="pepicons-pencil:people"
-          date="October 5th, 2024"
-        />
-        {session.user.role === Role.ADMIN ? (
-          <StatsCard
-            heading="Total volunteer hours"
-            value={
-              users
+            !loading
+              ? session.user.role === Role.ADMIN && users
                 ? users.reduce(
                     (sum, user) =>
                       sum + (user.volunteerDetails?.hoursWorked || 0),
                     0
                   )
-                : 0
-            }
-            icon="tabler:clock-check"
-            date="October 5th, 2024"
-          />
-        ) : null}
+                : session.user.volunteerDetails?.hoursWorked || 0
+              : "..."
+          }
+          icon="tabler:clock-check"
+          date="October 5th, 2024" // NOTE: Date will soon be moved
+        />
         <StatsCard
           heading={
             session.user.role === Role.ADMIN
@@ -97,14 +95,14 @@ export default function HomePage() {
               : "Events attended"
           }
           value={
-            session.user.role === Role.ADMIN
-              ? events
+            !loading
+              ? session.user.role === Role.ADMIN
                 ? events.length
-                : 0
-              : 9999 // dummy data for place holding
+                : 9999 // @TODO: Replace with actual user's events in the future
+              : "..."
           }
           icon="mdi:calendar-outline"
-          date="December 11th, 2024"
+          date="December 11th, 2024" // NOTE: Date will soon be moved
         />
       </div>
 

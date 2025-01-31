@@ -73,6 +73,7 @@ export const DELETE = async (request: NextRequest) => {
   }
 };
 
+// NOTE: This is for fetching all events
 export const GET = async () => {
   // currently implemented for fetching all events
   // need to add filtering
@@ -88,8 +89,6 @@ export const GET = async () => {
         { status: 404 }
       );
     }
-
-    console.log("Fetched Events:", fetchedEvents);
 
     return NextResponse.json({
       code: "SUCCESS",

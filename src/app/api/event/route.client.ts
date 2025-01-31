@@ -41,6 +41,7 @@ export const deleteEvent = async (id: string) => {
   return json;
 };
 
+// NOTE: This is for fetching all events
 export const fetchEvent = async () => {
   const response = await fetch("/api/event", {
     method: "GET",
@@ -50,4 +51,3 @@ export const fetchEvent = async () => {
 
   return json;
 };
-
