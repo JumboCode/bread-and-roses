@@ -1,26 +1,8 @@
-// import { useRef, useState } from "react";
-
-// function useThrottle(fn: Function) {
-//   const [loading, setLoading] = useState(false);
-//   const ref = useRef<Function | null>(null);
-
-//   const throttledFn = (...args: Parameters<Function>) => {
-//     if (loading) return;
-//     if (ref.current == null) {
-//       ref.current = fn;
-//       setLoading(true);
-//       await fn(...args);
-//       ref.current = null;
-//       setLoading(false);
-//     }
-//   };
-//   return throttledFn;
-// }
 import React from "react";
-type ApiCall = (...args: any[]) => Promise<any>;
+type ApiCall = (...args: unknown[]) => Promise<unknown>;
 interface UseApiThrottleProps<T extends ApiCall> {
   fn: T;
-  callback?: (res: Awaited<ReturnType<T>>) => void;
+  callback?: (res: unknown) => void;
 }
 /**
  * Prevent additional API call until the most recent one has completed.

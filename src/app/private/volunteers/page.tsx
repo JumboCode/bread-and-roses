@@ -61,7 +61,8 @@ export default function VolunteersPage() {
       console.error("Error deleting users:", error);
     }
   };
-  const { fn: throttledDeleteUsers } = useApiThrottle({ fn: deleteUsers });
+  const { fetching: disableFetching, fn: throttledDeleteUsers } =
+    useApiThrottle({ fn: deleteUsers });
 
   return (
     <div className="flex flex-col gap-8">
@@ -159,6 +160,7 @@ export default function VolunteersPage() {
               </Button>
               <Button
                 variant="outlined"
+                disabled={disableFetching}
                 sx={{
                   borderRadius: "8px",
                   padding: "10px 18px",
