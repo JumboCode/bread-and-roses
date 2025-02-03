@@ -10,7 +10,7 @@ export function InitialCalendar() {
   const defaultClassNames = getDefaultClassNames();
 
   return (
-    <div className="border-2 rounded-md w-80 size-fit py-4 px-2">
+    <div className="border-2 rounded-xl w-80 size-fit py-4 px-2">
     <DayPicker
       mode="single"
       selected={selected}
