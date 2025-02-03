@@ -12,7 +12,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { sendForgotCode, updatePassword } from "@api/password/route.client";
 import { verifyCode } from "@api/verify-code/route.client";
-import useApiThrottle from "../hooks/useThrottle";
+import useApiThrottle from "../hooks/useApiThrottle";
 
 export default function ForgotPasswordForm() {
   const router = useRouter();
@@ -239,9 +239,9 @@ export default function ForgotPasswordForm() {
                     setEmail(e.target.value);
                     setError("");
                   }}
-                  onKeyUp={(e) => {
+                  onKeyUp={async (e) => {
                     if (e.key === "Enter") {
-                      throttledEmailSubmit();
+                      await throttledEmailSubmit();
                     }
                   }}
                   error={error !== ""}
@@ -250,7 +250,9 @@ export default function ForgotPasswordForm() {
               </div>
               <div className="w-full">
                 <button
-                  onClick={throttledEmailSubmit}
+                  onClick={async () => {
+                    await throttledEmailSubmit();
+                  }}
                   className="w-full justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]"
                 >
                   Continue
@@ -334,9 +336,9 @@ export default function ForgotPasswordForm() {
                 slotProps={{
                   input: CustomInputProps("newPassword"),
                 }}
-                onKeyUp={(e) => {
+                onKeyUp={async (e) => {
                   if (e.key === "Enter") {
-                    throttledPasswordSubmit();
+                    await throttledPasswordSubmit();
                   }
                 }}
                 onChange={(e) => {
@@ -357,9 +359,9 @@ export default function ForgotPasswordForm() {
                 slotProps={{
                   input: CustomInputProps("confirmPassword"),
                 }}
-                onKeyUp={(e) => {
+                onKeyUp={async (e) => {
                   if (e.key === "Enter") {
-                    throttledPasswordSubmit();
+                    await throttledPasswordSubmit();
                   }
                 }}
                 onChange={(e) => {
@@ -370,7 +372,9 @@ export default function ForgotPasswordForm() {
               />
 
               <button
-                onClick={throttledPasswordSubmit}
+                onClick={async () => {
+                  await throttledPasswordSubmit();
+                }}
                 className="w-full justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold"
               >
                 Continue
@@ -407,7 +411,9 @@ export default function ForgotPasswordForm() {
             Didn&#39;t receive a code?
             <button
               className="px-1 text-teal-600 font-semibold"
-              onClick={throttledCodeResend}
+              onClick={async () => {
+                await throttledCodeResend();
+              }}
             >
               Resend
             </button>

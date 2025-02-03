@@ -9,7 +9,7 @@ import React from "react";
 import { Role, User } from "@prisma/client";
 import { deleteUser, getUsersByRole } from "@api/user/route.client";
 import Image from "next/image";
-import useApiThrottle from "../../../hooks/useThrottle";
+import useApiThrottle from "../../../hooks/useApiThrottle";
 
 export default function VolunteersPage() {
   const [users, setUsers] = React.useState<User[]>();
@@ -171,7 +171,9 @@ export default function VolunteersPage() {
                   fontSize: 16,
                   "&:hover": { backgroundColor: "var(--Teal-700, #1D7A7A)" },
                 }}
-                onClick={throttledDeleteUsers}
+                onClick={async () => {
+                  await throttledDeleteUsers();
+                }}
               >
                 Delete
               </Button>

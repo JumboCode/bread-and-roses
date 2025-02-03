@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Role } from "@prisma/client/edge";
 import { IconButton, InputAdornment } from "@mui/material";
-import useApiThrottle from "../hooks/useThrottle";
+import useApiThrottle from "../hooks/useApiThrottle";
 
 export default function SignUp() {
   interface Name {
@@ -615,7 +615,9 @@ export default function SignUp() {
                   isFormComplete ? "bg-[#138D8A]" : "bg-[#96E3DA]"
                 } text-white py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
                 type="submit"
-                onClick={throttledSubmit}
+                onClick={async () => {
+                  await throttledSubmit();
+                }}
                 disabled={!isFormComplete}
               >
                 Sign Up
