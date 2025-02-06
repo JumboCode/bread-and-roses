@@ -10,7 +10,7 @@ export function InitialCalendar() {
   const defaultClassNames = getDefaultClassNames();
 
   return (
-    <div className="border-2 rounded-xl w-80 size-fit py-4 px-2">
+    <div className="border-2 rounded-[20px] size-fit py-4 px-2">
     <DayPicker
       mode="single"
       selected={selected}
@@ -22,10 +22,8 @@ export function InitialCalendar() {
         // formatDay: (day) => day.getDay().toString().padStart(2, '0'),
       }}
       classNames={{
-        //is the figma showing date selected or day that it is ? 
         selected: 'bg-teal-500 border-teal-500 text-white rounded-full',
         month: 'font-size-sm text-gray-800',
-        //how to change color of icon inside buttons? 
         button_previous:'bg-white border-2 border-gray-400 rounded-md [&>svg]:fill-teal-700',
         button_next: 'bg-teal-700 border-2 border-teal-700 rounded-md [&>svg]:fill-white ml-2',
         // chevron: 'fill-white',

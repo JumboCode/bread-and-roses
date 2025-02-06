@@ -8,6 +8,7 @@ interface EventCardProps {
   address: string;
   volunteers: number;
   maxVolunteers: number;
+  width?: string | number;
 }
 
 const EventCard = ({
@@ -17,6 +18,7 @@ const EventCard = ({
   address,
   volunteers,
   maxVolunteers,
+  width = 360,
 }: EventCardProps) => {
   const isFull = volunteers === maxVolunteers ? true : false;
   const volunteerText = volunteers + "/" + maxVolunteers + " volunteers";
@@ -62,7 +64,7 @@ const EventCard = ({
   const dateText = `${startTime} - ${endTime} / ${month} ${dayWithSuffix}, ${year}`;
 
   return (
-    <div className="w-[360px] h-auto px-5 py-5 bg-white rounded-lg shadow border border-[#e4e7ec] flex-col justify-start items-start gap-4 inline-flex">
+    <div style={{width}} className="h-auto px-5 py-5 bg-white rounded-lg shadow border border-[#e4e7ec] flex-col justify-start items-start gap-4 inline-flex">
       <div className="self-stretch justify-start items-center inline-flex">
         <div className="grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
           <div className="self-stretch justify-start items-start gap-2 inline-flex">

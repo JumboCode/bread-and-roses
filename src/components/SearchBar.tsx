@@ -4,7 +4,7 @@ import SearchIcon from "@mui/icons-material/Search";
 
 interface SearchBarProps {
   onSearchChange: (searchText: string) => void;
-  width?: string | number; // customizable width
+  width?: string | number; // option to customize width (default is 400)
 }
 
 const SearchBar = ({ onSearchChange, width = 400 }: SearchBarProps) => {
