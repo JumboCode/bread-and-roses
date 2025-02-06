@@ -11,10 +11,12 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
 import { UserWithVolunteerDetail } from "../types";
 import { fetchEvent } from "../api/event/route.client";
+import Translator from "@components/languageExample";
+import { useTranslation } from "react-i18next";
 
 export default function HomePage() {
   const router = useRouter();
-
+  const { t } = useTranslation(["home"]);
   const { data: session } = useSession();
   const [users, setUsers] = React.useState<UserWithVolunteerDetail[]>([]);
   const [events, setEvents] = React.useState<Event[]>([]);
@@ -51,11 +53,12 @@ export default function HomePage() {
   return (
     <div>
       <div>
+        <Translator></Translator>
         <h1 className="text-4xl font-semibold	leading-10 font-['Kepler_Std']">
-          Thanks for checking in, {session.user.firstName} 👋
+          {t("welcome")}, {session.user.firstName} 👋
         </h1>
         <h1 className="text-lg mt-3 font-normal leading-7 font-serif text-slate-500">
-          What&apos;s the next event you want to join?
+          {t("welcome2")}
         </h1>
       </div>
 

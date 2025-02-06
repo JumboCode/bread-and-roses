@@ -3,10 +3,14 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Role } from "@prisma/client";
 import React from "react";
+import { useEffect } from "react";
 import { VolunteerDetails } from "../types/next-auth";
 import UserAvatar from "./UserAvatar";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
+import { setLanguageCookie } from "../lib/languages";
+import { getLanguageFromCookie } from "../lib/languages";
 
 interface TopHeaderProps {
   user: {
@@ -21,13 +25,28 @@ interface TopHeaderProps {
 
 const TopHeader = ({ user }: TopHeaderProps) => {
   const pathname = usePathname();
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    // Set the language from the cookie on page load
+    const savedLanguage = getLanguageFromCookie();
+    i18n.changeLanguage(savedLanguage);
+  }, [i18n]);
 
   // different button text and icon depending on if the user is a volunteer or admin
   const buttonText = user.role === Role.ADMIN ? "Add Event" : "Check in";
   const icon =
     user.role === Role.ADMIN ? "ic:baseline-plus" : "mdi:checkbox-outline";
 
-  const [isEnglish, setIsEnglish] = React.useState(true);
+  const [isEnglish, setIsEnglish] = React.useState(
+    getLanguageFromCookie() === "en"
+  );
+  const toggleLanguage = (): void => {
+    setIsEnglish(!isEnglish);
+    const newLang = i18n.language === "en" ? "es" : "en"; // Toggle between 'en' and 'es'
+    i18n.changeLanguage(newLang);
+    setLanguageCookie(newLang); // Save the new language in the cookie
+  };
 
   const getTitle = () => {
     const pathSegments = pathname.split("/");
@@ -60,7 +79,7 @@ const TopHeader = ({ user }: TopHeaderProps) => {
               id="check"
               className="sr-only peer"
               checked={isEnglish}
-              onChange={() => setIsEnglish(!isEnglish)}
+              onChange={() => toggleLanguage()}
             />
             <span className="w-[16px] h-[16px] bg-teal-600 absolute rounded-full left-1 top-0.5 peer-checked:left-4 transition-all duration-500" />
           </label>
