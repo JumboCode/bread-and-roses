@@ -8,10 +8,8 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import Image from "next/image";
 import logo1 from "../../public/logo1.png";
-
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-
 import { addUser } from "@api/user/route.client";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -213,11 +211,11 @@ export default function SignUp() {
     }
   };
 
-  const CustomInputProps1 = {
+  const PasswordProps = {
     endAdornment: (
       <InputAdornment position="end">
         <IconButton>
-          {password != "" &&
+          {password !== "" &&
             (showPassword ? (
               <VisibilityIcon
                 sx={{ color: "#138D8A" }}
@@ -234,11 +232,11 @@ export default function SignUp() {
     ),
   };
 
-  const CustomInputProps2 = {
+  const ConfirmPasswordProps = {
     endAdornment: (
       <InputAdornment position="end">
         <IconButton>
-          {password != "" &&
+          {confirmPassword !== "" &&
             (showConfirmPassword ? (
               <VisibilityIcon
                 sx={{ color: "#138D8A" }}
@@ -359,7 +357,7 @@ export default function SignUp() {
                       type={showPassword ? "text" : "password"}
                       value={password}
                       slotProps={{
-                        input: CustomInputProps1,
+                        input: PasswordProps,
                       }}
                       onChange={(e) => {
                         setPassword(e.target.value);
@@ -378,7 +376,7 @@ export default function SignUp() {
                       type={showConfirmPassword ? "text" : "password"}
                       value={confirmPassword}
                       slotProps={{
-                        input: CustomInputProps2,
+                        input: ConfirmPasswordProps,
                       }}
                       onChange={(e) => {
                         setConfirmPassword(e.target.value);
@@ -598,7 +596,7 @@ export default function SignUp() {
                       rows={4}
                       multiline
                     />
-                  </div>{" "}
+                  </div>
                 </>
               )}
             </div>
