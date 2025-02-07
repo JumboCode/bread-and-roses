@@ -36,7 +36,7 @@ const TopHeader = ({ user }: TopHeaderProps) => {
 
   return (
     <div className="w-[calc(100vw-240px)] top-0 left-60 right-0 flex items-center justify-between border-gray-200 border-y py-5 px-6 sticky z-10 bg-white">
-      {pathname === "/private" || pathname === "/private/events" ? (
+      {pathname === "/private" ? (
         <button className="flex gap-x-2 font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center">
           <Icon icon={icon} width="20" height="20" />
           <div className="mt-0.5">{buttonText}</div>

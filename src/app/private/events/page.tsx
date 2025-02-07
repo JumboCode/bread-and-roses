@@ -59,35 +59,52 @@ export default function EventsPage() {
           </div>
           <div className="flex-1 flex flex-col gap-y-[32px]"> 
             <EventCard
-              title="Community Cleanup"
-              start={new Date("2025-02-10T09:00:00")}
-              end={new Date("2025-02-10T12:00:00")}
-              address="123 Main Street, Boston, MA"
+              title="Dewick Community Meal"
+              start={new Date("December 10, 2024 11:20:00")}
+              end={new Date("December 17, 2024 13:20:00")}
+              address="25 Latin Way, Medford, MA 02155"
               volunteers={10}
-              maxVolunteers={20}
+              maxVolunteers={15}
               width="100%"
+              imageSrc="/event-card-placeholder.png"
             />
             <EventCard
-              title="Community Cleanup"
-              start={new Date("2025-02-10T09:00:00")}
-              end={new Date("2025-02-10T12:00:00")}
-              address="123 Main Street, Boston, MA"
-              volunteers={10}
-              maxVolunteers={20}
+              title="Carmichael Grab & Go Meal"
+              start={new Date("December 10, 2024 12:30:00")}
+              end={new Date("December 17, 2024 14:00:00")}
+              address="200 Packard Ave, Medford, MA 02155"
+              volunteers={15}
+              maxVolunteers={15}
               width="100%"
+              imageSrc="/event-card-placeholder.png"
             />
             <EventCard
-              title="Community Cleanup"
-              start={new Date("2025-02-10T09:00:00")}
-              end={new Date("2025-02-10T12:00:00")}
-              address="123 Main Street, Boston, MA"
+              title="Hodgedon Food-on-the-run"
+              start={new Date("December 10, 2024 14:20:00")}
+              end={new Date("December 17, 2024 14:30:00")}
+              address="103 Talbot Ave. Somerville, MA 02144"
               volunteers={10}
-              maxVolunteers={20}
+              maxVolunteers={15}
               width="100%"
+              imageSrc="/event-card-placeholder.png"
             />
+            <div className="w-full border-b border-0.5 border-[#E4E7EC]">
+                {" "}
+            </div>
+            <div className="flex flex-row justify-between items-center">
+              <div className="flex justify-start mb-8">  Page 1 of 10 </div>
+              <div className="flex flex-row justify-end gap-4 font-bold">
+                <button className="mb-8 bg-white-50 border-2 border-gray-200 w-32 h-[45px] rounded-xl text-teal-900">
+                  Previous
+                </button>
+                <button className="mb-8 bg-white-50 border-2 border-gray-200 w-24 h-[45px] rounded-xl text-teal-900">
+                  Next
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      {/* </div> */}
+
       
     </div>
   );
