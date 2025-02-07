@@ -203,6 +203,11 @@ export default function SignUp() {
       setSuccess(true);
     } catch (error) {
       console.error("Error adding user:", error);
+      setEmailError("Account with this email already exists");
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      })
     }
   };
 
@@ -294,6 +299,7 @@ export default function SignUp() {
                       label="ex: myname@gmail.com"
                       variant="outlined"
                       onChange={(e) => {
+                        setEmailError("")
                         setEmail(e.target.value);
                       }}
                       error={emailError !== ""}

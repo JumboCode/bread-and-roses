@@ -15,6 +15,17 @@ export const POST = async (request: NextRequest) => {
 
     const { user, volunteerDetails } = await request.json();
 
+    const existingUser = await prisma.user.findUnique({
+      where: { email: user.email },
+    });
+
+    if (existingUser) {
+      return NextResponse.json({
+        code: "ERROR",
+        message: `User created with none-unique email`,
+      }, { status: 400 });
+    }
+
     // Hash the user's password
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(user.password, saltRounds);
