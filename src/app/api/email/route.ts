@@ -22,6 +22,9 @@ export const POST = async (request: NextRequest) => {
         refreshToken: process.env.OAUTH_REFRESHTOKEN,
         accessToken: process.env.OAUTH_ACCESSTOKEN,
       },
+      tls: {
+        rejectUnauthorized: false,
+      }, //TODO: REmove before deployment
     });
 
     const massMessage = {
