@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
-import { User } from "@prisma/client";
+import { Role, User } from "@prisma/client";
+import { getUsersByRole } from "@api/user/route.client";
 
 export const sendMail = async (email: string, code: string) => {
   const transporter = nodemailer.createTransport({
@@ -25,27 +26,27 @@ export const sendMail = async (email: string, code: string) => {
   await transporter.sendMail(message);
 };
 
-export const sendMassMail = async (users: User[], text: string) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.NODEMAILER_EMAIL,
-      type: "OAuth2",
-      clientId: process.env.OAUTH_CLIENTID,
-      clientSecret: process.env.OAUTH_CLIENTSECRET,
-      refreshToken: process.env.OAUTH_REFRESHTOKEN,
-      accessToken: process.env.OAUTH_ACCESSTOKEN,
-    },
-  });
+// export const sendMassMail = async (text: string) => {
+//   const users: User[] = await getUsersByRole(Role.VOLUNTEER);
 
-  for (let i = 0; i < users.length; i++) {
-    const massMessage = {
-      from: process.env.NODEMAILER_EMAIL,
-      to: users[i].email,
-      subject: "Message from Bread & Roses Admin",
-      text: text,
-      html: `idk what this does`,
-    };
-    await transporter.sendMail(massMessage);
-  }
-};
+//   const transporter = nodemailer.createTransport({
+//     service: "gmail",
+//     auth: {
+//       user: process.env.NODEMAILER_EMAIL,
+//       type: "OAuth2",
+//       clientId: process.env.OAUTH_CLIENTID,
+//       clientSecret: process.env.OAUTH_CLIENTSECRET,
+//       refreshToken: process.env.OAUTH_REFRESHTOKEN,
+//       accessToken: process.env.OAUTH_ACCESSTOKEN,
+//     },
+//   });
+
+//   const massMessage = {
+//     from: process.env.NODEMAILER_EMAIL,
+//     bcc: users.filter((user) => user.lastName === "Kim").map((x) => x.email),
+//     subject: "Message from Bread & Roses Admin",
+//     text: "hello",
+//     html: `idk what this does`,
+//   };
+//   await transporter.sendMail(massMessage);
+// };

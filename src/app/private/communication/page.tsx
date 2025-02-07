@@ -2,29 +2,12 @@
 
 import React from "react";
 import Image from "next/image";
-import { useId } from "react";
-import { useState } from "react";
-import { Role, User } from "@prisma/client";
-import { deleteUser, getUsersByRole } from "@api/user/route.client";
-import { sendMassMail } from "../../../lib/nodemail";
+import { sendMassEmail } from "@api/email/route.client";
+// import { sendMassMail } from "../../../lib/nodemail";
 
 export default function CommunicationPage() {
-  const postTextAreaId = useId();
-  const [text, setText] = useState("");
-  const [users, setUsers] = React.useState<User[]>([]);
-
-  React.useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await getUsersByRole(Role.VOLUNTEER);
-        setUsers(response.data);
-      } catch (error) {
-        console.error("Error fetching volunteers:", error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
+  // const postTextAreaId = useId();
+  const [text, setText] = React.useState("");
 
   return (
     <div>
@@ -32,10 +15,10 @@ export default function CommunicationPage() {
         Communication
       </div>
       <div className="flex flex-col w-[800px]">
-        <label htmlFor={postTextAreaId}>Write your message:</label>
+        {/* <label htmlFor={postTextAreaId}>Write your message:</label> */}
         <textarea
           className="border border-gray-500"
-          id={postTextAreaId}
+          // id={postTextAreaId}
           name="postContent"
           rows={4}
           cols={40}
@@ -46,9 +29,7 @@ export default function CommunicationPage() {
         <button
           className="w-[150px] font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
           onClick={async () => {
-            if (users) {
-              await sendMassMail(users, text);
-            }
+            await sendMassEmail(text);
           }}
         >
           Send
