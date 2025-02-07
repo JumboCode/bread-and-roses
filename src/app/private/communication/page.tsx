@@ -6,11 +6,12 @@ import { useId } from "react";
 import { useState } from "react";
 import { Role, User } from "@prisma/client";
 import { deleteUser, getUsersByRole } from "@api/user/route.client";
+import { sendMassMail } from "../../../lib/nodemail";
 
 export default function CommunicationPage() {
   const postTextAreaId = useId();
   const [text, setText] = useState("");
-  const [users, setUsers] = React.useState<User[]>();
+  const [users, setUsers] = React.useState<User[]>([]);
 
   React.useEffect(() => {
     const fetchUsers = async () => {
@@ -42,7 +43,14 @@ export default function CommunicationPage() {
             setText(e.target.value);
           }}
         />
-        <button className="w-[150px] font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center">
+        <button
+          className="w-[150px] font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
+          onClick={async () => {
+            if (users) {
+              await sendMassMail(users, text);
+            }
+          }}
+        >
           Send
         </button>
       </div>
