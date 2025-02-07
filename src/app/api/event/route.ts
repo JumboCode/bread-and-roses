@@ -26,7 +26,7 @@ export const POST = async (request: NextRequest) => {
   }
 };
 
-export const PUT = async (request: NextRequest) => {
+export const PATCH = async (request: NextRequest) => {
   try {
     const { event } = await request.json();
     const { id, ...other } = event;

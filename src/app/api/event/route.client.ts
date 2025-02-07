@@ -19,7 +19,7 @@ export const addEvent = async (event: CreateEventInput) => {
 
 export const updateEvent = async (event: Event) => {
   const response = await fetch("/api/event", {
-    method: "PUT",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ event }),
   });
