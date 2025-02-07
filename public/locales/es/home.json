@@ -1,4 +1,7 @@
 {
-  "welcome": "Gracias por visitar nuestro sitio",
-  "welcome2": "¿Cuál es el próximo evento al que quieres unirte?"
+  "welcome_title": "Gracias por visitar nuestro sitio",
+  "welcome_subtitle": "¿Cuál es el próximo evento al que quieres unirte?",
+  "upcoming_events": "Próximos eventos",
+  "volunteer_hours": "Horas de voluntariado",
+  "events_attended": "Eventos asistidos"
 }

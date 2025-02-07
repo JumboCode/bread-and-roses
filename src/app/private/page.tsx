@@ -5,24 +5,23 @@ import StatsCard from "@components/StatsCard";
 import EventCard from "@components/EventCard";
 import VolunteerTable from "@components/VolunteerTable";
 import { Role, Event } from "@prisma/client";
-import React from "react";
+import React, { useEffect } from "react";
 import { getUsersByRole } from "@api/user/route.client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
 import { UserWithVolunteerDetail } from "../types";
 import { fetchEvent } from "../api/event/route.client";
-import Translator from "@components/languageExample";
 import { useTranslation } from "react-i18next";
 
 export default function HomePage() {
   const router = useRouter();
-  const { t } = useTranslation(["home"]);
+  const { t } = useTranslation(["translation", "home"]);
   const { data: session } = useSession();
   const [users, setUsers] = React.useState<UserWithVolunteerDetail[]>([]);
   const [events, setEvents] = React.useState<Event[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const [usersResponse, eventsResponse] = await Promise.all([
@@ -53,12 +52,11 @@ export default function HomePage() {
   return (
     <div>
       <div>
-        <Translator></Translator>
         <h1 className="text-4xl font-semibold	leading-10 font-['Kepler_Std']">
-          {t("welcome")}, {session.user.firstName} 👋
+          {t("welcome_title", { ns: "home" })}, {session.user.firstName} 👋
         </h1>
         <h1 className="text-lg mt-3 font-normal leading-7 font-serif text-slate-500">
-          {t("welcome2")}
+          {t("welcome_subtitle", { ns: "home" })}
         </h1>
       </div>
 
@@ -75,7 +73,7 @@ export default function HomePage() {
           heading={
             session.user.role === Role.ADMIN
               ? "Total volunteer hours"
-              : "Personal volunteer hours"
+              : t("volunteer_hours", { ns: "home" })
           }
           value={
             !loading
@@ -95,7 +93,7 @@ export default function HomePage() {
           heading={
             session.user.role === Role.ADMIN
               ? "Total events"
-              : "Events attended"
+              : t("events_attended", { ns: "home" })
           }
           value={
             !loading
@@ -112,13 +110,15 @@ export default function HomePage() {
       <div>
         <div className="flex items-center justify-between mt-8">
           <h1 className="text-2xl font-semibold leading-8 font-['Kepler_Std']">
-            Upcoming events
+            {t("upcoming_events", { ns: "home" })}
           </h1>
           <div
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => router.push("/private/events")}
           >
-            <div className="mt-0.5 text-[#145A5A] font-semibold">See all</div>
+            <div className="mt-0.5 text-[#145A5A] font-semibold">
+              {t("see_all")}
+            </div>
             <Icon
               icon="lucide:arrow-right"
               width={20}
@@ -204,7 +204,9 @@ export default function HomePage() {
               className="flex items-center gap-2 cursor-pointer"
               onClick={() => router.push("/private/volunteers")}
             >
-              <div className="mt-0.5 text-[#145A5A] font-semibold">See all</div>
+              <div className="mt-0.5 text-[#145A5A] font-semibold">
+                {t("ver_more")}
+              </div>
               <Icon
                 icon="lucide:arrow-right"
                 width={20}

@@ -9,6 +9,8 @@ i18n
   .init({
     lng: "en",
     fallbackLng: "en",
+    ns: ["translation", "home"],
+    defaultNS: "translation",
   });
 
 export default i18n;

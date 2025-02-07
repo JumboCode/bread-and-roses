@@ -25,7 +25,7 @@ interface TopHeaderProps {
 
 const TopHeader = ({ user }: TopHeaderProps) => {
   const pathname = usePathname();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation("translation");
 
   useEffect(() => {
     // Set the language from the cookie on page load
@@ -34,7 +34,7 @@ const TopHeader = ({ user }: TopHeaderProps) => {
   }, [i18n]);
 
   // different button text and icon depending on if the user is a volunteer or admin
-  const buttonText = user.role === Role.ADMIN ? "Add Event" : "Check in";
+  const buttonText = user.role === Role.ADMIN ? "Add Event" : t("check_in");
   const icon =
     user.role === Role.ADMIN ? "ic:baseline-plus" : "mdi:checkbox-outline";
 
@@ -94,7 +94,7 @@ const TopHeader = ({ user }: TopHeaderProps) => {
             <h1 className="font-bold">
               {user.firstName} {user.lastName}
             </h1>
-            <h2 className="text-gray-500">{user.role.toLowerCase()}</h2>
+            <h2 className="text-gray-500">{t(user.role.toLowerCase())}</h2>
           </div>
         </Link>
       </div>
