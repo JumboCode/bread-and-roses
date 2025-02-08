@@ -5,6 +5,24 @@ type CreateEventInput = Pick<
   "eventName" | "description" | "maxPeople" | "dateTime"
 >;
 
+export const fetchApi = async (
+  endpoint: string,
+  method: "POST" | "GET" | "DELETE" | "PATCH",
+  body?: Record<string, unknown>
+) => {
+  const response = await fetch(endpoint, {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  
+  if (!response.ok) {
+    throw new Error("API Error: $(response.statusText)");
+  }
+
+  return response.json();
+};
+
 export const addEvent = async (event: CreateEventInput) => {
   const response = await fetch("/api/event", {
     method: "POST",
@@ -16,6 +34,17 @@ export const addEvent = async (event: CreateEventInput) => {
 
   return json;
 };
+
+// export const getUser = async (userID: string) => {
+//   const url = `/api/user?id=${userID}`;
+//   return fetchApi(url, "GET");
+// };
+
+export const getEvent = async (eventID: string) => {
+  const url = `/api/event?id=${eventID}`;
+  return fetchApi(url, "GET");
+};
+
 
 export const updateEvent = async (event: Event) => {
   const response = await fetch("/api/event", {

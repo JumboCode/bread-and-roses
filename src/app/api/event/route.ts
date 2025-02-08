@@ -30,11 +30,33 @@ export const PATCH = async (request: NextRequest) => {
   try {
     const { event } = await request.json();
     const { id, ...other } = event;
+
+    // const updateEvent = await prisma.event.update({
+    //   where: {
+    //     id: id,
+    //   },
+    //   data: other,
+    // });
+
+
     const updateEvent = await prisma.event.update({
       where: {
         id: id,
       },
-      data: other,
+      data: {
+        id, ...event,
+        
+        // id: undefined,
+        maxPeople: 5,
+      },
+
+      // data: {
+      //   ...user,
+      //   //TO DO: REMOVE hard coded role:
+      //   role: "ADMIN",
+      //   id: undefined,
+      // },
+
     });
 
     return NextResponse.json({

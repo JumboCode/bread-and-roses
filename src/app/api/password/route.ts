@@ -45,7 +45,6 @@ export const POST = async (request: NextRequest) => {
   }
 };
 
-// NOTE/TODO: CHANGE PUT -> PATCH ???
 export const PUT = async (request: NextRequest) => {
   try {
     const { email, password } = await request.json();

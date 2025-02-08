@@ -5,6 +5,10 @@ import Image from "next/image";
 import { getUser, updateUser } from "@api/user/route.client";
 // import ExampleButton from "@components/ExampleButton";
 import { Role, User, VolunteerDetails } from "@prisma/client";
+
+import { getEvent, updateEvent } from "@api/event/route.client";
+import { Event } from "@prisma/client";
+
 // import { addUser } from "@api/user/route.client";
 // type CreateVolunteerDetailsInput = Omit<
 //   VolunteerDetails,
@@ -22,10 +26,28 @@ import { Role, User, VolunteerDetails } from "@prisma/client";
 // };
 
 const handleUpdateProfile = async () => {
-  const user = await getUser(0, "675a1cd75e034b58753b77f7"); // Wait for the resolved user object
-  const volunteerDetails = await getUser(0, "675a2dd432ac78e2748d2519"); // This can be filled as needed
+  // const user = await getUser("675a4c9b0cbad979b1058522"); // Wait for the resolved user object
+  // const volunteerDetails = await getUser("675a2dd432ac78e2748d2519"); // This can be filled as needed
+  // console.log(user);
+  // const vDetails = user.volunteerDetails;
 
-  await updateUser(user, volunteerDetails); // Now call updateUser with the correct user object
+  /*
+  const response = await getUser(userID);
+  const fetchedUser = response.data.user;
+  const fetchedVD = response.data.volunteerDetails;
+  */
+
+  // const response = await getUser("675a4c9b0cbad979b1058522");
+  // const fetchedUser = response.data.user;
+  // const fetchedVD = response.data.volunteerDetails;
+
+  // await updateUser(fetchedUser, fetchedVD); // Now call updateUser with the correct user object
+
+  const response = await getEvent("67942018b47a30a5cee9c9bd");
+  const fetchedEvent = response.data.eventName;
+
+  await updateEvent(fetchedEvent); // Now call updateUser with the correct user object
+
 };
 
 export default function ProfilePage() {
@@ -59,7 +81,7 @@ export default function ProfilePage() {
         <button
           onClick={async (event) => {
             event.preventDefault(); // Optional
-            await handleUpdateProfile();
+            handleUpdateProfile();
           }}
         >
           Get User

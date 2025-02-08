@@ -190,10 +190,8 @@ export const GET = async (request: NextRequest) => {
  * @param {NextRequest} request - The incoming request with user and volunteerDetails data.
  * @returns {NextResponse} - JSON response with updated data or error.
  */
-// export const PUT = async (request: NextRequest) => {
 
 export const PATCH = async (request: NextRequest) => {
-
 
   try {
     /* @TODO: Add auth */
@@ -207,17 +205,20 @@ export const PATCH = async (request: NextRequest) => {
       },
       data: {
         ...user,
-        role: "clown",
+        //TO DO: REMOVE hard coded role:
+        role: "ADMIN",
         id: undefined,
       },
     });
-
+    console.log("here", updatedUser);
     const updatedVD = await prisma.volunteerDetails.update({
       where: {
         id: volunteerDetails.id,
       },
       data: {
         ...volunteerDetails,
+        //TO DO: REMOVE hard address:
+        address: "johnny's house",
         id: undefined,
       },
     });

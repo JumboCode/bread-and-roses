@@ -39,7 +39,7 @@ export const addUser = async (
   volunteerDetails: CreateVolunteerDetailsInput
 ) => fetchApi("/api/user", "POST", { user, volunteerDetails });
 
-export const getUser = async (p0: number, userID: string) => {
+export const getUser = async (userID: string) => {
   const url = `/api/user?id=${userID}`;
   return fetchApi(url, "GET");
 };
