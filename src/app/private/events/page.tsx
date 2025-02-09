@@ -29,7 +29,6 @@ export default function EventsPage() {
       </div>
         <div className="relative text-center w-full h-[50vh] flex flex-row gap-x-[24px]">
           <div className="flex-2 flex flex-col">
-          {/* can change the size of calendar text w css */}
             <InitialCalendar />
             <div className="text-left font-semibold mt-[40px] mb-[18px]">
               Signup Availability
@@ -88,24 +87,19 @@ export default function EventsPage() {
               width="100%"
               imageSrc="/event-card-placeholder.png"
             />
-            <div className="w-full border-b border-0.5 border-[#E4E7EC]">
-                {" "}
-            </div>
-            <div className="flex flex-row justify-between items-center">
-              <div className="flex justify-start mb-8">  Page 1 of 10 </div>
-              <div className="flex flex-row justify-end gap-4 font-bold">
-                <button className="mb-8 bg-white-50 border-2 border-gray-200 w-32 h-[45px] rounded-xl text-teal-900">
+            <div className="flex flex-row justify-between items-center border-t border-gray-300 py-[12px]">
+              <div className="mb-4 text-sm">  Page 1 of 10 </div>
+              <div className="flex flex-row gap-4 font-bold">
+                <button className="flex mb-4 text-sm justify-center items-center bg-white-50 border-[1px] border-gray-300 w-[87px] h-[40px] rounded-lg text-teal-900">
                   Previous
                 </button>
-                <button className="mb-8 bg-white-50 border-2 border-gray-200 w-24 h-[45px] rounded-xl text-teal-900">
+                <button className="flex justify-center items-center mb-4 text-sm bg-white-50 border-[1px] border-gray-300 w-[62px] h-[40px] rounded-lg text-teal-900">
                   Next
                 </button>
               </div>
             </div>
           </div>
         </div>
-
-      
     </div>
   );
 }
