@@ -48,7 +48,7 @@ export default function ForgotPasswordForm() {
     }
   };
 
-  const { fn: throttledEmailSubmit } = useApiThrottle({
+  const { fetching: emailLoading, fn: throttledEmailSubmit } = useApiThrottle({
     fn: handleEmailSubmit,
   });
 
@@ -70,9 +70,10 @@ export default function ForgotPasswordForm() {
     }
   };
 
-  const { fn: throttledPasswordSubmit } = useApiThrottle({
-    fn: handlePasswordSubmit,
-  });
+  const { fetching: passwordLoading, fn: throttledPasswordSubmit } =
+    useApiThrottle({
+      fn: handlePasswordSubmit,
+    });
 
   const handleCodeSubmit = async () => {
     const verifyReponse = await verifyCode(email, code.join(""));
@@ -86,6 +87,8 @@ export default function ForgotPasswordForm() {
       setStep(3);
     }
   };
+  const { fetching: codeSubmitLoading, fn: throttledCodeSubmit } =
+    useApiThrottle({ fn: handleCodeSubmit });
 
   const handleCodeChange = (value: string, index: number) => {
     if (!/^\d$/.test(value) && value !== "") return;
@@ -117,7 +120,9 @@ export default function ForgotPasswordForm() {
     }
   };
 
-  const { fn: throttledCodeResend } = useApiThrottle({ fn: handleCodeResend });
+  const { fetching: resendLoading, fn: throttledCodeResend } = useApiThrottle({
+    fn: handleCodeResend,
+  });
 
   const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
     if (
@@ -250,10 +255,13 @@ export default function ForgotPasswordForm() {
               </div>
               <div className="w-full">
                 <button
+                  disabled={emailLoading}
                   onClick={async () => {
                     await throttledEmailSubmit();
                   }}
-                  className="w-full justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]"
+                  className={`${
+                    emailLoading ? "bg-[#96E3DA]" : "bg-[#138D8A]"
+                  } w-full justify-center flex flex-row px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]`}
                 >
                   Continue
                 </button>
@@ -277,9 +285,9 @@ export default function ForgotPasswordForm() {
                       onChange={(e) =>
                         handleCodeChange(e.target.value.slice(-1), index)
                       }
-                      onKeyUp={(e) => {
+                      onKeyUp={async (e) => {
                         if (e.key === "Enter") {
-                          handleCodeSubmit();
+                          await throttledCodeSubmit();
                         }
                       }}
                       onKeyDown={(e) => handleKeyDown(e, index)}
@@ -308,8 +316,13 @@ export default function ForgotPasswordForm() {
               <div className="w-full">
                 <div className="w-full">
                   <button
-                    onClick={handleCodeSubmit}
-                    className="w-full justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]"
+                    onClick={async () => {
+                      await handleCodeSubmit();
+                    }}
+                    disabled={codeSubmitLoading}
+                    className={`${
+                      codeSubmitLoading ? "bg-[#96E3DA]" : "bg-teal-600"
+                    } w-full justify-center flex flex-rowpx-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]`}
                   >
                     Continue
                   </button>
@@ -372,10 +385,13 @@ export default function ForgotPasswordForm() {
               />
 
               <button
+                disabled={passwordLoading}
                 onClick={async () => {
                   await throttledPasswordSubmit();
                 }}
-                className="w-full justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold"
+                className={`${
+                  passwordLoading ? "bg-[#96E3DA]" : "bg-teal-600"
+                } w-full justify-center flex flex-row  px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold`}
               >
                 Continue
               </button>
@@ -410,6 +426,7 @@ export default function ForgotPasswordForm() {
           <div className="mt-4 text-gray-500 text-center text-sm">
             Didn&#39;t receive a code?
             <button
+              disabled={resendLoading}
               className="px-1 text-teal-600 font-semibold"
               onClick={async () => {
                 await throttledCodeResend();

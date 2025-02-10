@@ -210,7 +210,10 @@ export default function SignUp() {
       console.error("Error adding user:", error);
     }
   };
-  const { fn: throttledSubmit } = useApiThrottle({ fn: handleSubmit });
+
+  const { fetching: submitLoading, fn: throttledSubmit } = useApiThrottle({
+    fn: handleSubmit,
+  });
 
   const PasswordProps = {
     endAdornment: (
@@ -612,13 +615,15 @@ export default function SignUp() {
             ) : (
               <button
                 className={`${
-                  isFormComplete ? "bg-[#138D8A]" : "bg-[#96E3DA]"
+                  !isFormComplete || submitLoading
+                    ? "bg-[#96E3DA]"
+                    : "bg-[#138D8A]"
                 } text-white py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
                 type="submit"
                 onClick={async () => {
                   await throttledSubmit();
                 }}
-                disabled={!isFormComplete}
+                disabled={!isFormComplete || submitLoading}
               >
                 Sign Up
               </button>
