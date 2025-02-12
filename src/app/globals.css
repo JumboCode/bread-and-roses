@@ -22,7 +22,3 @@ body {
     font-family: var(--font-sofia-pro);
   }
 }
-
-.rdp-root {
-  --rdp-today-color: red !important;
-}
