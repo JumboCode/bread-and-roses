@@ -200,14 +200,24 @@ export default function SignUp() {
           comments: comments,
         }
       );
+
       setSuccess(true);
     } catch (error) {
-      console.error("Error adding user:", error);
-      setEmailError("Account with this email already exists");
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      })
+      if (error instanceof Error) {
+        const errorData = JSON.parse(error.message);
+
+        if (errorData.code === "EMAIL_ALREADY_EXISTS") {
+          setEmailError("Account with this email already exists");
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        } else {
+          console.error("Error adding user:", errorData.message);
+        }
+      } else {
+        console.error("Unexpected error:", error);
+      }
     }
   };
 
@@ -299,7 +309,7 @@ export default function SignUp() {
                       label="ex: myname@gmail.com"
                       variant="outlined"
                       onChange={(e) => {
-                        setEmailError("")
+                        setEmailError("");
                         setEmail(e.target.value);
                       }}
                       error={emailError !== ""}

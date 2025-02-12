@@ -20,10 +20,13 @@ export const POST = async (request: NextRequest) => {
     });
 
     if (existingUser) {
-      return NextResponse.json({
-        code: "ERROR",
-        message: `User created with none-unique email`,
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          code: "EMAIL_ALREADY_EXISTS",
+          message: `User created with none-unique email`,
+        },
+        { status: 400 }
+      );
     }
 
     // Hash the user's password
