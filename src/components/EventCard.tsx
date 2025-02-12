@@ -1,5 +1,6 @@
 import React from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import Image from "next/image";
 
 interface EventCardProps {
   title: string;
@@ -8,6 +9,8 @@ interface EventCardProps {
   address: string;
   volunteers: number;
   maxVolunteers: number;
+  width?: string | number;
+  imageSrc?: string; // option to add image for eventCards in event page
 }
 
 const EventCard = ({
@@ -17,6 +20,8 @@ const EventCard = ({
   address,
   volunteers,
   maxVolunteers,
+  width = 360,
+  imageSrc,
 }: EventCardProps) => {
   const isFull = volunteers === maxVolunteers ? true : false;
   const volunteerText = volunteers + "/" + maxVolunteers + " volunteers";
@@ -62,11 +67,25 @@ const EventCard = ({
   const dateText = `${startTime} - ${endTime} / ${month} ${dayWithSuffix}, ${year}`;
 
   return (
-    <div className="w-[360px] h-auto px-5 py-5 bg-white rounded-lg shadow border border-[#e4e7ec] flex-col justify-start items-start gap-4 inline-flex">
+    <div
+      style={{ width }}
+      className="h-auto px-5 py-5 bg-white rounded-lg shadow border border-[#e4e7ec] flex-col justify-start items-start gap-4 inline-flex"
+    >
       <div className="self-stretch justify-start items-center inline-flex">
+        {imageSrc && (
+          <div className="mr-[32px]">
+            <Image
+              src={imageSrc}
+              alt="event image"
+              width={175}
+              height={175}
+              className="cursor-pointer"
+            />
+          </div>
+        )}
         <div className="grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
           <div className="self-stretch justify-start items-start gap-2 inline-flex">
-            <div className="w-full grow shrink basis-0 text-[#101828] text-base font-semibold font-['Sofia Pro'] leading-[18px] ">
+            <div className="inline-flex w-full grow shrink basis-0 text-[#101828] text-base font-semibold font-['Sofia Pro'] leading-[18px] ">
               {title}
             </div>
           </div>
@@ -90,12 +109,10 @@ const EventCard = ({
                 />
                 {address}
               </div>
-              <div className="w-full border-b border-0.5 border-[#F2F4F7]">
-                {" "}
-              </div>
+              <div className="w-full border-b border-0.5 border-[#F2F4F7]" />
               <div className="self-stretch justify-start items-center inline-flex">
                 <div
-                  className={`w-[153px] h-[20px] grow shrink basis-0 text-[#475466] text-sm pr-3 text-[14px] font-semibold leading-[20px] ${
+                  className={`w-[153px] h-[20px] inline-flex grow shrink basis-0 text-[#475466] text-sm pr-3 text-[14px] font-semibold leading-[20px] ${
                     isFull ? "text-[#E61932]" : "text-[#558D22]"
                   }`}
                 >
