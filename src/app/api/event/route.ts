@@ -13,16 +13,22 @@ export const POST = async (request: NextRequest) => {
       data: event,
     });
 
-    return NextResponse.json({
-      code: "SUCCESS",
-      message: savedEvent.eventName,
-    });
+    return NextResponse.json(
+      {
+        code: "SUCCESS",
+        message: savedEvent.eventName,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({
-      code: "ERROR",
-      message: error,
-    });
+    return NextResponse.json(
+      {
+        code: "ERROR",
+        message: error,
+      },
+      { status: 500 }
+    );
   }
 };
 
@@ -37,16 +43,22 @@ export const PUT = async (request: NextRequest) => {
       data: other,
     });
 
-    return NextResponse.json({
-      code: "SUCCESS",
-      message: updateEvent.eventName,
-    });
+    return NextResponse.json(
+      {
+        code: "SUCCESS",
+        message: updateEvent.eventName,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({
-      code: "ERROR",
-      message: error,
-    });
+    return NextResponse.json(
+      {
+        code: "ERROR",
+        message: error,
+      },
+      { status: 500 }
+    );
   }
 };
 
@@ -60,16 +72,22 @@ export const DELETE = async (request: NextRequest) => {
       },
     });
 
-    return NextResponse.json({
-      code: "SUCCESS",
-      message: deleteEvent.eventName,
-    });
+    return NextResponse.json(
+      {
+        code: "SUCCESS",
+        message: deleteEvent.eventName,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({
-      code: "ERROR",
-      message: error,
-    });
+    return NextResponse.json(
+      {
+        code: "ERROR",
+        message: error,
+      },
+      { status: 500 }
+    );
   }
 };
 
@@ -90,10 +108,13 @@ export const GET = async () => {
       );
     }
 
-    return NextResponse.json({
-      code: "SUCCESS",
-      data: fetchedEvents,
-    });
+    return NextResponse.json(
+      {
+        code: "SUCCESS",
+        data: fetchedEvents,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching events:", error);
     return NextResponse.json(
