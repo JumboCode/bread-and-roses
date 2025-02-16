@@ -102,7 +102,7 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
                   pathname === tab.href ? "text-darkrose bg-rose" : ""
                 }`}
                 onClick={() =>
-                  tab.name === "Logout"
+                  tab.name === t("logout")
                     ? signOut({ callbackUrl: "/public/signIn" })
                     : router.replace(tab.href)
                 }
