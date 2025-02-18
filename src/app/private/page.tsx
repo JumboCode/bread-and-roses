@@ -55,7 +55,19 @@ export default function HomePage() {
           Thanks for checking in, {session.user.firstName} 👋
         </h1>
         <h1 className="text-lg mt-3 font-normal leading-7 font-serif text-slate-500">
-          What&apos;s the next event you want to join?
+          Stats updated by:{" "}
+          {(() => {
+            const date = new Date().toLocaleDateString("en-GB", {
+              weekday: "long",
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+            });
+
+            const parts = date.split(" ");
+            return `${parts[0]}, ${parts[1]} ${parts[2]} ${parts[3]}`;
+          })()}
+          .
         </h1>
       </div>
 
@@ -65,7 +77,6 @@ export default function HomePage() {
             heading="Total volunteers"
             value={!loading ? users.length : "..."}
             icon="pepicons-pencil:people"
-            date="October 5th, 2024" // NOTE: Date will soon be moved
           />
         )}
         <StatsCard
@@ -86,7 +97,6 @@ export default function HomePage() {
               : "..."
           }
           icon="tabler:clock-check"
-          date="October 5th, 2024" // NOTE: Date will soon be moved
         />
         <StatsCard
           heading={
@@ -102,7 +112,6 @@ export default function HomePage() {
               : "..."
           }
           icon="mdi:calendar-outline"
-          date="December 11th, 2024" // NOTE: Date will soon be moved
         />
       </div>
 
