@@ -2,7 +2,10 @@
 
 import SideNavBar from "@components/SideNavBar";
 import TopHeader from "@components/TopHeader";
+import { useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useTranslation } from "react-i18next";
+import { getLanguageFromCookie } from "../../lib/languages";
 
 interface IHomeLayoutProps {
   children: React.ReactNode;
@@ -10,11 +13,17 @@ interface IHomeLayoutProps {
 
 const HomeLayout = ({ children }: IHomeLayoutProps) => {
   const { data: session } = useSession();
+  const { t, i18n } = useTranslation(["translation"]);
+
+  useEffect(() => {
+    // Set the language from the cookie on page load
+    i18n.changeLanguage(getLanguageFromCookie());
+  }, [i18n]);
 
   if (!session) {
     return (
       <div className="h-screen flex justify-center items-center text-3xl">
-        Loading...
+        {t("Loading")}...
       </div>
     );
   }
