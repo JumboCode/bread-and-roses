@@ -112,7 +112,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="mx-auto w-[1192px] min-h-[994px] p-[24px] px-[28px] flex flex-col gap-8">
+    <div className="mx-auto w-[1232px] min-h-[994px] p-[24px] px-[28px] flex flex-col gap-8">
       {/* Top Bar */}
       <div className="flex items-center justify-between">
         
@@ -151,7 +151,7 @@ export default function ProfilePage() {
             Password <span className="text-[#E61932]">*</span>
           </div>
           <div className="flex flex-col gap-4 flex-1">
-              <div className="flex-1 ml-4">
+              <div className="flex-1 ml-11">
                 <div className="w-full h-[56px] bg-[#F9FAFB] rounded-t-md overflow-hidden flex flex-col justify-start items-start">
                 <input
                   type="password"
@@ -175,7 +175,7 @@ export default function ProfilePage() {
               Note: we require volunteers to be over 14 years old to work with us.
             </div>
           </div>
-          <div className="flex gap-8 items-center ml-4">
+          <div className="flex gap-8 items-center ml-11">
             <RadioButton
               label="Yes"
               checked={session.user.volunteerDetails?.ageOver14 === true}
@@ -193,7 +193,7 @@ export default function ProfilePage() {
             Is this your first time volunteering with us?{" "}
             <span className="text-[#E61932]">*</span>
           </div>
-          <div className="flex gap-8 items-center ml-4">
+          <div className="flex gap-8 items-center ml-11">
             <RadioButton
               label="Yes"
               checked={session.user.volunteerDetails?.firstTime === true}
@@ -289,7 +289,7 @@ export default function ProfilePage() {
             Do you have a driver's license?{" "}
             <span className="text-[#E61932]">*</span>
           </div>
-          <div className="flex gap-8 items-center ml-4">
+          <div className="flex gap-8 items-center ml-11">
             <RadioButton
               label="Yes"
               checked={session.user.volunteerDetails?.hasLicense === true}
@@ -307,7 +307,7 @@ export default function ProfilePage() {
             Do you speak Spanish?{" "}
             <span className="text-[#E61932]">*</span>
           </div>
-          <div className="flex gap-8 items-center ml-4">
+          <div className="flex gap-8 items-center ml-11">
             <RadioButton
               label="Yes"
               checked={session.user.volunteerDetails?.speaksEsp === true}
@@ -325,7 +325,7 @@ export default function ProfilePage() {
             Why do you want to volunteer with us?{" "}
             <span className="text-[#E61932]">*</span>
           </div>
-          <div className="flex-1 flex flex-col ml-4">
+          <div className="flex-1 flex flex-col ml-11">
             <textarea
               readOnly
               value={session.user.volunteerDetails?.whyJoin || ""}
@@ -340,7 +340,7 @@ export default function ProfilePage() {
           <div className="w-[400px] text-lg font-bold font-['Sofia Pro'] text-[#344054]">
             Do you have any other questions or comments?
           </div>
-          <div className="flex-1 flex flex-col ml-4">
+          <div className="flex-1 flex flex-col ml-11">
             <textarea
               readOnly
               value={session.user.volunteerDetails?.comments || ""}

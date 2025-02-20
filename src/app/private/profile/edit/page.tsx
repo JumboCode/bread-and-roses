@@ -282,6 +282,7 @@ export default function EditProfilePage() {
             <input
               type="text"
               className="w-full border border-gray-300 rounded-md p-2"
+              placeholder="First Name"
               value={user.firstName || ""}
               onChange={(e) => handleChange("firstName", e.target.value)}
             />
@@ -291,6 +292,7 @@ export default function EditProfilePage() {
             <input
               type="text"
               className="w-full border border-gray-300 rounded-md p-2"
+              placeholder="Last Name"
               value={user.lastName || ""}
               onChange={(e) => handleChange("lastName", e.target.value)}
             />
@@ -310,6 +312,7 @@ export default function EditProfilePage() {
           <input
             type="email"
             className="w-full border border-gray-300 rounded-md p-2"
+            placeholder="ex: myname@gmail.com"
             value={user.email || ""}
             onChange={(e) => handleChange("email", e.target.value)}
           />
@@ -319,7 +322,11 @@ export default function EditProfilePage() {
 
       {/* Photo placeholder */}
       <div className="flex items-center justify-between">
-        <div className="w-1/3">
+        {/* Left Side */}
+        <span className="font-semibold w-1/3">Your Photo</span>
+        <span className="font-sm text-gray-500 w-1/3">This will be displayed on your profile.</span> 
+        {/* Right Side (same structure as name fields) */}
+        <div className="flex-grow">
           <UploadArea hasError='true'/>
         </div>
       </div>
@@ -338,6 +345,7 @@ export default function EditProfilePage() {
             <input
               type="password"
               className="w-full border border-gray-300 rounded-md p-2"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -347,6 +355,7 @@ export default function EditProfilePage() {
             <input
               type="password"
               className="w-full border border-gray-300 rounded-md p-2"
+              placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
