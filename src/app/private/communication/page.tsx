@@ -30,6 +30,7 @@ export default function CommunicationPage() {
         />
         <button
           className="w-[150px] font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
+          disabled={sendMassEmailLoading}
           onClick={async () => {
             await throttledSendMassEmail(text);
           }}
