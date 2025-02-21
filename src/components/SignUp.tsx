@@ -8,10 +8,14 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import Image from "next/image";
 import logo1 from "../../public/logo1.png";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { addUser } from "@api/user/route.client";
-import { Role } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { Role } from "@prisma/client/edge";
+import { IconButton, InputAdornment } from "@mui/material";
+import useApiThrottle from "../hooks/useApiThrottle";
 
 export default function SignUp() {
   interface Name {
@@ -27,10 +31,11 @@ export default function SignUp() {
   }
 
   const router = useRouter();
-
   const [success, setSuccess] = useState(false);
 
   const [name, setName] = useState<Name>({ first: "", last: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -200,10 +205,71 @@ export default function SignUp() {
           comments: comments,
         }
       );
+
       setSuccess(true);
     } catch (error) {
-      console.error("Error adding user:", error);
+      if (error instanceof Error) {
+        const errorData = JSON.parse(error.message);
+
+        if (errorData.code === "EMAIL_ALREADY_EXISTS") {
+          setEmailError("Account with this email already exists");
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        } else {
+          console.error("Error adding user:", errorData.message);
+        }
+      } else {
+        console.error("Unexpected error:", error);
+      }
     }
+  };
+
+  const { fetching: submitLoading, fn: throttledSubmit } = useApiThrottle({
+    fn: handleSubmit,
+  });
+
+  const PasswordProps = {
+    endAdornment: (
+      <InputAdornment position="end">
+        <IconButton>
+          {password !== "" &&
+            (showPassword ? (
+              <VisibilityIcon
+                sx={{ color: "#138D8A" }}
+                onClick={() => setShowPassword(false)}
+              />
+            ) : (
+              <VisibilityOffIcon
+                sx={{ color: "#138D8A" }}
+                onClick={() => setShowPassword(true)}
+              />
+            ))}
+        </IconButton>
+      </InputAdornment>
+    ),
+  };
+
+  const ConfirmPasswordProps = {
+    endAdornment: (
+      <InputAdornment position="end">
+        <IconButton>
+          {confirmPassword !== "" &&
+            (showConfirmPassword ? (
+              <VisibilityIcon
+                sx={{ color: "#138D8A" }}
+                onClick={() => setShowConfirmPassword(false)}
+              />
+            ) : (
+              <VisibilityOffIcon
+                sx={{ color: "#138D8A" }}
+                onClick={() => setShowConfirmPassword(true)}
+              />
+            ))}
+        </IconButton>
+      </InputAdornment>
+    ),
   };
 
   return (
@@ -294,6 +360,7 @@ export default function SignUp() {
                       label="ex: myname@gmail.com"
                       variant="outlined"
                       onChange={(e) => {
+                        setEmailError("");
                         setEmail(e.target.value);
                       }}
                       error={emailError !== ""}
@@ -307,8 +374,11 @@ export default function SignUp() {
                       sx={{ marginBottom: "10px", width: "100%" }}
                       id="Password"
                       variant="outlined"
-                      type="text"
+                      type={showPassword ? "text" : "password"}
                       value={password}
+                      slotProps={{
+                        input: PasswordProps,
+                      }}
                       onChange={(e) => {
                         setPassword(e.target.value);
                       }}
@@ -323,8 +393,11 @@ export default function SignUp() {
                       sx={{ marginBottom: "10px", width: "100%" }}
                       id="Confirm password"
                       variant="outlined"
-                      type="text"
+                      type={showConfirmPassword ? "text" : "password"}
                       value={confirmPassword}
+                      slotProps={{
+                        input: ConfirmPasswordProps,
+                      }}
                       onChange={(e) => {
                         setConfirmPassword(e.target.value);
                       }}
@@ -543,7 +616,7 @@ export default function SignUp() {
                       rows={4}
                       multiline
                     />
-                  </div>{" "}
+                  </div>
                 </>
               )}
             </div>
@@ -558,11 +631,15 @@ export default function SignUp() {
             ) : (
               <button
                 className={`${
-                  isFormComplete ? "bg-[#138D8A]" : "bg-[#96E3DA]"
+                  !isFormComplete || submitLoading
+                    ? "bg-[#96E3DA]"
+                    : "bg-[#138D8A]"
                 } text-white py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
                 type="submit"
-                onClick={handleSubmit}
-                disabled={!isFormComplete}
+                onClick={async () => {
+                  await throttledSubmit();
+                }}
+                disabled={!isFormComplete || submitLoading}
               >
                 Sign Up
               </button>

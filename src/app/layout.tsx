@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import AuthProvider from "./context/AuthProvider";
-
+import TranslationProvider from "./context/TranslationsProvider";
 const sofiaPro = localFont({
   src: "./fonts/sofia-pro.woff2",
   variable: "--font-sofia-pro",
@@ -22,7 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${sofiaPro.variable} antialiased overscroll-none`}>
-        <AuthProvider>{children}</AuthProvider>
+        <TranslationProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </TranslationProvider>
       </body>
     </html>
   );
