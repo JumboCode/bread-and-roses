@@ -1,7 +1,7 @@
-import { VolunteerSessions } from "@prisma/client";
+import { VolunteerSession } from "@prisma/client";
 
-type CreateVolunteerSessions = Omit<
-  VolunteerSessions, "id" | "User">;
+type CreateVolunteerSession = Omit<
+  VolunteerSession, "id" | "User">;
 
 /**
  * Sends an HTTP request to the specified endpoint with the provided method and body.
@@ -38,9 +38,8 @@ export const fetchApi = async (
   return responseData;
 };
 
-export const addUserVolunteerSessions = async (
-  userId: string,
-  volunteerSessions: CreateVolunteerSessions
+export const addUserVolunteerSession = async (
+  volunteerSession: CreateVolunteerSession
 ) => {
-  return fetchApi("/api/user", "POST", { userId, volunteerSessions });
+  return fetchApi("/api/volunteerSession", "POST", { volunteerSession });
 };

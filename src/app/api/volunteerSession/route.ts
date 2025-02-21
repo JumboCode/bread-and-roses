@@ -12,19 +12,18 @@ export const POST = async (request: NextRequest) => {
   try {
     /* @TODO: Add auth */
 
-    const { userId, volunteerSessions } = await request.json();
+    const { volunteerSession } = await request.json();
 
-    await prisma.volunteerSessions.create({
+    await prisma.volunteerSession.create({
       data: {
-        ...volunteerSessions,
-        userId: userId,
+        ...volunteerSession,
       },
     });
 
     return NextResponse.json(
       {
         code: "SUCCESS",
-        message: `volunteerSessions created for user ${userId} successfully`,
+        message: `volunteerSession created for user ${volunteerSession.userId} successfully`,
       },
       { status: 201 }
     );

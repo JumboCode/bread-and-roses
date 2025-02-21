@@ -11,7 +11,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
 import { UserWithVolunteerDetail } from "../types";
 import { fetchEvent } from "../api/event/route.client";
-import { addUserVolunteerSessions } from "../api/volunteerSessions/route.volunteerSessions";
+import { addUserVolunteerSession } from "../api/volunteerSession/route.client";
 
 export default function HomePage() {
   const router = useRouter();
@@ -24,9 +24,25 @@ export default function HomePage() {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await addUserVolunteerSessions(
-          session?.user.id || 'lol',
+        const [usersResponse, eventsResponse] = await Promise.all([
+          getUsersByRole(Role.VOLUNTEER),
+          fetchEvent(),
+        ]);
+
+        setUsers(usersResponse.data);
+        setEvents(eventsResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const addSe = async () => {
+      try {
+        const response = await addUserVolunteerSession(
           {
+            userId: session?.user.id || 'lol',
           checkInTime: new Date(Date.now()),
           checkOutTime: new Date(Date.now() + 1000 * 60),
           durationHours: 2,
@@ -36,11 +52,12 @@ export default function HomePage() {
         console.log(response);
         //setUserID(response.data.id);
       } catch (error) {
-        console.error("Error adding user:", error);
+        console.error("Error adding volunteer session:", error);
       }
     };
 
     fetchData();
+    addSe();
   }, []);
 
   if (!session) {
