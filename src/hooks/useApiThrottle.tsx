@@ -1,30 +1,51 @@
-import React from "react";
-type ApiCall = (...args: unknown[]) => Promise<unknown>;
-interface UseApiThrottleProps<T extends ApiCall> {
-  fn: T;
-  callback?: (res: unknown) => void;
+import { useCallback, useRef, useState } from "react";
+type ApiCall<TArgs extends unknown[], TReturn> = (
+  ...args: TArgs
+) => Promise<TReturn>;
+interface UseApiThrottleProps<TArgs extends unknown[], TReturn> {
+  fn: ApiCall<TArgs, TReturn>;
+  callback?: (res: Awaited<TReturn>) => void;
 }
 /**
- * Prevent additional API call until the most recent one has completed.
+ * Custom hook to throttle API calls, ensuring that multiple calls
+ * are not made concurrently. Only one call is allowed to run at a time.
+ *
+ * @template T - Type of the API call function.
+ *
+ * @param {UseApiThrottleProps<T>} props - Properties object for configuring the hook.
+ * @param {T} props.fn - The API function to call, which returns a Promise.
+ * @param {(res: Awaited<ReturnType<T>>) => void} [props.callback] - Optional callback to handle the result of the API call.
+ *
+ * @returns {Object} - The hook returns an object containing:
+ *  - `fetching`: A boolean that indicates whether the API call is currently being made.
+ *  - `fn`: A throttled version of the provided API function.
+ *
  */
-const useApiThrottle = <T extends ApiCall>(props: UseApiThrottleProps<T>) => {
+const useApiThrottle = <TArgs extends unknown[], TReturn>(
+  props: UseApiThrottleProps<TArgs, TReturn>
+) => {
   const { fn, callback } = props;
-  const fetchingRef = React.useRef(false);
-  const [fetching, setFetching] = React.useState(false);
-  const wrapperFn: (...args: Parameters<T>) => Promise<void> =
-    React.useCallback(
-      async (...args) => {
-        if (fetchingRef.current) {
-          return;
+  const fetchingRef = useRef(false);
+  const [fetching, setFetching] = useState(false);
+  const wrapperfn = useCallback(
+    async (...args: TArgs) => {
+      if (fetchingRef.current) {
+        return Promise.reject(new Error("Already fetching"));
+      }
+      fetchingRef.current = true;
+      setFetching(true);
+      try {
+        const result = await fn(...args);
+        if (callback) {
+          callback(result);
         }
-        fetchingRef.current = true;
-        setFetching(true);
-        await fn(...args).then(callback);
-        fetchingRef.current = false;
+      } finally {
         setFetching(false);
-      },
-      [fn, callback]
-    );
-  return { fetching, fn: wrapperFn };
+        fetchingRef.current = false;
+      }
+    },
+    [fn, callback]
+  );
+  return { fetching, fn: wrapperfn };
 };
 export default useApiThrottle;
