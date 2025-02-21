@@ -1,9 +1,7 @@
 import { VolunteerSessions } from "@prisma/client";
 
 type CreateVolunteerSessions = Omit<
-  VolunteerSessions,
-  "id"
->;
+  VolunteerSessions, "id" | "User">;
 
 /**
  * Sends an HTTP request to the specified endpoint with the provided method and body.
