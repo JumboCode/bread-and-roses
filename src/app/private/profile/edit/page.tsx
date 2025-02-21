@@ -24,7 +24,7 @@ const UploadArea = ({ hasError }) => {
 
   return (
     <div
-      className={`w-[738px] h-[112px] px-6 py-4 bg-white rounded-lg flex flex-col justify-start items-center gap-1 inline-flex border ${borderColorClass}`}
+      className={`w-[762px] h-[112px] px-6 py-4 bg-white rounded-lg flex flex-col justify-start items-center gap-1 inline-flex border ${borderColorClass}`}
     >
       <div className="self-stretch h-[80px] flex flex-col justify-start items-center gap-3">
         {/* Icon */}
@@ -389,12 +389,12 @@ export default function EditProfilePage() {
       </div>
       
       {/* First time volunteering? */}
-      <div className="">
+      <div className="flex items-center justify-between">
         <label className="block mb-1 font-semibold">
           Is this your first time volunteering with us?{" "}
           <span className="text-red-500">*</span>
         </label>
-        <div className="flex gap-6 mt-2">
+        <div className="flex gap-8 items-center ml-4">
           <RadioButton
             label="Yes"
             checked={user.volunteerDetails?.firstTime === true}
@@ -410,8 +410,8 @@ export default function EditProfilePage() {
 
       {/* Address fields */}
       <div>
-        <label className="block mb-1 font-semibold">
-          Address <span className="text-red-500">*</span>
+        <label className="block mb-1 font-semibold w-1/3">
+          Address <span className="text-red-500 w-1/3">*</span>
         </label>
         <input
           type="text"
@@ -457,11 +457,11 @@ export default function EditProfilePage() {
       </div>
 
       {/* Driver's license? */}
-      <div>
+      <div className="flex items-center justify-between">
         <label className="block mb-1 font-semibold">
           Do you have a driver's license? <span className="text-red-500">*</span>
         </label>
-        <div className="flex gap-6 mt-2">
+        <div className="flex gap-8 items-center ml-4">
           <RadioButton
             label="Yes"
             checked={user.volunteerDetails?.hasLicense === true}
@@ -476,11 +476,11 @@ export default function EditProfilePage() {
       </div>
 
       {/* Speak Spanish? */}
-      <div>
+      <div className="flex items-center justify-between">
         <label className="block mb-1 font-semibold">
           Do you speak Spanish? <span className="text-red-500">*</span>
         </label>
-        <div className="flex gap-6 mt-2">
+        <div className="flex gap-8 items-center ml-4">
           <RadioButton
             label="Yes"
             checked={user.volunteerDetails?.speaksEsp === true}
