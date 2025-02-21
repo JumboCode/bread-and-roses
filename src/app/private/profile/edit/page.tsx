@@ -323,8 +323,14 @@ export default function EditProfilePage() {
       {/* Photo placeholder */}
       <div className="flex items-center justify-between">
         {/* Left Side */}
-        <span className="font-semibold w-1/3">Your Photo</span>
-        <span className="font-sm text-gray-500 w-1/3">This will be displayed on your profile.</span> 
+        <div className="w-1/3">
+          <div className="text-lg font-bold font-['Sofia Pro'] text-[#344054]">
+            Your Photo
+          </div>
+          <div className="text-xs font-normal font-['Sofia Pro'] text-[#667085]">
+            This will be displayed on your profile.
+          </div>
+        </div>
         {/* Right Side (same structure as name fields) */}
         <div className="flex-grow">
           <UploadArea hasError='true'/>
@@ -410,51 +416,65 @@ export default function EditProfilePage() {
 
       {/* Address fields */}
       <div>
-        <label className="block mb-1 font-semibold w-1/3">
-          Address <span className="text-red-500 w-1/3">*</span>
-        </label>
-        <input
-          type="text"
-          placeholder="Address line"
-          className="w-full border border-gray-300 rounded-md p-2 mb-2"
-          value={user.volunteerDetails?.address || ""}
-          onChange={(e) => handleChange("address", e.target.value)}
-        />
-
-        <div className="flex flex-col md:flex-row gap-4 mb-2">
-          <input
-            type="text"
-            placeholder="City"
-            className="flex-1 border border-gray-300 rounded-md p-2"
-            value={user.volunteerDetails?.city || ""}
-            onChange={(e) => handleChange("city", e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="State"
-            className="flex-1 border border-gray-300 rounded-md p-2"
-            value={user.volunteerDetails?.state || ""}
-            onChange={(e) => handleChange("state", e.target.value)}
-          />
+        {/* Address Row */}
+        <div className="flex items-center justify-between mb-2">
+          <span className="font-semibold w-1/3">
+            Address <span className="text-red-500">*</span>
+          </span>
+          <div className="flex-grow">
+            <input
+              type="text"
+              placeholder="Address line"
+              className="w-full border border-gray-300 rounded-md p-2"
+              value={user.volunteerDetails?.address || ""}
+              onChange={(e) => handleChange("address", e.target.value)}
+            />
+          </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4">
-          <input
-            type="text"
-            placeholder="ZIP code"
-            className="flex-1 border border-gray-300 rounded-md p-2"
-            value={user.volunteerDetails?.zipCode || ""}
-            onChange={(e) => handleChange("zipCode", e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Country"
-            className="flex-1 border border-gray-300 rounded-md p-2"
-            value={user.volunteerDetails?.country || ""}
-            onChange={(e) => handleChange("country", e.target.value)}
-          />
+        {/* City and State Row */}
+        <div className="flex items-center justify-between mb-2">
+          <span className="w-1/3"></span>
+          <div className="flex-grow flex gap-4">
+            <input
+              type="text"
+              placeholder="City"
+              className="flex-1 border border-gray-300 rounded-md p-2"
+              value={user.volunteerDetails?.city || ""}
+              onChange={(e) => handleChange("city", e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="State"
+              className="flex-1 border border-gray-300 rounded-md p-2"
+              value={user.volunteerDetails?.state || ""}
+              onChange={(e) => handleChange("state", e.target.value)}
+            />
+          </div>
         </div>
-      </div>
+
+        {/* ZIP and Country Row */}
+        <div className="flex items-center justify-between">
+          <span className="w-1/3"></span>
+          <div className="flex-grow flex gap-4">
+            <input
+              type="text"
+              placeholder="ZIP code"
+              className="flex-1 border border-gray-300 rounded-md p-2"
+              value={user.volunteerDetails?.zipCode || ""}
+              onChange={(e) => handleChange("zipCode", e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Country"
+              className="flex-1 border border-gray-300 rounded-md p-2"
+              value={user.volunteerDetails?.country || ""}
+              onChange={(e) => handleChange("country", e.target.value)}
+            />
+          </div>
+        </div>
+      </div>                
+
 
       {/* Driver's license? */}
       <div className="flex items-center justify-between">
@@ -496,29 +516,41 @@ export default function EditProfilePage() {
 
       {/* Why volunteer? */}
       <div>
-        <label className="block mb-1 font-semibold">
-          Why do you want to volunteer with us? <span className="text-red-500">*</span>
-        </label>
-        <textarea
-          className="w-full border border-gray-300 rounded-md p-2"
-          rows={3}
-          value={user.volunteerDetails?.whyJoin || ""}
-          onChange={(e) => handleChange("whyJoin", e.target.value)}
-        />
+        {/* Why Volunteer Row */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="w-1/3">
+            <label className="block font-semibold">
+              Why do you want to volunteer with us? <span className="text-red-500">*</span>
+            </label>
+          </div>
+          <div className="flex-grow">
+            <textarea
+              className="w-full border border-gray-300 rounded-md p-2"
+              rows={3}
+              value={user.volunteerDetails?.whyJoin || ""}
+              onChange={(e) => handleChange("whyJoin", e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* Comments Row */}
+        <div className="flex items-start justify-between">
+          <div className="w-1/3">
+            <div className="text-lg font-bold font-['Sofia Pro'] text-[#344054]">
+              Do you have any other questions or comments?
+            </div>
+          </div>
+          <div className="flex-grow">
+            <textarea
+              className="w-full border border-gray-300 rounded-md p-2"
+              rows={3}
+              value={user.volunteerDetails?.comments || ""}
+              onChange={(e) => handleChange("comments", e.target.value)}
+            />
+          </div>
+        </div>
       </div>
 
-      {/* Comments */}
-      <div>
-        <label className="block mb-1 font-semibold">
-          Do you have any other questions or comments?
-        </label>
-        <textarea
-          className="w-full border border-gray-300 rounded-md p-2"
-          rows={3}
-          value={user.volunteerDetails?.comments || ""}
-          onChange={(e) => handleChange("comments", e.target.value)}
-        />
-      </div>
     </form>
   );
 }
