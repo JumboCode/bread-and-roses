@@ -192,7 +192,6 @@ export const GET = async (request: NextRequest) => {
  */
 
 export const PATCH = async (request: NextRequest) => {
-
   try {
     /* @TODO: Add auth */
 
@@ -205,9 +204,7 @@ export const PATCH = async (request: NextRequest) => {
       },
       data: {
         ...user,
-        //TO DO: REMOVE hard coded role:
-        role: "ADMIN",
-        id: undefined,
+        // id: undefined,
       },
     });
     console.log("here", updatedUser);
@@ -217,9 +214,7 @@ export const PATCH = async (request: NextRequest) => {
       },
       data: {
         ...volunteerDetails,
-        //TO DO: REMOVE hard address:
-        address: "johnny's house",
-        id: undefined,
+        // id: undefined,
       },
     });
 

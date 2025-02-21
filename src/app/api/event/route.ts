@@ -38,23 +38,17 @@ export const PATCH = async (request: NextRequest) => {
     //   data: other,
     // });
 
-
     const updateEvent = await prisma.event.update({
-      where: {
-        id: id,
-      },
-      data: {
-        id, ...event,
-        
-        // id: undefined,
-        maxPeople: 5,
+      where: { id },
+      data: { 
+        ...other, 
+        maxPeople: 5 
       },
 
       // data: {
       //   ...user,
-      //   //TO DO: REMOVE hard coded role:
-      //   role: "ADMIN",
-      //   id: undefined,
+      //   // TODO: ask Johnny and Won
+      //   // id: undefined,
       // },
 
     });

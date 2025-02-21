@@ -44,10 +44,26 @@ const handleUpdateProfile = async () => {
   // await updateUser(fetchedUser, fetchedVD); // Now call updateUser with the correct user object
 
   const response = await getEvent("67942018b47a30a5cee9c9bd");
-  const fetchedEvent = response.data.eventName;
+  const fetchedEvent = response.data.id;
+  // const fetchedEvent = "HELLO";
+  
+  console.log("Response: ", response);
+  // console.log(fetchedEvent);
 
-  await updateEvent(fetchedEvent); // Now call updateUser with the correct user object
+  // await updateEvent(fetchedEvent); // Now call updateUser with the correct user object
 
+  // test 1
+  // const response1 = await getEvent("67b8dcdb786ad2a7cb153e36");
+  // const events: Event[] = response.data;
+  // const fetchedEvent1 = events.find(
+  //   (event) => event.id === "67b8dcdb786ad2a7cb153e36"
+  // );
+
+  // if (fetchedEvent1) {
+  //   console.log(fetchedEvent1.eventName);
+  // } else {
+  //   console.log("Event not found");
+  // }
 };
 
 export default function ProfilePage() {
@@ -84,7 +100,7 @@ export default function ProfilePage() {
             handleUpdateProfile();
           }}
         >
-          Get User
+          Get Event
         </button>
       </div>
     </div>

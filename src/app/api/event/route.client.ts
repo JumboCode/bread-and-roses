@@ -10,29 +10,35 @@ export const fetchApi = async (
   method: "POST" | "GET" | "DELETE" | "PATCH",
   body?: Record<string, unknown>
 ) => {
+  if (body) {
+    console.log("body exists", body);
+  } else {
+    console.log("body does not exist", body);
+  }
+  
   const response = await fetch(endpoint, {
     method,
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  
   if (!response.ok) {
-    throw new Error("API Error: $(response.statusText)");
+    throw new Error('API Error: $(response.statusText)');
   }
 
   return response.json();
 };
 
 export const addEvent = async (event: CreateEventInput) => {
-  const response = await fetch("/api/event", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ event }),
-  });
+  // const response = await fetch("/api/event", {
+  //   method: "POST",
+  //   headers: { "Content-Type": "application/json" },
+  //   body: JSON.stringify({ event }),
+  // });
 
-  const json = await response.json();
+  // const json = await response.json();
 
-  return json;
+  // return json;
+  fetchApi("/api/event", "POST", { event });
 };
 
 // export const getUser = async (userID: string) => {
@@ -42,20 +48,21 @@ export const addEvent = async (event: CreateEventInput) => {
 
 export const getEvent = async (eventID: string) => {
   const url = `/api/event?id=${eventID}`;
+  // console.log("HERE");
   return fetchApi(url, "GET");
 };
 
-
 export const updateEvent = async (event: Event) => {
-  const response = await fetch("/api/event", {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ event }),
-  });
+  // const response = await fetch("/api/event", {
+  //   method: "PATCH",
+  //   headers: { "Content-Type": "application/json" },
+  //   body: JSON.stringify({ event }),
+  // });
 
-  const json = await response.json();
+  // const json = await response.json();
 
-  return json;
+  // return json;
+  return fetchApi("/api/event", "PATCH", { event });
 };
 
 export const deleteEvent = async (id: string) => {
