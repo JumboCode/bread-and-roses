@@ -11,6 +11,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
 import { UserWithVolunteerDetail } from "../types";
 import { fetchEvent } from "../api/event/route.client";
+import { addUserVolunteerSessions } from "../api/volunteerSessions/route.volunteerSessions";
 
 export default function HomePage() {
   const router = useRouter();
@@ -20,20 +21,38 @@ export default function HomePage() {
   const [events, setEvents] = React.useState<Event[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
 
+
+
+  // export const addUserVolunteerSessions = async (
+  //   volunteerSessions: CreateVolunteerSessions
+  // ) => {
+  //   return fetchApi("/api/user", "POST", { volunteerSessions });
+  // };
+
+
+//   model VolunteerSessions {
+//   userId             String     @db.ObjectId
+//   checkInTime        DateTime   // DateTime object representing when the user checks in
+//   checkOutTime       DateTime?  // DateTime object representing when the user checks out -> this will be null initially
+//   durationHours      Float?     // The number of hours worked on that day -> this will be calculated after the user checks out and will be also null initially
+//   dateWorked         DateTime   // Stores the date of the volunteer session -> might be a little redundant, but it could make querying easier
+// }
+
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const [usersResponse, eventsResponse] = await Promise.all([
-          getUsersByRole(Role.VOLUNTEER),
-          fetchEvent(),
-        ]);
+        const response = await addUserVolunteerSessions({
+          userId: session?.user.id,
+          checkInTime: new Date(Date.now()),
+          checkOutTime: new Date(Date.now() + 1000 * 60),
+          durationHours: 2,
+          dateWorked: new Date(Date.now()),
+        });
 
-        setUsers(usersResponse.data);
-        setEvents(eventsResponse.data);
+        console.log(response);
+        //setUserID(response.data.id);
       } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error adding user:", error);
       }
     };
 
