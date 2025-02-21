@@ -12,8 +12,6 @@ import { useRouter } from "next/navigation";
 import { UserWithVolunteerDetail } from "../types";
 import { getAllEvents } from "../api/event/route.client";
 import { useTranslation } from "react-i18next";
-// import { fetchEvent } from "../api/event/route.client";
-// import { addUserVolunteerSessions } from "../api/volunteerSessions/route.volunteerSessions";
 
 export default function HomePage() {
   const router = useRouter();
@@ -30,50 +28,11 @@ export default function HomePage() {
           getUsersByRole(Role.VOLUNTEER),
           getAllEvents(),
         ]);
-        // React.useEffect(() => {
-        //   const fetchData = async () => {
-        //     try {
-        //       const response = await addUserVolunteerSessions(
-        //         session?.user.id || 'lol',
-        //         {
-        //         checkInTime: new Date(Date.now()),
-        //         checkOutTime: new Date(Date.now() + 1000 * 60),
-        //         durationHours: 2,
-        //         dateWorked: new Date(Date.now()),
-        //       });
 
         setUsers(usersResponse.data);
         setEvents(eventsResponse.data);
-
-        // export const addUserVolunteerSessions = async (
-        //   volunteerSessions: CreateVolunteerSessions
-        // ) => {
-        //   return fetchApi("/api/user", "POST", { volunteerSessions });
-        // };
-
-        //   model VolunteerSessions {
-        //   userId             String     @db.ObjectId
-        //   checkInTime        DateTime   // DateTime object representing when the user checks in
-        //   checkOutTime       DateTime?  // DateTime object representing when the user checks out -> this will be null initially
-        //   durationHours      Float?     // The number of hours worked on that day -> this will be calculated after the user checks out and will be also null initially
-        //   dateWorked         DateTime   // Stores the date of the volunteer session -> might be a little redundant, but it could make querying easier
-        // }
-
-        // React.useEffect(() => {
-        //   const fetchData = async () => {
-        //     try {
-        //       const response = await addUserVolunteerSessions({
-        //         userId: session?.user.id,
-        //         checkInTime: new Date(Date.now()),
-        //         checkOutTime: new Date(Date.now() + 1000 * 60),
-        //         durationHours: 2,
-        //         dateWorked: new Date(Date.now()),
-        //       });
-
-        // console.log(response);
-        //setUserID(response.data.id);
       } catch (error) {
-        console.error("Error adding user:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
