@@ -30,6 +30,17 @@ export default function HomePage() {
           getUsersByRole(Role.VOLUNTEER),
           getAllEvents(),
         ]);
+        // React.useEffect(() => {
+        //   const fetchData = async () => {
+        //     try {
+        //       const response = await addUserVolunteerSessions(
+        //         session?.user.id || 'lol',
+        //         {
+        //         checkInTime: new Date(Date.now()),
+        //         checkOutTime: new Date(Date.now() + 1000 * 60),
+        //         durationHours: 2,
+        //         dateWorked: new Date(Date.now()),
+        //       });
 
         setUsers(usersResponse.data);
         setEvents(eventsResponse.data);

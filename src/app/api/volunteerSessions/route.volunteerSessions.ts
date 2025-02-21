@@ -39,7 +39,8 @@ export const fetchApi = async (
 };
 
 export const addUserVolunteerSessions = async (
+  userId: string,
   volunteerSessions: CreateVolunteerSessions
 ) => {
-  return fetchApi("/api/user", "POST", { volunteerSessions });
+  return fetchApi("/api/user", "POST", { userId, volunteerSessions });
 };
