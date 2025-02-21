@@ -3,11 +3,13 @@
 import React from "react";
 import Image from "next/image";
 import { sendMassEmail } from "@api/email/route.client";
-// import { sendMassMail } from "../../../lib/nodemail";
+import useApiThrottle from "../../../hooks/useApiThrottle";
 
 export default function CommunicationPage() {
-  // const postTextAreaId = useId();
   const [text, setText] = React.useState("");
+
+  const { fetching: sendMassEmailLoading, fn: throttledSendMassEmail } =
+    useApiThrottle({ fn: sendMassEmail });
 
   return (
     <div>
@@ -29,7 +31,7 @@ export default function CommunicationPage() {
         <button
           className="w-[150px] font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
           onClick={async () => {
-            await sendMassEmail(text);
+            await throttledSendMassEmail(text);
           }}
         >
           Send
