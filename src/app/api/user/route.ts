@@ -197,24 +197,21 @@ export const PATCH = async (request: NextRequest) => {
 
     const { user, volunteerDetails } = await request.json();
 
-    // id: undefined for data because we cannot modify the id
     const updatedUser = await prisma.user.update({
       where: {
         id: user.id,
       },
       data: {
         ...user,
-        // id: undefined,
       },
     });
-    console.log("here", updatedUser);
+    // console.log("here", updatedUser);
     const updatedVD = await prisma.volunteerDetails.update({
       where: {
         id: volunteerDetails.id,
       },
       data: {
         ...volunteerDetails,
-        // id: undefined,
       },
     });
 

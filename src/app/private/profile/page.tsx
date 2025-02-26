@@ -37,20 +37,21 @@ const handleUpdateProfile = async () => {
   const fetchedVD = response.data.volunteerDetails;
   */
 
-  // const response = await getUser("675a4c9b0cbad979b1058522");
-  // const fetchedUser = response.data.user;
-  // const fetchedVD = response.data.volunteerDetails;
+  // const responseUser = await getUser("675a4c9b0cbad979b1058522");
+  // const fetchedUser = responseUser.data.user;
+  // const fetchedVD = responseUser.data.volunteerDetails;
 
   // await updateUser(fetchedUser, fetchedVD); // Now call updateUser with the correct user object
 
-  const response = await getEvent("67942018b47a30a5cee9c9bd");
-  const fetchedEvent = response.data.id;
-  // const fetchedEvent = "HELLO";
-  
-  console.log("Response: ", response);
-  // console.log(fetchedEvent);
+  // console.log(fetchedUser); // this thing actually returns stuff ummm...
 
-  // await updateEvent(fetchedEvent); // Now call updateUser with the correct user object
+  const response = await getEvent("67942018b47a30a5cee9c9bd");
+  const fetchedEvent = response.data; // this thing is returning undefined
+  // const fetchedEvent = "HELLO";
+
+  console.log(fetchedEvent);
+
+  await updateEvent(fetchedEvent); // Now call updateUser with the correct user object
 
   // test 1
   // const response1 = await getEvent("67b8dcdb786ad2a7cb153e36");

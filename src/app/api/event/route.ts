@@ -29,33 +29,21 @@ export const POST = async (request: NextRequest) => {
 export const PATCH = async (request: NextRequest) => {
   try {
     const { event } = await request.json();
-    const { id, ...other } = event;
-
-    // const updateEvent = await prisma.event.update({
-    //   where: {
-    //     id: id,
-    //   },
-    //   data: other,
-    // });
-
-    const updateEvent = await prisma.event.update({
-      where: { id },
-      data: { 
-        ...other, 
-        maxPeople: 5 
+    
+    const updatedEvent = await prisma.event.update({
+      where: {
+        id: event.id,
       },
-
-      // data: {
-      //   ...user,
-      //   // TODO: ask Johnny and Won
-      //   // id: undefined,
-      // },
-
+      data: { 
+        ...event, 
+        //maxPeople: 5,,
+        //eventName: "b",
+      },
     });
 
     return NextResponse.json({
       code: "SUCCESS",
-      message: updateEvent.eventName,
+      message: updatedEvent.eventName,
     });
   } catch (error) {
     console.error("Error:", error);
@@ -89,18 +77,27 @@ export const DELETE = async (request: NextRequest) => {
   }
 };
 
-// NOTE: This is for fetching all events
-export const GET = async () => {
+// NOTE: Changed to fetch only one event
+export const GET = async (request: NextRequest) => {
   // currently implemented for fetching all events
   // need to add filtering
-  try {
-    const fetchedEvents = await prisma.event.findMany(); // Use findMany to fetch all events
+  const { searchParams } = new URL(request.url);
+  const eventId: string | undefined = searchParams.get("id") || undefined;
 
-    if (!fetchedEvents || fetchedEvents.length === 0) {
+  try {
+    // const fetchedEvents = await prisma.event.findMany(); // Use findMany to fetch all events
+
+    if (eventId) {
+      const fetchedEvent = await prisma.event.findUnique({
+        where: {id: eventId}
+      });
+  
+
+    if (!fetchedEvent) {
       return NextResponse.json(
         {
           code: "NOT_FOUND",
-          message: "No events found",
+          message: "No event found",
         },
         { status: 404 }
       );
@@ -108,8 +105,9 @@ export const GET = async () => {
 
     return NextResponse.json({
       code: "SUCCESS",
-      data: fetchedEvents,
+      data: fetchedEvent,
     });
+  }
   } catch (error) {
     console.error("Error fetching events:", error);
     return NextResponse.json(

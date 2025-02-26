@@ -49,12 +49,12 @@ export default function ExampleCallingUserRoutes() {
 
       const updatedUser = {
         ...user,
-        firstName: "Justin",
+        // firstName: "Justin",
       };
 
       const updatedVD = {
         ...volunteerDetails,
-        country: "Mexico",
+        // country: "Mexico",
       };
       console.log(updatedVD);
 
