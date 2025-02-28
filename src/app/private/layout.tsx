@@ -3,6 +3,7 @@
 import SideNavBar from "@components/SideNavBar";
 import TopHeader from "@components/TopHeader";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 interface IHomeLayoutProps {
   children: React.ReactNode;
@@ -10,6 +11,7 @@ interface IHomeLayoutProps {
 
 const HomeLayout = ({ children }: IHomeLayoutProps) => {
   const { data: session } = useSession();
+  const pathname = usePathname();
 
   if (!session) {
     return (
@@ -17,6 +19,10 @@ const HomeLayout = ({ children }: IHomeLayoutProps) => {
         Loading...
       </div>
     );
+  }
+
+  if (pathname === "/private/check-in-out") {
+    return <>{children}</>;
   }
 
   return (
