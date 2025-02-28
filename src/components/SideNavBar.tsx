@@ -27,16 +27,9 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
   const adminTabs = [
     { name: "Home", icon: "tabler:home", href: "/private" },
     { name: "Events", icon: "uil:calender", href: "/private/events" },
-    {
-      name: "Volunteers",
-      icon: "pepicons-print:people",
-      href: "/private/volunteers",
-    },
-    {
-      name: "Communication",
-      icon: "material-symbols:inbox-outline",
-      href: "/private/communication",
-    },
+    { name: "Volunteers", icon: "pepicons-print:people", href: "/private/volunteers" },
+    { name: "Communication", icon: "material-symbols:inbox-outline", href: "/private/communication" },
+    { name: "Check-in/out", icon: "material-symbols:check-circle-outline-rounded", href: "/private/check-in-out" },
     { name: "Profile", icon: "charm:person", href: "/private/profile" },
     { name: "Logout", icon: "tabler:logout", href: "" },
   ];
@@ -44,6 +37,7 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
   const volunteerTabs = [
     { name: "Home", icon: "tabler:home", href: "/private" },
     { name: "Events", icon: "uil:calender", href: "/private/events" },
+    { name: "Check-in/out", icon: "material-symbols:check-circle-outline-rounded", href: "/private/check-in-out"},
     { name: "Profile", icon: "charm:person", href: "/private/profile" },
     { name: "Logout", icon: "tabler:logout", href: "" },
   ];
