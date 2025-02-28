@@ -206,9 +206,9 @@ export default function ProfilePage() {
         </div>
 
         {/* Address Field */}
-        <div className="flex items-start gap-4 ml-auto">
+        <div className="flex items-start gap-4">
           {/* Label Column */}
-          <div className="w-[400px]">
+          <div className="w-[400px] text-lg font-bold font-['Sofia Pro'] text-[#344054]">
             <span className="text-lg font-bold font-['Sofia Pro'] text-[#344054]">
               Address
             </span>

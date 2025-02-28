@@ -1,31 +1,91 @@
 "use client";
 
-import React, { useState, useEffect, FormEvent } from "react";
+import React, { useState, useEffect, FormEvent, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getUser, updateUser } from "@api/user/route.client";
 import { updatePassword } from "@api/password/route.client";
 import { User } from "@prisma/client";
 
-const UploadArea = ({ hasError }) => {
-  // For demonstration, we force hasError to false.
-  // In practice, this value comes from your component state.
-  hasError = false;
-  
-  const borderColorClass = hasError 
-    ? 'border-[#E61932]' 
-    : 'border-[rgba(0,0,0,0.23)]';
-  const iconFill = hasError ? '#E61932' : '#138D8A';
-  const clickToUpload = hasError ? '#E61932' : '#138D8A';
-  const bottomText = hasError 
-    ? 'Unsupported file.' 
-    : 'SVG, PNG, JPG or GIF (max. 3MB)';
-  const bottomTextColor = hasError ? '#E61932' : '#667085';
+interface UploadAreaProps {
+  onFileChange?: (file: File) => void;
+}
+
+const UploadArea: React.FC<UploadAreaProps> = ({ onFileChange }) => {
+  const [file, setFile] = useState<File | null>(null);
+  const [errorMsg, setErrorMsg] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Allowed MIME types and max file size (3MB)
+  const allowedTypes = [
+    "image/svg+xml",
+    "image/png",
+    "image/jpeg",
+    "image/gif",
+  ];
+  const maxSize = 3 * 1024 * 1024;
+
+  const handleFile = (file: File) => {
+    if (!allowedTypes.includes(file.type)) {
+      setErrorMsg("Unsupported file.");
+      setFile(null);
+      return;
+    }
+    if (file.size > maxSize) {
+      setErrorMsg("File exceeds maximum size of 3MB.");
+      setFile(null);
+      return;
+    }
+    setErrorMsg("");
+    setFile(file);
+    if (onFileChange) {
+      onFileChange(file);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files && e.target.files[0];
+    if (selectedFile) {
+      handleFile(selectedFile);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFile(e.dataTransfer.files[0]);
+      e.dataTransfer.clearData();
+    }
+  };
+
+  const borderColorClass = errorMsg
+    ? "border-[#E61932]"
+    : "border-[rgba(0,0,0,0.23)]";
+  const iconFill = errorMsg ? "#E61932" : "#138D8A";
+  const clickToUpload = errorMsg ? "#E61932" : "#138D8A";
+  const bottomText = errorMsg
+    ? errorMsg
+    : "SVG, PNG, JPG or GIF (max. 3MB)";
+  const bottomTextColor = errorMsg ? "#E61932" : "#667085";
 
   return (
     <div
+      onClick={() => fileInputRef.current && fileInputRef.current.click()}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
       className={`w-[762px] h-[112px] px-6 py-4 bg-white rounded-lg flex flex-col justify-start items-center gap-1 inline-flex border ${borderColorClass}`}
     >
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".svg,.png,.jpg,.jpeg,.gif"
+        className="hidden"
+        onChange={handleInputChange}
+      />
       <div className="self-stretch h-[80px] flex flex-col justify-start items-center gap-3">
         {/* Icon */}
         <div data-svg-wrapper className="relative">
@@ -47,8 +107,8 @@ const UploadArea = ({ hasError }) => {
           <div className="text-center text-[14px] leading-[20px] break-words">
             <span className="font-bold" style={{ color: clickToUpload }}>
               Click to upload
-            </span>{' '}
-            <span className="font-normal" style={{ color: '#667085' }}>
+            </span>{" "}
+            <span className="font-normal" style={{ color: "#667085" }}>
               or drag and drop
             </span>
           </div>
@@ -64,38 +124,77 @@ const UploadArea = ({ hasError }) => {
   );
 };
 
-const RadioButton = ({
-  label,
-  checked,
-  onChange,
-}: {
+
+type RadioButtonProps = {
   label: string;
   checked: boolean;
   onChange: () => void;
-}) => {
+};
+
+const RadioButton: React.FC<RadioButtonProps> = ({ label, checked, onChange }) => {
   return (
-    <label className="inline-flex items-center gap-2 cursor-pointer">
-      <input
-        type="radio"
-        className="hidden"
-        checked={checked}
-        onChange={onChange}
-      />
-      <g clipPath="url(#clip0_yes)">
-        <path
-          d="M21 16C18.24 16 16 18.24 16 21C16 23.76 18.24 26 21 26C23.76 26 26 23.76 26 21C26 18.24 23.76 16 21 16ZM21 11C15.48 11 11 15.48 11 21C11 26.52 15.48 31 21 31C26.52 31 31 26.52 31 21C31 15.48 26.52 11 21 11ZM21 29C16.58 29 13 25.42 13 21C13 16.58 16.58 13 21 13C25.42 13 29 16.58 29 21C29 25.42 25.42 29 21 29Z"
-          fill="#1976D2"
-        />
-      </g>
-      <div className="w-4 h-4 flex-shrink-0 rounded-full border border-gray-400 flex items-center justify-center">
-        {checked && <div className="w-2 h-2 bg-blue-600 rounded-full" />}
+    <div
+      className="w-[332px] h-[42px] inline-flex justify-between items-start cursor-pointer"
+      onClick={onChange}
+    >
+      <div className="flex items-center gap-2">
+        <div className="w-[42px] h-[42px] flex items-center justify-center">
+          {checked ? (
+            <svg
+              width="42"
+              height="42"
+              viewBox="0 0 42 42"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clipPath="url(#clip0_yes)">
+                <path
+                  d="M21 16C18.24 16 16 18.24 16 21C16 23.76 18.24 26 21 26C23.76 26 26 23.76 26 21C26 18.24 23.76 16 21 16ZM21 11C15.48 11 11 15.48 11 21C11 26.52 15.48 31 21 31C26.52 31 31 26.52 31 21C31 15.48 26.52 11 21 11ZM21 29C16.58 29 13 25.42 13 21C13 16.58 16.58 13 21 13C25.42 13 29 16.58 29 21C29 25.42 25.42 29 21 29Z"
+                  fill="#1976D2"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_yes">
+                  <rect width="42" height="42" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+          ) : (
+            <svg
+              width="42"
+              height="42"
+              viewBox="0 0 42 42"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clipPath="url(#clip0_no)">
+                <path
+                  d="M21 11C15.48 11 11 15.48 11 21C11 26.52 15.48 31 21 31C26.52 31 31 26.52 31 21C31 15.48 26.52 11 21 11ZM21 29C16.58 29 13 25.42 13 21C13 16.58 16.58 13 21 13C25.42 13 29 16.58 29 21C29 25.42 25.42 29 21 29Z"
+                  fill="black"
+                  fillOpacity="0.6"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_no">
+                  <rect width="42" height="42" fill="white" />
+                </clipPath>
+              </defs>
+            </svg>
+          )}
+        </div>
+        <div className="inline-flex flex-col items-start">
+          <div
+            className="text-[#344054] text-[16px] font-['Sofia Pro'] font-normal leading-6"
+            style={{ wordWrap: "break-word" }}
+          >
+            {label}
+          </div>
+        </div>
       </div>
-      <span className="text-[#344054] text-[16px] font-['Sofia Pro'] font-normal">
-        {label}
-      </span>
-    </label>
+    </div>
   );
 };
+
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -181,7 +280,7 @@ export default function EditProfilePage() {
   // 7) Handle form submission
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
-
+    console.log("SAVING");
     // If user entered a new password, handle that first
     if (password || confirmPassword) {
       if (password !== confirmPassword) {
@@ -197,18 +296,11 @@ export default function EditProfilePage() {
       }
     }
 
-    // Construct updated user data
-    const updatedUserData = {
-      ...user,
-      volunteerDetails: {
-        ...user.volunteerDetails,
-      },
-    };
-
+    // Pass the user and volunteerDetails as two separate arguments
     try {
-      await updateUser(updatedUserData);
+      await updateUser(user, user.volunteerDetails);
       // Navigate back to read-only profile
-      router.push(`/private/profile?userId=${user.id}`);
+      router.push(`/private/profile`);
     } catch (err) {
       console.error("Error updating user:", err);
       alert("Failed to update user");
@@ -217,7 +309,7 @@ export default function EditProfilePage() {
 
   // 8) Cancel
   const handleCancel = () => {
-    router.push(`/private/profile?userId=${user.id}`);
+    router.push(`/private/profile`);
   };
 
   // 9) Helper to update user state
@@ -264,6 +356,7 @@ export default function EditProfilePage() {
           <button
             type="submit"
             className="px-4 py-2 bg-teal-600 text-white rounded-md font-semibold"
+            onClick={handleSave}
           >
             Save
           </button>
@@ -371,16 +464,16 @@ export default function EditProfilePage() {
 
     
       {/* Are You Over 14 Field */}
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between items-center w-full">
         <div className="w-[400px]">
           <div className="text-lg font-bold font-['Sofia Pro'] text-[#344054]">
             Are you over 14? <span className="text-[#E61932]">*</span>
           </div>
-          <div className="text-xs font-normal font-['Sofia Pro'] text-[#667085]">
+          <div className="text-sm font-normal font-['Sofia Pro'] text-[#667085]">
             Note: we require volunteers to be over 14 years old to work with us.
           </div>
         </div>
-        <div className="flex gap-8 items-center ml-4">
+        <div className="flex gap-8 items-center">
           <RadioButton
               label="Yes"
               checked={user.volunteerDetails?.ageOver14 === true}
@@ -550,7 +643,6 @@ export default function EditProfilePage() {
           </div>
         </div>
       </div>
-
     </form>
   );
 }
