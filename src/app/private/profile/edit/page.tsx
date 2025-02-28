@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getUser, updateUser } from "@api/user/route.client";
 import { updatePassword } from "@api/password/route.client";
-import { User } from "@prisma/client";
+import { User, VolunteerDetails } from "@prisma/client";
 
 interface UploadAreaProps {
   onFileChange?: (file: File) => void;
@@ -199,18 +199,56 @@ const RadioButton: React.FC<RadioButtonProps> = ({ label, checked, onChange }) =
 export default function EditProfilePage() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
   
-  // 1) Wait for session to load
-  if (status === "loading") {
-    return (
-      <div className="h-screen flex justify-center items-center text-3xl">
-        Loading session...
-      </div>
-    );
-  }
+  // 3) Determine which userId to use:
+  //    - from query param OR from session user (if editing own profile)
+  // const queryUserId = searchParams.get("userId");
+  // console.log("queryUserId:", queryUserId);
+  // const userId = queryUserId || session?.user.id;
 
-  // 2) If no session, show message or redirect
+  const [user, setUser] = useState<User | null>(null);
+  const [volunteerDetails, setVolunteerDetails] = useState<VolunteerDetails | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  
+  // 4) Fetch user once we know userId
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!session?.user.id) {
+        setLoadError("No user ID found.");
+        return;
+      }
+      try {
+        const response = await getUser(session?.user.id);
+        // If your API returns { data: User } or something else, adjust accordingly
+        if (!response?.data) {
+          setLoadError("User not found.");
+          return;
+        }
+
+        setUser(response.data.user);
+        setVolunteerDetails(response.data.volunteerDetails);
+      } catch (err) {
+        console.error("Error fetching user:", err);
+        setLoadError("Failed to load user information.");
+      }
+    };
+    fetchData();
+  }, [session?.user.id]);
+
+    // 1) Wait for session to load
+    if (status === "loading") {
+      return (
+        <div className="h-screen flex justify-center items-center text-3xl">
+          Loading session...
+        </div>
+      );
+    }
+  
+  // // 2) If no session, show message or redirect
   if (!session) {
     return (
       <div className="h-screen flex justify-center items-center text-xl">
@@ -218,40 +256,6 @@ export default function EditProfilePage() {
       </div>
     );
   }
-
-  // 3) Determine which userId to use:
-  //    - from query param OR from session user (if editing own profile)
-  const queryUserId = searchParams.get("userId");
-  const userId = queryUserId || session.user.id;
-
-  const [user, setUser] = useState<User | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
-
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  // 4) Fetch user once we know userId
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!userId) {
-        setLoadError("No user ID found.");
-        return;
-      }
-      try {
-        const response = await getUser(userId);
-        // If your API returns { data: User } or something else, adjust accordingly
-        if (!response?.data) {
-          setLoadError("User not found.");
-          return;
-        }
-        setUser(response.data);
-      } catch (err) {
-        console.error("Error fetching user:", err);
-        setLoadError("Failed to load user information.");
-      }
-    };
-    fetchData();
-  }, [userId]);
 
   // 5) If there's a load error, show it
   if (loadError) {
@@ -288,7 +292,7 @@ export default function EditProfilePage() {
         return;
       }
       try {
-        await updatePassword({ userId: user.id, newPassword: password });
+        await updatePassword(user.email, password);
       } catch (err) {
         console.error("Error updating password:", err);
         alert("Failed to update password");
@@ -296,9 +300,9 @@ export default function EditProfilePage() {
       }
     }
 
-    // Pass the user and volunteerDetails as two separate arguments
+    // Pass the user   and volunteerDetails as two separate arguments
     try {
-      await updateUser(user, user.volunteerDetails);
+      await updateUser(user, volunteerDetails);
       // Navigate back to read-only profile
       router.push(`/private/profile`);
     } catch (err) {
@@ -312,28 +316,30 @@ export default function EditProfilePage() {
     router.push(`/private/profile`);
   };
 
-  // 9) Helper to update user state
+  const volunteerDetailKeys: Array<keyof VolunteerDetails> = [
+    'ageOver14',
+    'firstTime',
+    'country',
+    'address',
+    'city',
+    'state',
+    'zipCode',
+    'hasLicense',
+    'speaksEsp',
+    'whyJoin',
+    'comments'
+  ];
+
   const handleChange = (
-    key: keyof User | keyof User["volunteerDetails"],
+    key: keyof User | keyof VolunteerDetails,
     value: string | boolean
   ) => {
-    if (user.volunteerDetails && key in user.volunteerDetails) {
-      setUser((prev) =>
-        prev
-          ? {
-              ...prev,
-              volunteerDetails: {
-                ...prev.volunteerDetails,
-                [key]: value,
-              },
-            }
-          : null
-      );
+    if (volunteerDetailKeys.includes(key as keyof VolunteerDetails)) {
+      setVolunteerDetails(prev => prev ? { ...prev, [key]: value } : null);
     } else {
-      setUser((prev) => (prev ? { ...prev, [key]: value } : null));
+      setUser(prev => prev ? { ...prev, [key]: value } : null);
     }
   };
-  
 
   return (
     <form
@@ -376,7 +382,7 @@ export default function EditProfilePage() {
               type="text"
               className="w-full border border-gray-300 rounded-md p-2"
               placeholder="First Name"
-              value={user.firstName || ""}
+              value={user.firstName}
               onChange={(e) => handleChange("firstName", e.target.value)}
             />
           </div>
@@ -476,12 +482,12 @@ export default function EditProfilePage() {
         <div className="flex gap-8 items-center">
           <RadioButton
               label="Yes"
-              checked={user.volunteerDetails?.ageOver14 === true}
+              checked={volunteerDetails?.ageOver14 === true}
               onChange={() => handleChange("ageOver14", true)}
           />
           <RadioButton
             label="No"
-            checked={user.volunteerDetails?.ageOver14 === false}
+            checked={volunteerDetails?.ageOver14 === false}
             onChange={() => handleChange("ageOver14", false)}
           />
         </div>
@@ -496,12 +502,12 @@ export default function EditProfilePage() {
         <div className="flex gap-8 items-center ml-4">
           <RadioButton
             label="Yes"
-            checked={user.volunteerDetails?.firstTime === true}
+            checked={volunteerDetails?.firstTime === true}
             onChange={() => handleChange("firstTime", true)}
           />
           <RadioButton
             label="No"
-            checked={user.volunteerDetails?.firstTime === false}
+            checked={volunteerDetails?.firstTime === false}
             onChange={() => handleChange("firstTime", false)}
           />
         </div>
@@ -519,7 +525,7 @@ export default function EditProfilePage() {
               type="text"
               placeholder="Address line"
               className="w-full border border-gray-300 rounded-md p-2"
-              value={user.volunteerDetails?.address || ""}
+              value={volunteerDetails?.country || ""}
               onChange={(e) => handleChange("address", e.target.value)}
             />
           </div>
@@ -533,14 +539,14 @@ export default function EditProfilePage() {
               type="text"
               placeholder="City"
               className="flex-1 border border-gray-300 rounded-md p-2"
-              value={user.volunteerDetails?.city || ""}
+              value={volunteerDetails?.city || ""}
               onChange={(e) => handleChange("city", e.target.value)}
             />
             <input
               type="text"
               placeholder="State"
               className="flex-1 border border-gray-300 rounded-md p-2"
-              value={user.volunteerDetails?.state || ""}
+              value={volunteerDetails?.state || ""}
               onChange={(e) => handleChange("state", e.target.value)}
             />
           </div>
@@ -554,14 +560,14 @@ export default function EditProfilePage() {
               type="text"
               placeholder="ZIP code"
               className="flex-1 border border-gray-300 rounded-md p-2"
-              value={user.volunteerDetails?.zipCode || ""}
+              value={volunteerDetails?.zipCode || ""}
               onChange={(e) => handleChange("zipCode", e.target.value)}
             />
             <input
               type="text"
               placeholder="Country"
               className="flex-1 border border-gray-300 rounded-md p-2"
-              value={user.volunteerDetails?.country || ""}
+              value={volunteerDetails?.country || ""}
               onChange={(e) => handleChange("country", e.target.value)}
             />
           </div>
@@ -577,12 +583,12 @@ export default function EditProfilePage() {
         <div className="flex gap-8 items-center ml-4">
           <RadioButton
             label="Yes"
-            checked={user.volunteerDetails?.hasLicense === true}
+            checked={volunteerDetails?.hasLicense === true}
             onChange={() => handleChange("hasLicense", true)}
           />
           <RadioButton
             label="No"
-            checked={user.volunteerDetails?.hasLicense === false}
+            checked={volunteerDetails?.hasLicense === false}
             onChange={() => handleChange("hasLicense", false)}
           />
         </div>
@@ -596,12 +602,12 @@ export default function EditProfilePage() {
         <div className="flex gap-8 items-center ml-4">
           <RadioButton
             label="Yes"
-            checked={user.volunteerDetails?.speaksEsp === true}
+            checked={volunteerDetails?.speaksEsp === true}
             onChange={() => handleChange("speaksEsp", true)}
           />
           <RadioButton
             label="No"
-            checked={user.volunteerDetails?.speaksEsp === false}
+            checked={volunteerDetails?.speaksEsp === false}
             onChange={() => handleChange("speaksEsp", false)}
           />
         </div>
@@ -620,7 +626,7 @@ export default function EditProfilePage() {
             <textarea
               className="w-full border border-gray-300 rounded-md p-2"
               rows={3}
-              value={user.volunteerDetails?.whyJoin || ""}
+              value={volunteerDetails?.whyJoin || ""}
               onChange={(e) => handleChange("whyJoin", e.target.value)}
             />
           </div>
@@ -637,7 +643,7 @@ export default function EditProfilePage() {
             <textarea
               className="w-full border border-gray-300 rounded-md p-2"
               rows={3}
-              value={user.volunteerDetails?.comments || ""}
+              value={volunteerDetails?.comments || ""}
               onChange={(e) => handleChange("comments", e.target.value)}
             />
           </div>
