@@ -2,18 +2,24 @@
 
 import { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import InputAdornment from "@mui/material/InputAdornment";
-import IconButton from "@mui/material/IconButton";
+import Autocomplete from "@mui/material/Autocomplete";
 
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import VisibilityIcon from "@mui/icons-material/Visibility";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+// import Checkbox from "@mui/material/Checkbox";
+// import FormControlLabel from "@mui/material/FormControlLabel";
+// import InputAdornment from "@mui/material/InputAdornment";
+// import IconButton from "@mui/material/IconButton";
+
+// import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+// import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import Image from "next/image";
 import logo1 from "../../public/logo1.png";
 
-import { signIn } from "next-auth/react";
+// import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -22,21 +28,21 @@ export default function CheckInOutForm() {
   const [emailDisplayError, setEmailDisplayError] = useState(false);
   const [activeButton, setActiveButton] = useState<"checkin" | "checkout" | null>(null);
 
-//   const router = useRouter();
+  // mock text for now until backend is implemented
+  const emailOptions = [
+    "example1@example.com",
+    "example2@example.com",
+    "example3@example.com",
+  ];
 
-//   useEffect(() => {
-//     if (status === "authenticated") {
-//       router.push("/"); // Change to your desired redirect path
-//     }
-//   }, [status, router]);
-
+  // submit logic
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await signIn("credentials", {
-      email,
-      redirect: false,
-    });
+    // const res = await signIn("credentials", {
+    //   email,
+    //   redirect: false,
+    // });
 
     // if (res?.error) {
     //   if (res?.error == "Invalid password") {
@@ -74,44 +80,44 @@ export default function CheckInOutForm() {
             </div>
             <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
             <div className="flex flex-col w-full text-lg font-bold text-[#344054] gap-[8px]">
-                I want to
-            <div className="flex flex-row gap-4 w-full">
-                <button
-                    onClick={() => setActiveButton("checkin")}
-                    className={`flex mb-4 text-base justify-center items-center w-[100px] h-[40px] rounded-lg text-teal-900
-                        ${activeButton === "checkin" ? "bg-teal-50 border-teal-600 border-[2px]" : "bg-white-50 border-gray-300 border-[1px]"}
-                 `}
-                >
-                    Check In
-                </button>
-                <button 
-                    onClick={() => setActiveButton("checkout")}
-                    className={`flex mb-4 text-base justify-center items-center border-[1px] border-gray-300 w-[100px] h-[40px] rounded-lg text-teal-900
-                        ${activeButton === "checkout" ? "bg-teal-50 border-teal-600 border-[2px]" : "bg-white-50 border-gray-300 border-[1px]"}
-                 `}
-                >
-                    Check Out
-                </button>
-            </div>
+                    I want to
+                <div className="flex flex-row gap-4 w-full">
+                    <button
+                        onClick={() => setActiveButton("checkin")}
+                        className={`flex mb-4 text-base justify-center items-center w-[100px] h-[40px] rounded-lg text-teal-900
+                            ${activeButton === "checkin" ? "bg-teal-50 border-teal-600 border-[2px]" : "bg-white-50 border-gray-300 border-[1px]"}
+                    `}
+                    >
+                        Check In
+                    </button>
+                    <button 
+                        onClick={() => setActiveButton("checkout")}
+                        className={`flex mb-4 text-base justify-center items-center border-[1px] border-gray-300 w-[100px] h-[40px] rounded-lg text-teal-900
+                            ${activeButton === "checkout" ? "bg-teal-50 border-teal-600 border-[2px]" : "bg-white-50 border-gray-300 border-[1px]"}
+                    `}
+                    >
+                        Check Out
+                    </button>
+                </div>
             </div>
 
             <div className="flex flex-col w-full text-lg font-bold text-[#344054] gap-[8px]">
                 Your email
             <TextField
-              sx={{ marginBottom: "30px", width: "100%" }}
-              id="outlined-basic"
-              label=""
-              variant="outlined"
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-              onKeyUp={(e) => {
-                if (e.key === "Enter" && email !== "") {
-                  handleSubmit(e);
-                }
-              }}
-              error={emailDisplayError}
-              helperText={emailDisplayError && "Couldn't find your account"}
+                sx={{ marginBottom: "30px", width: "100%" }}
+                id="outlined-basic"
+                label=""
+                variant="outlined"
+                onChange={(e) => {
+                    setEmail(e.target.value);
+                }}
+                onKeyUp={(e) => {
+                    if (e.key === "Enter" && email !== "") {
+                    handleSubmit(e);
+                    }
+                }}
+                error={emailDisplayError}
+                helperText={emailDisplayError && "Couldn't find your account"}
             />
             </div>
 
