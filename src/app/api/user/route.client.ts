@@ -65,3 +65,4 @@ export const updateUser = async (
 ) => {
   return fetchApi("/api/user", "PATCH", { user, volunteerDetails });
 };
+
