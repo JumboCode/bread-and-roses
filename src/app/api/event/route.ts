@@ -39,6 +39,7 @@ export const PATCH = async (request: NextRequest) => {
           ...updateData, 
         },
       });
+      
 
     return NextResponse.json({
       code: "SUCCESS",
