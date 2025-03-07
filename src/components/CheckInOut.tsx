@@ -105,11 +105,11 @@ export default function CheckInOutForm() {
             <button
               className="bg-[#138D8A] mt-[32px] text-white text-[16px] py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold"
               type="submit"
-              onClick={(e) => {
-                if (email !== "") {
-                  handleSubmit(e);
+              onClick={() => {
+                // if (email !== "") {
+                //   handleSubmit(e);
                   setStage("confirmation");
-                }
+                // }
               }}
             >
               Confirm Your Check-In
