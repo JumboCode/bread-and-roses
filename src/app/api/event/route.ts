@@ -29,17 +29,16 @@ export const POST = async (request: NextRequest) => {
 export const PATCH = async (request: NextRequest) => {
   try {
     const { event } = await request.json();
+    const { id, ...updateData } = event; // needed to prevent prisma update error: overwriting "id"
     
-    const updatedEvent = await prisma.event.update({
-      where: {
-        id: event.id,
-      },
-      data: { 
-        ...event, 
-        //maxPeople: 5,,
-        //eventName: "b",
-      },
-    });
+      const updatedEvent = await prisma.event.update({
+        where: {
+          id: event.id,
+        },
+        data: { 
+          ...updateData, 
+        },
+      });
 
     return NextResponse.json({
       code: "SUCCESS",

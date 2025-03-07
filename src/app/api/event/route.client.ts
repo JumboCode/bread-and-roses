@@ -28,7 +28,6 @@ export const addEvent = async (event: CreateEventInput) => {
 
 export const getEvent = async (eventID: string) => {
   const url = `/api/event?id=${eventID}`;
-  // console.log("HERE");
   return fetchApi(url, "GET");
 };
 

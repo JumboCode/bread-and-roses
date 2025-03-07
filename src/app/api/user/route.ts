@@ -194,7 +194,6 @@ export const GET = async (request: NextRequest) => {
 export const PATCH = async (request: NextRequest) => {
   try {
     /* @TODO: Add auth */
-
     const { user, volunteerDetails } = await request.json();
 
     const updatedUser = await prisma.user.update({
@@ -203,15 +202,17 @@ export const PATCH = async (request: NextRequest) => {
       },
       data: {
         ...user,
+        id: undefined, // needed to prevent prisma update error: overwriting "id"
       },
     });
-    // console.log("here", updatedUser);
+
     const updatedVD = await prisma.volunteerDetails.update({
       where: {
         id: volunteerDetails.id,
       },
       data: {
         ...volunteerDetails,
+        id: undefined, // needed to prevent prisma update error: overwriting "id"
       },
     });
 
