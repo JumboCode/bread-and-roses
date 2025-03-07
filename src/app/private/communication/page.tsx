@@ -11,7 +11,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function CommunicationPage() {
   const [subject, setSubject] = React.useState("");
-  const [fromEmail] = React.useState("breadandroses@gmail.com"); // TODO: is this the right email?
+  const [fromEmail] = React.useState("breadandrosesjc@gmail.com");
   const [text, setText] = React.useState("");
 
   const { fetching: sendMassEmailLoading, fn: throttledSendMassEmail } =
@@ -49,7 +49,11 @@ export default function CommunicationPage() {
 
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
+    return (
+      parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) +
+      (i === 0 ? " " : "") +
+      sizes[i]
+    );
   };
 
   useEffect(() => {
@@ -75,7 +79,7 @@ export default function CommunicationPage() {
         <GroupRoundedIcon sx={{ width: 44, height: 44 }}></GroupRoundedIcon>
         Send Email To Volunteers
       </div>
-      <div className="flex items-start gap-4">
+      <div className="flex items-start">
         <div className="w-1/3">
           <p className="font-semibold">Subject</p>
         </div>
@@ -90,7 +94,7 @@ export default function CommunicationPage() {
         </div>
       </div>
 
-      <div className="flex items-start gap-4">
+      <div className="flex items-start">
         <div className="w-1/3">
           <p className="font-semibold">Email From</p>
           <p className="text-gray-500">This is the default email.</p>
@@ -105,7 +109,7 @@ export default function CommunicationPage() {
         </div>
       </div>
 
-      <div className="flex items-start gap-4">
+      <div className="flex items-start">
         <div className="w-1/3">
           <p className="font-semibold">Email Body</p>
           <p className="text-gray-500">
@@ -180,7 +184,7 @@ export default function CommunicationPage() {
         </div>
       </div>
 
-      <div className="flex items-start gap-4">
+      <div className="flex items-start">
         <div className="w-1/3"></div>
         <div className="w-2/3">
           <button
