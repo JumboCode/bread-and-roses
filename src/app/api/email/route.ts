@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export const POST = async (request: NextRequest) => {
   try {
-    const { text } = await request.json();
+    const { text, subject, attachments } = await request.json();
 
     const users = await prisma.user.findMany({
       where: { role: Role.VOLUNTEER },
@@ -27,15 +27,23 @@ export const POST = async (request: NextRequest) => {
       }, //@TODO: REmove before deployment
     });
 
+    console.log("before mass message");
+
+    console.log(attachments);
+
     const massMessage = {
       from: process.env.NODEMAILER_EMAIL,
+      //@TODO: CHANGE TS BEFORE DEPLOYMENT
       bcc: users.filter((user) => user.lastName === "Kim").map((x) => x.email),
-      subject: "Message from Bread & Roses Admin",
+      subject: subject,
       text: text,
-      html: `idk what this does`,
+      html: `${text}`, //@TODO: ACTUALLY DO TS
+      attachments: attachments,
     };
 
     await transporter.sendMail(massMessage);
+
+    console.log("after transporter");
 
     return NextResponse.json({
       code: "SUCCESS",

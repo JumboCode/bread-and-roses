@@ -8,6 +8,7 @@ import GroupRoundedIcon from "@mui/icons-material/GroupRounded";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { Attachment } from "nodemailer/lib/mailer";
 
 export default function CommunicationPage() {
   const [subject, setSubject] = React.useState("");
@@ -18,7 +19,7 @@ export default function CommunicationPage() {
     useApiThrottle({ fn: sendMassEmail });
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File[] | null>(null);
+  const [attachments, setAttachments] = useState<File[] | null>(null);
   const [preview, setPreview] = useState<string[]>([""]); //TODO: change ts
 
   const handleButtonClick = () => {
@@ -31,21 +32,19 @@ export default function CommunicationPage() {
     const files = event.target.files;
     if (files) {
       const fileArray = Array.from(files);
-      setSelectedFile(
-        selectedFile ? [...selectedFile, ...fileArray] : fileArray
-      );
+      setAttachments(attachments ? [...attachments, ...fileArray] : fileArray);
       event.target.value = "";
     }
   };
 
   const formatFileSize = (bytes: number, decimals = 0) => {
     if (!bytes) {
-      return "0 Bytes";
+      return "0 bytes";
     }
 
     const k = 1024;
     const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ["Bytes", "kb", "mb", "gb", "tb", "pb", "eb", "zb", "yb"];
+    const sizes = ["bytes", "kb", "mb", "gb", "tb", "pb", "eb", "zb", "yb"];
 
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
@@ -57,11 +56,11 @@ export default function CommunicationPage() {
   };
 
   useEffect(() => {
-    if (!selectedFile) {
+    if (!attachments) {
       setPreview([""]);
       return;
     }
-    const objectUrls: string[] = selectedFile.map((currFile) =>
+    const objectUrls: string[] = attachments.map((currFile) =>
       URL.createObjectURL(currFile)
     );
 
@@ -71,7 +70,30 @@ export default function CommunicationPage() {
     return () => {
       objectUrls.forEach((url) => URL.revokeObjectURL(url));
     };
-  }, [selectedFile]);
+  }, [attachments]);
+
+  async function fileToNodemailerAttachment(file: File): Promise<Attachment> {
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    return {
+      filename: file.name,
+      content: buffer,
+    };
+  }
+
+  async function convertFilesToNodemailerAttachment(
+    files: File[] | null
+  ): Promise<Attachment[]> {
+    const nodeMailerAttachments: Attachment[] = [];
+    if (!files) {
+      return nodeMailerAttachments;
+    }
+    for (const file of files) {
+      const nodeMailerAttachment = await fileToNodemailerAttachment(file);
+      nodeMailerAttachments.push(nodeMailerAttachment);
+    }
+    return nodeMailerAttachments;
+  }
 
   return (
     <div className="flex flex-col gap-8 h-full">
@@ -119,6 +141,7 @@ export default function CommunicationPage() {
         <div className="w-2/3 flex flex-col gap-6">
           <button
             onClick={handleButtonClick}
+            disabled={sendMassEmailLoading}
             className="border-2 border-gray-300 rounded-md p-4 text-center text-gray-500 cursor-pointer hover:border-teal-600"
           >
             <FileUploadRoundedIcon sx={{ color: "#138D8A" }} />
@@ -137,15 +160,14 @@ export default function CommunicationPage() {
             className="hidden"
             multiple
           />
-          {/* {selectedFile?.length && (
+          {/* {attachments?.length && (
             <p className="text-gray-700">
-              Selected: {selectedFile.map((file) => file.name).join(", ")}
+              Selected: {attachments.map((file) => file.name).join(", ")}
             </p>
           )} */}
 
-          {/* <div> */}
-          {(selectedFile?.length ?? 0) > 0 &&
-            selectedFile?.map((src, index) => (
+          {(attachments?.length ?? 0) > 0 &&
+            attachments?.map((src, index) => (
               <div className="p-4 gap-4 flex flex-row items-center w-full">
                 <UploadFileIcon sx={{ color: "#138D8A" }} />
                 <div className="flex flex-col">
@@ -159,7 +181,7 @@ export default function CommunicationPage() {
                 </div>
                 <DeleteIcon
                   onClick={() =>
-                    setSelectedFile(
+                    setAttachments(
                       (prev) => prev?.filter((_, i) => i !== index) || []
                     )
                   }
@@ -167,14 +189,12 @@ export default function CommunicationPage() {
                 />
               </div>
             ))}
-          {/* </div> */}
 
-          {/* <div> */}
-          {preview.length > 0 &&
+          {/* {preview.length > 0 &&
             preview.map((src, index) => (
               <img key={index} src={src} alt="OKAY" />
-            ))}
-          {/* </div> */}
+            ))} */}
+
           <textarea
             className="border border-gray-300 rounded-md p-2 w-full resize-none"
             placeholder="Type your email content"
@@ -191,8 +211,15 @@ export default function CommunicationPage() {
             className="w-[150px] font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
             disabled={sendMassEmailLoading}
             onClick={async () => {
+              // TODO: See if we have to throttle conversion
+              const nodeMailerAttachments =
+                await convertFilesToNodemailerAttachment(attachments);
               // TODO: FIX TO INCLUDE SUBJECT AND BODY, ETC
-              await throttledSendMassEmail(text);
+              await throttledSendMassEmail(
+                text,
+                subject,
+                nodeMailerAttachments
+              );
             }}
           >
             Send Email
