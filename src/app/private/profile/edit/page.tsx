@@ -198,7 +198,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({ label, checked, onChange }) =
 
 export default function EditProfilePage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   // const searchParams = useSearchParams();
   
   // 3) Determine which userId to use:
@@ -300,16 +300,46 @@ export default function EditProfilePage() {
       }
     }
 
-    // Pass the user   and volunteerDetails as two separate arguments
+    const filterEmptyStrings = <T extends Record<string, unknown>>(obj: T): Partial<T> => {
+      const newObj = {} as Partial<T>;
+      Object.entries(obj).forEach(([key, value]) => {
+        if (typeof value === "string") {
+          if (value.trim() !== "") {
+            newObj[key as keyof T] = value;
+          }
+        } else {
+          newObj[key as keyof T] = value;
+        }
+      });
+      return newObj;
+    };
+    const filteredUser = filterEmptyStrings(user);
+    const filteredVolunteerDetails = volunteerDetails
+      ? filterEmptyStrings(volunteerDetails)
+      : null;
+  
     try {
-      await updateUser(user, volunteerDetails);
-      // Navigate back to read-only profile
+      await updateUser(filteredUser, filteredVolunteerDetails);
+      // Optionally update the session if needed and navigate back to profile
+      await update();
       router.push(`/private/profile`);
     } catch (err) {
       console.error("Error updating user:", err);
       alert("Failed to update user");
     }
   };
+  //   // Pass the user and volunteerDetails as two separate arguments
+  //   try {
+  //     await updateUser(user, volunteerDetails);
+  //     // Navigate back to read-only profile
+  //     await update();
+  //     // setUser((prevUser) => ({ ...prevUser, volunteerDetails }));
+  //     router.push(`/private/profile`);
+  //   } catch (err) {
+  //     console.error("Error updating user:", err);
+  //     alert("Failed to update user");
+  //   }
+  // };
 
   // 8) Cancel
   const handleCancel = () => {
@@ -525,7 +555,7 @@ export default function EditProfilePage() {
               type="text"
               placeholder="Address line"
               className="w-full border border-gray-300 rounded-md p-2"
-              value={volunteerDetails?.country || ""}
+              value={volunteerDetails?.address || ""}
               onChange={(e) => handleChange("address", e.target.value)}
             />
           </div>

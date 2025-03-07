@@ -206,81 +206,64 @@ export default function ProfilePage() {
         </div>
 
         {/* Address Field */}
-        <div className="flex items-start gap-4">
-          {/* Label Column */}
+        <div className="flex items-center">
           <div className="w-[400px] text-lg font-bold font-['Sofia Pro'] text-[#344054]">
-            <span className="text-lg font-bold font-['Sofia Pro'] text-[#344054]">
-              Address
-            </span>
-            <span className="text-lg font-bold font-['Sofia Pro'] text-[#E61932]">
-              *
-            </span>
+            Address <span className="text-[#E61932]">*</span>
           </div>
-          {/* Input Column */}
           <div className="flex flex-col gap-4 flex-1">
             {/* Street Field */}
-            <div className="flex">
-              <div className="flex-1">
+            <div className="flex-1 ml-11">
+              <div className="w-full h-[56px] bg-[#F9FAFB] rounded-t-md overflow-hidden flex flex-col justify-start items-start">
+                <div className="w-full px-3 py-4 inline-flex justify-start items-center whitespace-normal break-words">
+                  {session.user.volunteerDetails?.address || ""}
+                </div>
+              </div>
+              <div className="w-full h-0 border-t border-[#101828]"></div>
+            </div>
+            {/* City, Zip Code, State, Country Row */}
+            <div className="flex gap-4 ml-11">
+              {/* City Field */}
+              <div className="w-[360px]">
                 <div className="w-full h-[56px] bg-[#F9FAFB] rounded-t-md overflow-hidden flex flex-col justify-start items-start">
                   <div className="w-full px-3 py-4 inline-flex justify-start items-center whitespace-normal break-words">
-                    {session.user.volunteerDetails?.address || ""}
+                    {session.user.volunteerDetails?.city || ""}
+                  </div>
+                </div>
+                <div className="w-full h-0 border-t border-[#101828]"></div>
+              </div>
+              {/* Zip Code Field */}
+              <div className="w-[360px]">
+                <div className="w-full h-[56px] bg-[#F9FAFB] rounded-t-md overflow-hidden flex flex-col justify-start items-start">
+                  <div className="w-full px-3 py-4 inline-flex justify-start items-center whitespace-normal break-words">
+                    {session.user.volunteerDetails?.zipCode || ""}
                   </div>
                 </div>
                 <div className="w-full h-0 border-t border-[#101828]"></div>
               </div>
             </div>
-            {/* City and Zip Code Row */}
-            <div className="flex gap-4">
-              {/* City Field */}
-              <div className="flex flex-col">
-                <div className="w-[360px] h-[56px] inline-flex flex-col justify-start items-start">
-                  <div className="w-full h-[56px] bg-[#F9FAFB] rounded-t-md overflow-hidden flex flex-col justify-start items-start">
-                    <div className="w-full px-3 py-4 inline-flex justify-start items-center whitespace-normal break-words">
-                      {session.user.volunteerDetails?.city || ""}
-                    </div>
-                  </div>
-                  <div className="w-[360px] h-0 border-t border-[#101828]"></div>
-                </div>
-              </div>
-              {/* Zip Code Field */}
-              <div className="flex flex-col">
-                <div className="w-[360px] h-[56px] inline-flex flex-col justify-start items-start">
-                  <div className="w-full h-[56px] bg-[#F9FAFB] rounded-t-md overflow-hidden flex flex-col justify-start items-start">
-                    <div className="w-full px-3 py-4 inline-flex justify-start items-center whitespace-normal break-words">
-                      {session.user.volunteerDetails?.zipCode || ""}
-                    </div>
-                  </div>
-                  <div className="w-[360px] h-0 border-t border-[#101828]"></div>
-                </div>
-              </div>
-            </div>
-            {/* State and Country Row */}
-            <div className="flex gap-4">
+            <div className="flex gap-4 ml-11">
               {/* State Field */}
-              <div className="flex flex-col">
-                <div className="w-[360px] h-[56px] inline-flex flex-col justify-start items-start">
-                  <div className="w-full h-[56px] bg-[#F9FAFB] rounded-t-md overflow-hidden flex flex-col justify-start items-start">
-                    <div className="w-full px-3 py-4 inline-flex justify-start items-center whitespace-normal break-words">
-                      {session.user.volunteerDetails?.state || ""}
-                    </div>
+              <div className="w-[360px]">
+                <div className="w-full h-[56px] bg-[#F9FAFB] rounded-t-md overflow-hidden flex flex-col justify-start items-start">
+                  <div className="w-full px-3 py-4 inline-flex justify-start items-center whitespace-normal break-words">
+                    {session.user.volunteerDetails?.state || ""}
                   </div>
-                  <div className="w-[360px] h-0 border-t border-[#101828]"></div>
                 </div>
+                <div className="w-full h-0 border-t border-[#101828]"></div>
               </div>
               {/* Country Field */}
-              <div className="flex flex-col">
-                <div className="w-[360px] h-[56px] inline-flex flex-col justify-start items-start">
-                  <div className="w-full h-[56px] bg-[#F9FAFB] rounded-t-md overflow-hidden flex flex-col justify-start items-center">
-                    <div className="w-full px-3 py-4 inline-flex justify-start items-center whitespace-normal break-words">
-                      {session.user.volunteerDetails?.country || ""}
-                    </div>
+              <div className="w-[360px]">
+                <div className="w-full h-[56px] bg-[#F9FAFB] rounded-t-md overflow-hidden flex flex-col justify-start items-center">
+                  <div className="w-full px-3 py-4 inline-flex justify-start items-center whitespace-normal break-words">
+                    {session.user.volunteerDetails?.country || ""}
                   </div>
-                  <div className="w-[360px] h-0 border-t border-[#101828]"></div>
                 </div>
+                <div className="w-full h-0 border-t border-[#101828]"></div>
               </div>
             </div>
           </div>
         </div>
+
 
 
         {/* Driver's License Field */}
