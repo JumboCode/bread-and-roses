@@ -29,12 +29,18 @@ export const POST = async (request: NextRequest) => {
 
     console.log("before mass message");
 
+    for (const attachment of attachments) {
+      attachment.content = Buffer.from(attachment.content.data);
+    }
+
     console.log(attachments);
 
     const massMessage = {
       from: process.env.NODEMAILER_EMAIL,
       //@TODO: CHANGE TS BEFORE DEPLOYMENT
-      bcc: users.filter((user) => user.lastName === "Kim").map((x) => x.email),
+      bcc: users
+        .filter((user) => user.lastName === "Maranga")
+        .map((x) => x.email),
       subject: subject,
       text: text,
       html: `${text}`, //@TODO: ACTUALLY DO TS

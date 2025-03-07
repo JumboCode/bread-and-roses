@@ -168,7 +168,10 @@ export default function CommunicationPage() {
 
           {(attachments?.length ?? 0) > 0 &&
             attachments?.map((src, index) => (
-              <div className="p-4 gap-4 flex flex-row items-center w-full">
+              <div
+                key={index}
+                className="p-4 gap-4 flex flex-row items-center w-full"
+              >
                 <UploadFileIcon sx={{ color: "#138D8A" }} />
                 <div className="flex flex-col">
                   <div>{src.name}</div>
