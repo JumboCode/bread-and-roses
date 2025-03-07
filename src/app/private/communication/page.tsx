@@ -28,10 +28,28 @@ export default function CommunicationPage() {
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setSelectedFile(selectedFile ? [...selectedFile, file] : [file]);
+    const files = event.target.files;
+    if (files) {
+      const fileArray = Array.from(files);
+      setSelectedFile(
+        selectedFile ? [...selectedFile, ...fileArray] : fileArray
+      );
+      event.target.value = "";
     }
+  };
+
+  const formatFileSize = (bytes: number, decimals = 0) => {
+    if (!bytes) {
+      return "0 Bytes";
+    }
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ["Bytes", "kb", "mb", "gb", "tb", "pb", "eb", "zb", "yb"];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
   };
 
   useEffect(() => {
@@ -113,44 +131,46 @@ export default function CommunicationPage() {
             ref={fileInputRef}
             onChange={handleFileChange}
             className="hidden"
+            multiple
           />
-          {selectedFile?.length && (
+          {/* {selectedFile?.length && (
             <p className="text-gray-700">
               Selected: {selectedFile.map((file) => file.name).join(", ")}
             </p>
-          )}
+          )} */}
 
-          <div>
-            {selectedFile?.length &&
-              selectedFile.map((src, index) => (
-                <div className="p-4 gap-4 flex flex-row items-center w-full">
-                  <UploadFileIcon sx={{ color: "#138D8A" }} />
-                  <div className="flex flex-col">
-                    <div>{src.name}</div>
-                    <div className="flex flex-row gap-2">
-                      <div>file size here</div>
-                      <div>dot</div>
-                      <div>complete</div>
-                    </div>
+          {/* <div> */}
+          {(selectedFile?.length ?? 0) > 0 &&
+            selectedFile?.map((src, index) => (
+              <div className="p-4 gap-4 flex flex-row items-center w-full">
+                <UploadFileIcon sx={{ color: "#138D8A" }} />
+                <div className="flex flex-col">
+                  <div>{src.name}</div>
+                  <div className="text-gray-500 flex flex-row gap-2">
+                    <div>{formatFileSize(src.size)}</div>
+                    <div>•</div>
+                    {/* TODO: Actually see if its Complete */}
+                    <div>Complete</div>
                   </div>
-                  <DeleteIcon
-                    onClick={() =>
-                      setSelectedFile(
-                        (prev) => prev?.filter((_, i) => i !== index) || []
-                      )
-                    }
-                    className="ml-auto"
-                  />
                 </div>
-              ))}
-          </div>
+                <DeleteIcon
+                  onClick={() =>
+                    setSelectedFile(
+                      (prev) => prev?.filter((_, i) => i !== index) || []
+                    )
+                  }
+                  className="ml-auto"
+                />
+              </div>
+            ))}
+          {/* </div> */}
 
-          <div>
-            {preview.length > 0 &&
-              preview.map((src, index) => (
-                <img key={index} src={src} alt="OKAY" />
-              ))}
-          </div>
+          {/* <div> */}
+          {preview.length > 0 &&
+            preview.map((src, index) => (
+              <img key={index} src={src} alt="OKAY" />
+            ))}
+          {/* </div> */}
           <textarea
             className="border border-gray-300 rounded-md p-2 w-full resize-none"
             placeholder="Type your email content"
@@ -167,7 +187,7 @@ export default function CommunicationPage() {
             className="w-[150px] font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
             disabled={sendMassEmailLoading}
             onClick={async () => {
-              // FIX TO INCLUDE SUBJECT AND BODY, ETC
+              // TODO: FIX TO INCLUDE SUBJECT AND BODY, ETC
               await throttledSendMassEmail(text);
             }}
           >

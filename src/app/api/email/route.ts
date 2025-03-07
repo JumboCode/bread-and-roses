@@ -24,7 +24,7 @@ export const POST = async (request: NextRequest) => {
       },
       tls: {
         rejectUnauthorized: false,
-      }, //TODO: REmove before deployment
+      }, //@TODO: REmove before deployment
     });
 
     const massMessage = {
