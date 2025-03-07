@@ -31,6 +31,9 @@ export default function CheckInOutForm() {
   // use state to keep track of what stage of check-in flow user is on
   const [stage, setStage] = useState<"shifts" | null>(null);
 
+  // store shifts in an array (sample data for now)
+  const shifts = [1, 2];
+
   // mock text for now until backend is implemented
   const emailOptions = [
     "example1@example.com",
@@ -47,7 +50,7 @@ export default function CheckInOutForm() {
   if (stage === "shifts") {
     return (
       <div className="flex flex-col items-center w-full">
-      <div className="flex flex-col justify-center items-center min-h-screen w-full">
+      <div className="flex flex-col justify-center items-center min-h-screen w-full my-[32px]">
         <Image src={logo1} alt="Logo" height={173} width={215} className="mb-[24px]"/>
         <div className="p-6 border border-[#D0D5DD] rounded-[20px] shadow-[0px_8px_8px_-4px_#10182808,_0px_20px_24px_-4px_#10182814] flex justify-center items-start pt-6 w-1/2">
           <div className="flex flex-col items-center w-full">
@@ -81,27 +84,29 @@ export default function CheckInOutForm() {
               </div>
               
               {/* TODO: implement mapping feature to display shifts */}
-              <div className="text-[16px] font-bold text-[#344054]">
+              <div className="flex flex-col gap-[20px] text-[16px] font-bold text-[#344054]">
                 Shift(s) (choose one)
-                <div className="flex flex-row gap-[16px] items-center mt-[8px]">
-                  <input
-                    id="shift"
-                    type="radio"
-                    className="size-[20px]"
-                  />
-                  <TextField
-                    sx={{ width: "50%" }}
-                    id="outlined-basic"
-                    label="Start"
-                    variant="filled"
-                  />
-                  <TextField
-                    sx={{ width: "50%" }}
-                    id="outlined-basic"
-                    label="End"
-                    variant="filled"
-                  />
-                </div>
+                {shifts.map((shift, index) => (
+                  <div className="flex flex-row gap-[16px] items-center mt-[8px]">
+                    <input
+                      id={`shift-${index}`}
+                      type="radio"
+                      className="size-[20px]"
+                    />
+                    <TextField
+                      sx={{ width: "50%" }}
+                      id="outlined-basic"
+                      label="Start"
+                      variant="filled"
+                    />
+                    <TextField
+                      sx={{ width: "50%" }}
+                      id="outlined-basic"
+                      label="End"
+                      variant="filled"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
 
