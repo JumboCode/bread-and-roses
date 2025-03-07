@@ -7,11 +7,13 @@ import Image from "next/image";
 import logo1 from "../../public/logo1.png";
 import CheckConfirmation from "./CheckConfirmation";
 import Autocomplete from '@mui/material/Autocomplete';
+import confirmation from "../../public/confirmation.png";
 
 export default function CheckInOutForm() {
   const [email, setEmail] = useState("");
   const [emailDisplayError, setEmailDisplayError] = useState(false);
   const [activeButton, setActiveButton] = useState<"checkin" | "checkout" | null>(null);
+  const [selectedShift, setSelectedShift] = useState<number | null>(null);
 
   // use state to keep track of what stage of check-in flow user is on
   const [stage, setStage] = useState<"initial" | "shifts" | "confirmation">("initial");
@@ -83,8 +85,11 @@ export default function CheckInOutForm() {
                   <div className="flex flex-row gap-[16px] items-center mt-[8px]">
                     <input
                       id={`shift-${index}`}
+                      value={shift}
                       type="radio"
                       className="size-[20px]"
+                      checked={selectedShift === shift}
+                      onChange={() => setSelectedShift(shift)}
                     />
                     <TextField
                       sx={{ width: "50%" }}
@@ -122,10 +127,12 @@ export default function CheckInOutForm() {
     );
   } else if (stage === "confirmation") {
     return (
+      // can replace text of modal if user hasn't signed up for shift yet
       <CheckConfirmation
         title="Hooray! You have checked in at 10:00:39 AM."
         captionText="Do not forget to check out before you leave!"
         buttonText="Back to First Page"
+        image={confirmation}
       />
     );
   }

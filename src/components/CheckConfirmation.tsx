@@ -2,16 +2,17 @@
 
 import Image from "next/image";
 import logo1 from "../../public/logo1.png";
-import confirmation from "../../public/confirmation.png";
 import { useRouter } from "next/navigation";
+import { StaticImageData } from "next/image";
 
 interface ConfirmationProps {
     title: string;
     buttonText: string;
     captionText: string;
+    image: StaticImageData;
 }
 
-const CheckConfirmation = ({title, buttonText, captionText}: ConfirmationProps) => {
+const CheckConfirmation = ({title, buttonText, captionText, image}: ConfirmationProps) => {
     const router = useRouter();
     return (
         <div className="flex flex-col items-center w-full">
@@ -36,7 +37,7 @@ const CheckConfirmation = ({title, buttonText, captionText}: ConfirmationProps) 
                 </div>
                 <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
                 
-                <Image src={confirmation} alt="Confirmation" width={284} height={249} />
+                <Image src={image} alt="Confirmation" width={284} height={249} />
                 <button
                   className="bg-[#138D8A] mt-[32px] text-white text-[16px] py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold"
                   type="submit"
