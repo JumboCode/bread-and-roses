@@ -3,9 +3,9 @@
 import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import { Icon } from "@iconify/react/dist/iconify.js";
-
 import Image from "next/image";
 import logo1 from "../../public/logo1.png";
+import CheckConfirmation from "./CheckConfirmation";
 
 export default function CheckInOutForm() {
   const [email, setEmail] = useState("");
@@ -13,7 +13,7 @@ export default function CheckInOutForm() {
   const [activeButton, setActiveButton] = useState<"checkin" | "checkout" | null>(null);
 
   // use state to keep track of what stage of check-in flow user is on
-  const [stage, setStage] = useState<"shifts" | "initial">("initial");
+  const [stage, setStage] = useState<"initial" | "shifts" | "confirmation">("initial");
 
   // store shifts in an array (sample data for now)
   const shifts = [1, 2];
@@ -47,7 +47,7 @@ export default function CheckInOutForm() {
         <Image src={logo1} alt="Logo" height={173} width={215} className="mb-[24px]"/>
         <div className="p-6 border border-[#D0D5DD] rounded-[20px] shadow-[0px_8px_8px_-4px_#10182808,_0px_20px_24px_-4px_#10182814] flex justify-center items-start pt-6 w-1/2">
           <div className="flex flex-col items-center w-full">
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center text-center">
               <div
                 style={{
                   color: "#9A0F28",
@@ -105,11 +105,12 @@ export default function CheckInOutForm() {
             <button
               className="bg-[#138D8A] mt-[32px] text-white text-[16px] py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold"
               type="submit"
-              // onClick={(e) => {
-              //   if (email !== "") {
-              //     handleSubmit(e);
-              //   }
-              // }}
+              onClick={(e) => {
+                if (email !== "") {
+                  handleSubmit(e);
+                  setStage("confirmation");
+                }
+              }}
             >
               Confirm Your Check-In
             </button>
@@ -117,6 +118,14 @@ export default function CheckInOutForm() {
         </div>
       </div>
     </div>
+    );
+  } else if (stage === "confirmation") {
+    return (
+      <CheckConfirmation
+        title="Hooray! You have checked in at 10:00:39 AM."
+        captionText="Do not forget to check out before you leave!"
+        buttonText="Back to First Page"
+      />
     );
   }
 
@@ -127,7 +136,7 @@ export default function CheckInOutForm() {
         <Image src={logo1} alt="Logo" height={173} width={215} className="mb-[24px]"/>
         <div className="p-6 border border-[#D0D5DD] rounded-[20px] shadow-[0px_8px_8px_-4px_#10182808,_0px_20px_24px_-4px_#10182814] flex justify-center items-start pt-6 w-1/2">
           <div className="flex flex-col items-center w-full">
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center text-center">
               <div
                 style={{
                   color: "#9A0F28",
