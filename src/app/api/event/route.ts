@@ -39,12 +39,15 @@ export const PATCH = async (request: NextRequest) => {
           ...updateData, 
         },
       });
-      
 
-    return NextResponse.json({
-      code: "SUCCESS",
-      message: updatedEvent.eventName,
-    });
+
+    return NextResponse.json(
+      {
+        code: "SUCCESS",
+        message: updatedEvent.eventName,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error:", error);
     return NextResponse.json({
@@ -93,21 +96,24 @@ export const GET = async (request: NextRequest) => {
       });
   
 
-    if (!fetchedEvent) {
+      if (!fetchedEvent) {
+        return NextResponse.json(
+          {
+            code: "NOT_FOUND",
+            message: "No event found",
+          },
+          { status: 404 }
+        );
+      }
+
       return NextResponse.json(
-        {
-          code: "NOT_FOUND",
-          message: "No event found",
-        },
-        { status: 404 }
+      {
+        code: "SUCCESS",
+        data: fetchedEvent,
+      },
+      { status: 200 }
       );
     }
-
-    return NextResponse.json({
-      code: "SUCCESS",
-      data: fetchedEvent,
-    });
-  }
   } catch (error) {
     console.error("Error fetching events:", error);
     return NextResponse.json(
