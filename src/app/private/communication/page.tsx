@@ -1,18 +1,55 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
+import React, { useEffect, useState, useRef } from "react";
+// import Image from "next/image";
 import { sendMassEmail } from "@api/email/route.client";
 import useApiThrottle from "../../../hooks/useApiThrottle";
 import GroupRoundedIcon from "@mui/icons-material/GroupRounded";
+import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function CommunicationPage() {
   const [subject, setSubject] = React.useState("");
-  const [fromEmail] = React.useState("breadandroses@gmail.com");
+  const [fromEmail] = React.useState("breadandroses@gmail.com"); // TODO: is this the right email?
   const [text, setText] = React.useState("");
 
   const { fetching: sendMassEmailLoading, fn: throttledSendMassEmail } =
     useApiThrottle({ fn: sendMassEmail });
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File[] | null>(null);
+  const [preview, setPreview] = useState<string[]>([""]); //TODO: change ts
+
+  const handleButtonClick = () => {
+    if (fileInputRef.current !== null) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(selectedFile ? [...selectedFile, file] : [file]);
+    }
+  };
+
+  useEffect(() => {
+    if (!selectedFile) {
+      setPreview([""]);
+      return;
+    }
+    const objectUrls: string[] = selectedFile.map((currFile) =>
+      URL.createObjectURL(currFile)
+    );
+
+    setPreview(objectUrls);
+
+    // Cleanup function to free memory
+    return () => {
+      objectUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [selectedFile]);
 
   return (
     <div className="flex flex-col gap-8 h-full">
@@ -58,9 +95,61 @@ export default function CommunicationPage() {
           </p>
         </div>
         <div className="w-2/3 flex flex-col gap-6">
-          <div className="border-2 border-gray-300 rounded-md p-4 text-center text-gray-500 cursor-pointer hover:border-teal-600">
-            <p>Click to upload or drag and drop</p>
-            <p>SVG, PNG, JPG or GIF (max. 3MB)</p>
+          <button
+            onClick={handleButtonClick}
+            className="border-2 border-gray-300 rounded-md p-4 text-center text-gray-500 cursor-pointer hover:border-teal-600"
+          >
+            <FileUploadRoundedIcon sx={{ color: "#138D8A" }} />
+            <p>
+              <span className="text-teal-600 font-semibold">
+                Click to upload
+              </span>{" "}
+              or drag and drop
+            </p>
+            {/* <p>SVG, PNG, JPG or GIF (max. 3MB)</p> */}
+          </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          {selectedFile?.length && (
+            <p className="text-gray-700">
+              Selected: {selectedFile.map((file) => file.name).join(", ")}
+            </p>
+          )}
+
+          <div>
+            {selectedFile?.length &&
+              selectedFile.map((src, index) => (
+                <div className="p-4 gap-4 flex flex-row items-center w-full">
+                  <UploadFileIcon sx={{ color: "#138D8A" }} />
+                  <div className="flex flex-col">
+                    <div>{src.name}</div>
+                    <div className="flex flex-row gap-2">
+                      <div>file size here</div>
+                      <div>dot</div>
+                      <div>complete</div>
+                    </div>
+                  </div>
+                  <DeleteIcon
+                    onClick={() =>
+                      setSelectedFile(
+                        (prev) => prev?.filter((_, i) => i !== index) || []
+                      )
+                    }
+                    className="ml-auto"
+                  />
+                </div>
+              ))}
+          </div>
+
+          <div>
+            {preview.length > 0 &&
+              preview.map((src, index) => (
+                <img key={index} src={src} alt="OKAY" />
+              ))}
           </div>
           <textarea
             className="border border-gray-300 rounded-md p-2 w-full resize-none"
@@ -82,7 +171,7 @@ export default function CommunicationPage() {
               await throttledSendMassEmail(text);
             }}
           >
-            Send
+            Send Email
           </button>
         </div>
       </div>
