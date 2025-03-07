@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import Autocomplete from "@mui/material/Autocomplete";
 
 import MenuItem from "@mui/material/MenuItem";
@@ -29,7 +30,7 @@ export default function CheckInOutForm() {
   const [activeButton, setActiveButton] = useState<"checkin" | "checkout" | null>(null);
 
   // use state to keep track of what stage of check-in flow user is on
-  const [stage, setStage] = useState<"shifts" | null>(null);
+  const [stage, setStage] = useState<"shifts" | "initial">("initial");
 
   // store shifts in an array (sample data for now)
   const shifts = [1, 2];
@@ -51,6 +52,15 @@ export default function CheckInOutForm() {
     return (
       <div className="flex flex-col items-center w-full">
       <div className="flex flex-col justify-center items-center min-h-screen w-full my-[32px]">
+        <div className="w-1/2">
+          <button className="flex flex-row gap-[8px] text-[16px] text-[#145A5A] font-bold" 
+            type="button" 
+            onClick={() => setStage("initial")}
+          >
+            <Icon icon={"tabler:arrow-left"} width="20" />
+            Back
+          </button>
+        </div>
         <Image src={logo1} alt="Logo" height={173} width={215} className="mb-[24px]"/>
         <div className="p-6 border border-[#D0D5DD] rounded-[20px] shadow-[0px_8px_8px_-4px_#10182808,_0px_20px_24px_-4px_#10182814] flex justify-center items-start pt-6 w-1/2">
           <div className="flex flex-col items-center w-full">
@@ -82,8 +92,7 @@ export default function CheckInOutForm() {
                 variant="filled"
                 />
               </div>
-              
-              {/* TODO: implement mapping feature to display shifts */}
+            
               <div className="flex flex-col gap-[20px] text-[16px] font-bold text-[#344054]">
                 Shift(s) (choose one)
                 {shifts.map((shift, index) => (
