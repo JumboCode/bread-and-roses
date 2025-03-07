@@ -6,6 +6,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import Image from "next/image";
 import logo1 from "../../public/logo1.png";
 import CheckConfirmation from "./CheckConfirmation";
+import Autocomplete from '@mui/material/Autocomplete';
 
 export default function CheckInOutForm() {
   const [email, setEmail] = useState("");
@@ -20,9 +21,9 @@ export default function CheckInOutForm() {
 
   // mock text for now until backend is implemented
   const emailOptions = [
-    "example1@example.com",
-    "example2@example.com",
-    "example3@example.com",
+    "johnnytan@example.com",
+    "wonkim@example.com",
+    "antran@example.com",
   ];
 
   // submit logic
@@ -69,7 +70,7 @@ export default function CheckInOutForm() {
               <div className="text-[16px] font-bold text-[#344054]">
                 Name
                 <TextField
-                sx={{ width: "100%" }}
+                sx={{ width: "100%", backgroundColor: "#F9FAFB" }}
                 id="outlined-basic"
                 label=""
                 variant="filled"
@@ -177,21 +178,26 @@ export default function CheckInOutForm() {
 
             <div className="flex flex-col w-full text-lg font-bold text-[#344054] gap-[8px]">
                 Your email
-            <TextField
+            <Autocomplete
+              includeInputInList
+              disableClearable
+              freeSolo
+              options={emailOptions}
+              onInputChange={(_, value) => {setEmail(value)}}
+              sx={{ width: "100%" }}
+              renderInput={(params) => <TextField {...params}
                 sx={{ marginBottom: "30px", width: "100%" }}
                 id="outlined-basic"
                 label=""
                 variant="outlined"
-                onChange={(e) => {
-                    setEmail(e.target.value);
-                }}
                 onKeyUp={(e) => {
                     if (e.key === "Enter" && email !== "") {
                     handleSubmit(e);
-                    }
+                  }
                 }}
                 error={emailDisplayError}
                 helperText={emailDisplayError && "Couldn't find your account"}
+              />}
             />
             </div>
 
