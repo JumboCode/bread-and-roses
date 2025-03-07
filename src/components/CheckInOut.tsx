@@ -1,28 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import Autocomplete from "@mui/material/Autocomplete";
-
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-// import Checkbox from "@mui/material/Checkbox";
-// import FormControlLabel from "@mui/material/FormControlLabel";
-// import InputAdornment from "@mui/material/InputAdornment";
-// import IconButton from "@mui/material/IconButton";
-
-// import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-// import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import Image from "next/image";
 import logo1 from "../../public/logo1.png";
-
-// import { signIn } from "next-auth/react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function CheckInOutForm() {
   const [email, setEmail] = useState("");
