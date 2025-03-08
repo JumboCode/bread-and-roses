@@ -4,9 +4,10 @@ import SearchIcon from "@mui/icons-material/Search";
 
 interface SearchBarProps {
   onSearchChange: (searchText: string) => void;
+  width?: string | number; // option to customize width (default is 400)
 }
 
-const SearchBar = ({ onSearchChange }: SearchBarProps) => {
+const SearchBar = ({ onSearchChange, width = 400 }: SearchBarProps) => {
   return (
     <Box
       sx={{
@@ -19,7 +20,7 @@ const SearchBar = ({ onSearchChange }: SearchBarProps) => {
         background: "var(--White, #FFF)",
         boxShadow: "0px 1px 2px 0px rgba(16, 24, 40, 0.05)",
         width: "100%",
-        maxWidth: 400,
+        maxWidth: width,
       }}
     >
       <SearchIcon sx={{ color: "var(--Grey-500, #667085)" }} />

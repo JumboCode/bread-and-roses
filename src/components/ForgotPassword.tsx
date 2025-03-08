@@ -12,6 +12,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { sendForgotCode, updatePassword } from "@api/password/route.client";
 import { verifyCode } from "@api/verify-code/route.client";
+import useApiThrottle from "../hooks/useApiThrottle";
 
 export default function ForgotPasswordForm() {
   const router = useRouter();
@@ -47,6 +48,10 @@ export default function ForgotPasswordForm() {
     }
   };
 
+  const { fetching: emailLoading, fn: throttledEmailSubmit } = useApiThrottle({
+    fn: handleEmailSubmit,
+  });
+
   const handlePasswordSubmit = async () => {
     if (
       confirmPassword !== newPassword ||
@@ -65,6 +70,11 @@ export default function ForgotPasswordForm() {
     }
   };
 
+  const { fetching: passwordLoading, fn: throttledPasswordSubmit } =
+    useApiThrottle({
+      fn: handlePasswordSubmit,
+    });
+
   const handleCodeSubmit = async () => {
     const verifyReponse = await verifyCode(email, code.join(""));
 
@@ -77,6 +87,8 @@ export default function ForgotPasswordForm() {
       setStep(3);
     }
   };
+  const { fetching: codeSubmitLoading, fn: throttledCodeSubmit } =
+    useApiThrottle({ fn: handleCodeSubmit });
 
   const handleCodeChange = (value: string, index: number) => {
     if (!/^\d$/.test(value) && value !== "") return;
@@ -107,6 +119,10 @@ export default function ForgotPasswordForm() {
       setError(codeResponse.message);
     }
   };
+
+  const { fetching: resendLoading, fn: throttledCodeResend } = useApiThrottle({
+    fn: handleCodeResend,
+  });
 
   const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
     if (
@@ -228,9 +244,9 @@ export default function ForgotPasswordForm() {
                     setEmail(e.target.value);
                     setError("");
                   }}
-                  onKeyUp={(e) => {
+                  onKeyUp={async (e) => {
                     if (e.key === "Enter") {
-                      handleEmailSubmit();
+                      await throttledEmailSubmit();
                     }
                   }}
                   error={error !== ""}
@@ -239,8 +255,13 @@ export default function ForgotPasswordForm() {
               </div>
               <div className="w-full">
                 <button
-                  onClick={handleEmailSubmit}
-                  className="w-full justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]"
+                  disabled={emailLoading}
+                  onClick={async () => {
+                    await throttledEmailSubmit();
+                  }}
+                  className={`${
+                    emailLoading ? "bg-[#96E3DA]" : "bg-[#138D8A]"
+                  } w-full justify-center flex flex-row px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]`}
                 >
                   Continue
                 </button>
@@ -264,9 +285,9 @@ export default function ForgotPasswordForm() {
                       onChange={(e) =>
                         handleCodeChange(e.target.value.slice(-1), index)
                       }
-                      onKeyUp={(e) => {
+                      onKeyUp={async (e) => {
                         if (e.key === "Enter") {
-                          handleCodeSubmit();
+                          await throttledCodeSubmit();
                         }
                       }}
                       onKeyDown={(e) => handleKeyDown(e, index)}
@@ -295,8 +316,13 @@ export default function ForgotPasswordForm() {
               <div className="w-full">
                 <div className="w-full">
                   <button
-                    onClick={handleCodeSubmit}
-                    className="w-full justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]"
+                    onClick={async () => {
+                      await handleCodeSubmit();
+                    }}
+                    disabled={codeSubmitLoading}
+                    className={`${
+                      codeSubmitLoading ? "bg-[#96E3DA]" : "bg-teal-600"
+                    } w-full justify-center flex flex-rowpx-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]`}
                   >
                     Continue
                   </button>
@@ -323,9 +349,9 @@ export default function ForgotPasswordForm() {
                 slotProps={{
                   input: CustomInputProps("newPassword"),
                 }}
-                onKeyUp={(e) => {
+                onKeyUp={async (e) => {
                   if (e.key === "Enter") {
-                    handlePasswordSubmit();
+                    await throttledPasswordSubmit();
                   }
                 }}
                 onChange={(e) => {
@@ -346,9 +372,9 @@ export default function ForgotPasswordForm() {
                 slotProps={{
                   input: CustomInputProps("confirmPassword"),
                 }}
-                onKeyUp={(e) => {
+                onKeyUp={async (e) => {
                   if (e.key === "Enter") {
-                    handlePasswordSubmit();
+                    await throttledPasswordSubmit();
                   }
                 }}
                 onChange={(e) => {
@@ -359,8 +385,13 @@ export default function ForgotPasswordForm() {
               />
 
               <button
-                onClick={handlePasswordSubmit}
-                className="w-full justify-center flex flex-row bg-teal-600 px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold"
+                disabled={passwordLoading}
+                onClick={async () => {
+                  await throttledPasswordSubmit();
+                }}
+                className={`${
+                  passwordLoading ? "bg-[#96E3DA]" : "bg-teal-600"
+                } w-full justify-center flex flex-row  px-4.5 py-2.5 text-white rounded-lg place-items-center text-[14px] font-semibold`}
               >
                 Continue
               </button>
@@ -395,8 +426,11 @@ export default function ForgotPasswordForm() {
           <div className="mt-4 text-gray-500 text-center text-sm">
             Didn&#39;t receive a code?
             <button
+              disabled={resendLoading}
               className="px-1 text-teal-600 font-semibold"
-              onClick={handleCodeResend}
+              onClick={async () => {
+                await throttledCodeResend();
+              }}
             >
               Resend
             </button>

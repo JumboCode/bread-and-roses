@@ -15,6 +15,20 @@ export const POST = async (request: NextRequest) => {
 
     const { user, volunteerDetails } = await request.json();
 
+    const existingUser = await prisma.user.findUnique({
+      where: { email: user.email },
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        {
+          code: "EMAIL_ALREADY_EXISTS",
+          message: "User with this email already exists",
+        },
+        { status: 409 }
+      );
+    }
+
     // Hash the user's password
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(user.password, saltRounds);
@@ -41,17 +55,23 @@ export const POST = async (request: NextRequest) => {
       },
     });
 
-    return NextResponse.json({
-      code: "SUCCESS",
-      message: `User created with email: ${savedUser.email}`,
-      data: savedUser,
-    });
+    return NextResponse.json(
+      {
+        code: "SUCCESS",
+        message: `User created with email: ${savedUser.email}`,
+        data: savedUser,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({
-      code: "ERROR",
-      message: error,
-    });
+    return NextResponse.json(
+      {
+        code: "ERROR",
+        message: error,
+      },
+      { status: 500 }
+    );
   }
 };
 
@@ -88,17 +108,23 @@ export const DELETE = async (request: NextRequest) => {
       where: { id },
     });
 
-    return NextResponse.json({
-      code: "SUCCESS",
-      message: "User deleted successfully",
-      data: deletedUser,
-    });
+    return NextResponse.json(
+      {
+        code: "SUCCESS",
+        message: "User deleted successfully",
+        data: deletedUser,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({
-      code: "ERROR",
-      message: error,
-    });
+    return NextResponse.json(
+      {
+        code: "ERROR",
+        message: error,
+      },
+      { status: 500 }
+    );
   }
 };
 
@@ -140,16 +166,22 @@ export const GET = async (request: NextRequest) => {
         );
       }
 
-      return NextResponse.json({
-        code: "SUCCESS",
-        data: users,
-      });
+      return NextResponse.json(
+        {
+          code: "SUCCESS",
+          data: users,
+        },
+        { status: 200 }
+      );
     } catch (error) {
       console.error("Error:", error);
-      return NextResponse.json({
-        code: "ERROR",
-        message: error,
-      });
+      return NextResponse.json(
+        {
+          code: "ERROR",
+          message: error,
+        },
+        { status: 404 }
+      );
     }
   }
 
@@ -172,16 +204,22 @@ export const GET = async (request: NextRequest) => {
     // Do not include volunteerDetails in user we return
     const { volunteerDetails, ...user } = fetchedUser;
 
-    return NextResponse.json({
-      code: "SUCCESS",
-      data: { user, volunteerDetails },
-    });
+    return NextResponse.json(
+      {
+        code: "SUCCESS",
+        data: { user, volunteerDetails },
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({
-      code: "ERROR",
-      message: error,
-    });
+    return NextResponse.json(
+      {
+        code: "ERROR",
+        message: error,
+      },
+      { status: 500 }
+    );
   }
 };
 
@@ -216,16 +254,22 @@ export const PATCH = async (request: NextRequest) => {
       },
     });
 
-    return NextResponse.json({
-      code: "SUCCESS",
-      message: `User update with email: ${updatedUser.email}`,
-      data: { user: updatedUser, volunteerDetails: updatedVD },
-    });
+    return NextResponse.json(
+      {
+        code: "SUCCESS",
+        message: `User update with email: ${updatedUser.email}`,
+        data: { user: updatedUser, volunteerDetails: updatedVD },
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({
-      code: "ERROR",
-      message: error,
-    });
+    return NextResponse.json(
+      {
+        code: "ERROR",
+        message: error,
+      },
+      { status: 500 }
+    );
   }
 };

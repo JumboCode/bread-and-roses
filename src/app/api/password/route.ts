@@ -14,10 +14,13 @@ export const POST = async (request: NextRequest) => {
       },
     });
     if (!user) {
-      return NextResponse.json({
-        code: "ERROR",
-        message: "Email not found",
-      });
+      return NextResponse.json(
+        {
+          code: "ERROR",
+          message: "Email not found",
+        },
+        { status: 404 }
+      );
     }
 
     const codeString = Math.floor(Math.random() * 10000)
@@ -32,16 +35,22 @@ export const POST = async (request: NextRequest) => {
 
     await sendMail(email, codeString);
 
-    return NextResponse.json({
-      code: "SUCCESS",
-      message: "Forgot password email sent",
-    });
+    return NextResponse.json(
+      {
+        code: "SUCCESS",
+        message: "Forgot password email sent",
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({
-      code: "ERROR",
-      message: error,
-    });
+    return NextResponse.json(
+      {
+        code: "ERROR",
+        message: error,
+      },
+      { status: 500 }
+    );
   }
 };
 
@@ -62,15 +71,21 @@ export const PUT = async (request: NextRequest) => {
       },
     });
 
-    return NextResponse.json({
-      code: "SUCCESS",
-      message: "Password successfully updated",
-    });
+    return NextResponse.json(
+      {
+        code: "SUCCESS",
+        message: "Password successfully updated",
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({
-      code: "ERROR",
-      message: error,
-    });
+    return NextResponse.json(
+      {
+        code: "ERROR",
+        message: error,
+      },
+      { status: 500 }
+    );
   }
 };
