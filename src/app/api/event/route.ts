@@ -126,6 +126,14 @@ export const GET = async (request: NextRequest) => {
       },
       { status: 200 }
       );
+    } else {
+      return NextResponse.json(
+        {
+          code: "ERROR",
+          message: "No event ID provided",
+        },
+        { status: 400 }
+      );
     }
     
   } catch (error) {
