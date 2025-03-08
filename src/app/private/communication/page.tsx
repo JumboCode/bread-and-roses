@@ -11,7 +11,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Attachment } from "nodemailer/lib/mailer";
 
 export default function CommunicationPage() {
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(1);
 
   interface SendEmailResponse {
     code: "SUCCESS" | "ERROR";
@@ -23,11 +23,19 @@ export default function CommunicationPage() {
   const [text, setText] = React.useState("");
 
   const { fetching: sendMassEmailLoading, fn: throttledSendMassEmail } =
-    useApiThrottle({ fn: sendMassEmail });
+    useApiThrottle({
+      fn: sendMassEmail,
+      callback: (response: SendEmailResponse) => {
+        if (response.code === "SUCCESS") {
+          setStep(2);
+        } else {
+          console.error("Email sending failed", response);
+        }
+      },
+    });
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [attachments, setAttachments] = useState<File[] | null>(null);
-  const [preview, setPreview] = useState<string[]>([""]); //TODO: change ts
 
   const handleButtonClick = () => {
     if (fileInputRef.current !== null) {
@@ -62,23 +70,6 @@ export default function CommunicationPage() {
     );
   };
 
-  useEffect(() => {
-    if (!attachments) {
-      setPreview([""]);
-      return;
-    }
-    const objectUrls: string[] = attachments.map((currFile) =>
-      URL.createObjectURL(currFile)
-    );
-
-    setPreview(objectUrls);
-
-    // Cleanup function to free memory
-    return () => {
-      objectUrls.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [attachments]);
-
   async function fileToNodemailerAttachment(file: File): Promise<Attachment> {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -101,6 +92,13 @@ export default function CommunicationPage() {
     }
     return nodeMailerAttachments;
   }
+
+  const handleBackToOriginalPage = async () => {
+    setStep(1);
+    setSubject("");
+    setText("");
+    setAttachments(null);
+  };
 
   return (
     <div className="flex flex-col gap-8 h-full">
@@ -213,23 +211,11 @@ export default function CommunicationPage() {
                   const nodeMailerAttachments =
                     await convertFilesToNodemailerAttachment(attachments);
                   try {
-                    // Make the API call and expect a JSON response
-                    const response = (await throttledSendMassEmail(
+                    await throttledSendMassEmail(
                       text,
                       subject,
                       nodeMailerAttachments
-                    )) as SendEmailResponse | undefined;
-
-                    console.log("API response:", response);
-
-                    if (response && response.code === "SUCCESS") {
-                      setStep(2);
-                    } else {
-                      console.error(
-                        "Email sending failed or response is undefined",
-                        response
-                      );
-                    }
+                    );
                   } catch (error) {
                     console.error("Error sending email:", error);
                   }
@@ -258,7 +244,7 @@ export default function CommunicationPage() {
               </div>
             </div>
             <button
-              onClick={() => setStep(1)}
+              onClick={() => handleBackToOriginalPage()}
               className="w-auto h-auto font-semibold bg-teal-600 py-2.5 px-4 text-white rounded-md items-center"
             >
               Back to the original page
