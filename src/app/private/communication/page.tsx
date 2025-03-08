@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { sendMassEmail } from "@api/email/route.client";
 import useApiThrottle from "../../../hooks/useApiThrottle";
