@@ -81,15 +81,6 @@ export default function CheckInOutForm() {
 
               <div className="flex flex-col w-full text-lg font-bold text-[#344054] gap-[32px]">
                 Here is your shift signup information:
-                <div className="text-[16px] font-bold text-[#344054]">
-                  Name
-                  <TextField
-                    sx={{ width: "100%", backgroundColor: "#F9FAFB" }}
-                    id="outlined-basic"
-                    variant="filled"
-                    hiddenLabel
-                  />
-                </div>
                 <div className="flex flex-col gap-[20px] text-[16px] font-bold text-[#344054]">
                   Shift(s) (choose one)
                   {shifts.map((shift, index) => (
