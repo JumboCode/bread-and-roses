@@ -22,44 +22,38 @@ export const POST = async (request: NextRequest) => {
         refreshToken: process.env.OAUTH_REFRESHTOKEN,
         accessToken: process.env.OAUTH_ACCESSTOKEN,
       },
-      tls: {
-        rejectUnauthorized: false,
-      }, //@TODO: REmove before deployment
     });
-
-    console.log("before mass message");
 
     for (const attachment of attachments) {
       attachment.content = Buffer.from(attachment.content.data);
     }
 
-    console.log(attachments);
-
     const massMessage = {
       from: process.env.NODEMAILER_EMAIL,
-      //@TODO: CHANGE TS BEFORE DEPLOYMENT
-      bcc: users
-        .filter((user) => user.lastName === "Maranga")
-        .map((x) => x.email),
+      bcc: users.map((x) => x.email),
       subject: subject,
       text: text,
-      html: `${text}`, //@TODO: ACTUALLY DO TS
+      html: `${text}`,
       attachments: attachments,
     };
 
     await transporter.sendMail(massMessage);
 
-    console.log("after transporter");
-
-    return NextResponse.json({
-      code: "SUCCESS",
-      message: "Mass email sent with text: " + text,
-    });
+    return NextResponse.json(
+      {
+        code: "SUCCESS",
+        message: "Mass email sent with text: " + text,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({
-      code: "ERROR",
-      message: error,
-    });
+    return NextResponse.json(
+      {
+        code: "ERROR",
+        message: error,
+      },
+      { status: 500 }
+    );
   }
 };

@@ -187,7 +187,7 @@ export default function CommunicationPage() {
                           (prev) => prev?.filter((_, i) => i !== index) || []
                         )
                       }
-                      className="ml-auto"
+                      className="ml-auto cursor-pointer"
                     />
                   </div>
                 ))}
@@ -205,8 +205,8 @@ export default function CommunicationPage() {
             <div className="w-1/3"></div>
             <div className="w-2/3">
               <button
-                className="w-[150px] font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
-                disabled={sendMassEmailLoading}
+                className="w-[150px] font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center disabled:opacity-50"
+                disabled={sendMassEmailLoading || subject === "" || text === ""}
                 onClick={async () => {
                   const nodeMailerAttachments =
                     await convertFilesToNodemailerAttachment(attachments);
