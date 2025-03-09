@@ -68,7 +68,7 @@ export const deleteUser = async (userID: string) => {
 
 export const updateUser = async (
   user: User,
-  volunteerDetails: VolunteerDetails
+  volunteerDetails?: VolunteerDetails
 ) => {
   return fetchApi("/api/user", "PATCH", { user, volunteerDetails });
 };

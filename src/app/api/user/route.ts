@@ -244,21 +244,27 @@ export const PATCH = async (request: NextRequest) => {
       },
     });
 
-    const updatedVD = await prisma.volunteerDetails.update({
-      where: {
-        id: volunteerDetails.id,
-      },
-      data: {
-        ...volunteerDetails,
-        id: undefined,
-      },
-    });
+    let updatedVD = undefined;
+
+    if (volunteerDetails) {
+      updatedVD = await prisma.volunteerDetails.update({
+        where: {
+          id: volunteerDetails.id,
+        },
+        data: {
+          ...volunteerDetails,
+          id: undefined,
+        },
+      });
+    }
 
     return NextResponse.json(
       {
         code: "SUCCESS",
         message: `User update with email: ${updatedUser.email}`,
-        data: { user: updatedUser, volunteerDetails: updatedVD },
+        data: updatedVD
+          ? { user: updatedUser, volunteerDetails: updatedVD }
+          : { user: updatedUser },
       },
       { status: 200 }
     );

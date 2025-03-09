@@ -75,6 +75,28 @@ export const options: NextAuthOptions = {
           token.volunteerDetails = user.volunteerDetails || null;
         }
       }
+
+      if (token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id },
+        });
+
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.role = dbUser.role;
+          token.firstName = dbUser.firstName;
+          token.lastName = dbUser.lastName;
+
+          if (dbUser.role !== "ADMIN") {
+            const volunteerDetails = await prisma.volunteerDetails.findUnique({
+              where: { userId: dbUser.id },
+            });
+            token.volunteerDetails = volunteerDetails || null;
+          } else {
+            token.volunteerDetails = null;
+          }
+        }
+      }
       return token;
     },
     async session({ session, token }) {
