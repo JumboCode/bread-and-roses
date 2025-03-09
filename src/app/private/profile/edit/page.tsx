@@ -283,9 +283,7 @@ export default function EditProfilePage() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold font-['Sofia Pro'] text-[#101828]">
-          Edit Info
-        </h1>
+        <h1 className="text-2xl font-bold text-[#101828]">Edit Info</h1>
         <div className="flex gap-4">
           <button
             type="button"
@@ -336,10 +334,10 @@ export default function EditProfilePage() {
       {/* @TODO: Upload Photo */}
       {/* <div className="flex items-center justify-between">
         <div className="w-1/3">
-          <div className="text-lg font-bold font-['Sofia Pro'] text-[#344054]">
+          <div className="text-lg font-bold text-[#344054]">
             Your Photo
           </div>
-          <div className="text-xs font-normal font-['Sofia Pro'] text-[#667085]">
+          <div className="text-xs font-normal text-[#667085]">
             This will be displayed on your profile.
           </div>
         </div>
@@ -356,7 +354,7 @@ export default function EditProfilePage() {
               <div className="font-bold text-[#344054]">
                 Are you over 14? <span className="text-[#E61932]">*</span>
               </div>
-              <div className="text-sm font-normal font-['Sofia Pro'] text-[#667085]">
+              <div className="text-sm font-normal text-[#667085]">
                 Note: we require volunteers to be over 14 years old to work with
                 us.
               </div>

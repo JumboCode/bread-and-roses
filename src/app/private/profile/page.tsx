@@ -34,10 +34,10 @@ export default function ProfilePage() {
             </div>
           </div>
           <div>
-            <div className="text-2xl font-bold font-['Sofia Pro'] text-[#101828]">
+            <div className="text-2xl font-bold text-[#101828]">
               {session.user.firstName} {session.user.lastName}
             </div>
-            <div className="font-normal font-['Sofia Pro'] text-[#344054]">
+            <div className="font-normal text-[#344054]">
               {session.user.email}
             </div>
           </div>
@@ -61,7 +61,7 @@ export default function ProfilePage() {
                 <div className="font-bold text-[#344054] mb-1">
                   Are you over 14? <span className="text-[#E61932]">*</span>
                 </div>
-                <div className="text-sm font-normal font-['Sofia Pro'] text-[#667085]">
+                <div className="text-sm font-normal text-[#667085]">
                   Note: we require volunteers to be over 14 years old to work
                   with us.
                 </div>
