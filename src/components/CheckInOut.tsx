@@ -148,6 +148,7 @@ export default function CheckInOutForm() {
         onClick={() => {
           setEmail("");
           setActiveButton(null);
+          setSelectedShift(null);
           setStage("initial");
         }}
       />
