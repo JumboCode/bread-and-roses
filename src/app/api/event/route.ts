@@ -32,21 +32,23 @@ export const POST = async (request: NextRequest) => {
   }
 };
 
-export const PUT = async (request: NextRequest) => {
+export const PATCH = async (request: NextRequest) => {
   try {
     const { event } = await request.json();
-    const { id, ...other } = event;
-    const updateEvent = await prisma.event.update({
-      where: {
-        id: id,
-      },
-      data: other,
-    });
 
+    const updatedEvent = await prisma.event.update({
+      where: {
+        id: event.id,
+      },
+      data: {
+        ...event,
+        id: undefined,
+      },
+    });
     return NextResponse.json(
       {
         code: "SUCCESS",
-        message: updateEvent.eventName,
+        message: updatedEvent.eventName,
       },
       { status: 200 }
     );
@@ -63,19 +65,30 @@ export const PUT = async (request: NextRequest) => {
 };
 
 export const DELETE = async (request: NextRequest) => {
-  try {
-    const { id } = await request.json();
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
 
-    const deleteEvent = await prisma.event.delete({
-      where: {
-        id: id,
+  // Check if id is null
+  if (!id) {
+    return NextResponse.json(
+      {
+        code: "BAD_REQUEST",
+        message: "Event ID is required.",
       },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const deletedEvent = await prisma.event.delete({
+      where: { id },
     });
 
     return NextResponse.json(
       {
         code: "SUCCESS",
-        message: deleteEvent.eventName,
+        message: "Event deleted successfully",
+        data: deletedEvent,
       },
       { status: 200 }
     );
@@ -91,37 +104,38 @@ export const DELETE = async (request: NextRequest) => {
   }
 };
 
-// NOTE: This is for fetching all events
-export const GET = async () => {
-  // currently implemented for fetching all events
-  // need to add filtering
-  try {
-    const fetchedEvents = await prisma.event.findMany(); // Use findMany to fetch all events
+export const GET = async (request: NextRequest) => {
+  const { searchParams } = new URL(request.url);
+  const eventId = searchParams.get("id");
 
-    if (!fetchedEvents || fetchedEvents.length === 0) {
+  try {
+    if (eventId) {
+      const fetchedEvent = await prisma.event.findUnique({
+        where: { id: eventId },
+      });
+
+      if (!fetchedEvent) {
+        return NextResponse.json(
+          { code: "NOT_FOUND", message: "No event found" },
+          { status: 404 }
+        );
+      }
+
       return NextResponse.json(
-        {
-          code: "NOT_FOUND",
-          message: "No events found",
-        },
-        { status: 404 }
+        { code: "SUCCESS", data: fetchedEvent },
+        { status: 200 }
+      );
+    } else {
+      const fetchedEvents = await prisma.event.findMany();
+      return NextResponse.json(
+        { code: "SUCCESS", data: fetchedEvents },
+        { status: 200 }
       );
     }
-
-    return NextResponse.json(
-      {
-        code: "SUCCESS",
-        data: fetchedEvents,
-      },
-      { status: 200 }
-    );
   } catch (error) {
     console.error("Error fetching events:", error);
     return NextResponse.json(
-      {
-        code: "ERROR",
-        message: "An error occurred while fetching events",
-      },
+      { code: "ERROR", message: "An error occurred while fetching events" },
       { status: 500 }
     );
   }

@@ -228,13 +228,12 @@ export const GET = async (request: NextRequest) => {
  * @param {NextRequest} request - The incoming request with user and volunteerDetails data.
  * @returns {NextResponse} - JSON response with updated data or error.
  */
-export const PUT = async (request: NextRequest) => {
+
+export const PATCH = async (request: NextRequest) => {
   try {
     /* @TODO: Add auth */
-
     const { user, volunteerDetails } = await request.json();
 
-    // id: undefined for data because we cannot modify the id
     const updatedUser = await prisma.user.update({
       where: {
         id: user.id,
