@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Role } from "@prisma/client";
 import { VolunteerDetails } from "../types/next-auth";
+import { useTranslation } from "react-i18next";
 
 interface SideNavBarProps {
   user: {
@@ -20,15 +21,18 @@ interface SideNavBarProps {
   };
 }
 
+const currentYear = new Date().getFullYear();
+
 const SideNavBar = ({ user }: SideNavBarProps) => {
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useTranslation(["translation"]);
 
   const adminTabs = [
-    { name: "Home", icon: "tabler:home", href: "/private" },
-    { name: "Events", icon: "uil:calender", href: "/private/events" },
+    { name: t("home"), icon: "tabler:home", href: "/private" },
+    { name: t("events"), icon: "uil:calender", href: "/private/events" },
     {
-      name: "Volunteers",
+      name: t("volunteers"),
       icon: "pepicons-print:people",
       href: "/private/volunteers",
     },
@@ -42,15 +46,15 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
       icon: "material-symbols:check-circle-outline-rounded",
       href: "/private/check-in-out",
     },
-    { name: "Profile", icon: "charm:person", href: "/private/profile" },
-    { name: "Logout", icon: "tabler:logout", href: "" },
+    { name: t("profile"), icon: "charm:person", href: "/private/profile" },
+    { name: t("logout"), icon: "tabler:logout", href: "" },
   ];
 
   const volunteerTabs = [
-    { name: "Home", icon: "tabler:home", href: "/private" },
-    { name: "Events", icon: "uil:calender", href: "/private/events" },
-    { name: "Profile", icon: "charm:person", href: "/private/profile" },
-    { name: "Logout", icon: "tabler:logout", href: "" },
+    { name: t("home"), icon: "tabler:home", href: "/private" },
+    { name: t("events"), icon: "uil:calender", href: "/private/events" },
+    { name: t("profile"), icon: "charm:person", href: "/private/profile" },
+    { name: t("logout"), icon: "tabler:logout", href: "" },
   ];
 
   const tabs = user.role === Role.ADMIN ? adminTabs : volunteerTabs;
@@ -105,7 +109,7 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
                   pathname === tab.href ? "text-darkrose bg-rose" : ""
                 }`}
                 onClick={() =>
-                  tab.name === "Logout"
+                  tab.name === t("logout")
                     ? signOut({ callbackUrl: "/public/signIn" })
                     : router.replace(tab.href)
                 }
@@ -132,7 +136,7 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
           </div>
 
           <div className="flex text-gray-500">
-            <h5 className="text-xs ">ⓒ 2024 Bread & Roses</h5>
+            <h5 className="text-xs ">ⓒ {currentYear} Bread & Roses</h5>
           </div>
         </div>
       </div>

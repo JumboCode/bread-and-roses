@@ -1,6 +1,7 @@
 import React from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
 
 interface EventCardProps {
   title: string;
@@ -23,8 +24,10 @@ const EventCard = ({
   width = 360,
   imageSrc,
 }: EventCardProps) => {
+  const { t } = useTranslation(["translation"]);
   const isFull = volunteers === maxVolunteers ? true : false;
-  const volunteerText = volunteers + "/" + maxVolunteers + " volunteers";
+  const volunteerText =
+    volunteers + "/" + maxVolunteers + " " + t("volunteers");
   const optionsTime: Intl.DateTimeFormatOptions = {
     hour: "numeric",
     minute: "numeric",
@@ -119,7 +122,7 @@ const EventCard = ({
                   {volunteerText}
                 </div>
                 <button className="flex justify-end flex-row gap-x-2 bg-teal-600 px-3.5 py-1 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]">
-                  See details
+                  {t("see_details")}
                   <Icon icon="formkit:arrowright" width="20" height="21" />
                 </button>
               </div>
