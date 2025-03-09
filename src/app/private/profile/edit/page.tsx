@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { getUser, updateUser } from "@api/user/route.client";
 import { Role, User, VolunteerDetails } from "@prisma/client";
 import RadioButton from "@components/RadioButton";
+import useApiThrottle from "../../../../hooks/useApiThrottle";
 
 // @TOOD: Add Upload Image
 // interface UploadAreaProps {
@@ -155,44 +156,6 @@ export default function EditProfilePage() {
     fetchData();
   }, [session?.user.id]);
 
-  if (status === "loading") {
-    return (
-      <div className="h-screen flex justify-center items-center text-3xl">
-        Loading...
-      </div>
-    );
-  }
-
-  if (!session) {
-    return (
-      <div className="h-screen flex justify-center items-center text-xl">
-        You must be logged in to edit your profile.
-      </div>
-    );
-  }
-
-  if (loadError) {
-    return (
-      <div className="h-screen flex flex-col justify-center items-center gap-4">
-        <p className="text-xl text-red-600">{loadError}</p>
-        <button
-          onClick={() => router.push("/private/profile")}
-          className="px-4 py-2 bg-gray-200 rounded"
-        >
-          Go back
-        </button>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="h-[calc(100vh-90px)] flex justify-center items-center text-3xl">
-        Loading...
-      </div>
-    );
-  }
-
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -206,17 +169,23 @@ export default function EditProfilePage() {
     };
 
     try {
-      await updateUser(
-        trimStrings(user),
-        volunteerDetails ? trimStrings(volunteerDetails) : undefined
-      );
-      await update();
-      router.push(`/private/profile`);
+      if (user) {
+        await updateUser(
+          trimStrings(user),
+          volunteerDetails ? trimStrings(volunteerDetails) : undefined
+        );
+        await update();
+        router.push(`/private/profile`);
+      }
     } catch (err) {
       console.error("Error updating user:", err);
       alert("Failed to update user");
     }
   };
+
+  const { fetching: saveLoading, fn: throttledHandleSave } = useApiThrottle({
+    fn: handleSave,
+  });
 
   const handleCancel = () => {
     router.push(`/private/profile`);
@@ -273,6 +242,44 @@ export default function EditProfilePage() {
     }
   };
 
+  if (status === "loading") {
+    return (
+      <div className="h-screen flex justify-center items-center text-3xl">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="h-screen flex justify-center items-center text-xl">
+        You must be logged in to edit your profile.
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="h-screen flex flex-col justify-center items-center gap-4">
+        <p className="text-xl text-red-600">{loadError}</p>
+        <button
+          onClick={() => router.push("/private/profile")}
+          className="px-4 py-2 bg-gray-200 rounded"
+        >
+          Go back
+        </button>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="h-[calc(100vh-90px)] flex justify-center items-center text-3xl">
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
@@ -290,8 +297,8 @@ export default function EditProfilePage() {
           <button
             type="submit"
             className="px-4 py-2 bg-teal-600 text-white rounded-md font-semibold disabled:opacity-50"
-            onClick={handleSave}
-            disabled={!isFormValid()}
+            onClick={throttledHandleSave}
+            disabled={!isFormValid() || saveLoading}
           >
             Save
           </button>
