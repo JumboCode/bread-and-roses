@@ -86,6 +86,7 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
       link: "https://www.linkedin.com/company/breadandrosescommunitykitchen/",
     },
   ];
+
   return (
     <div className="h-screen w-60 border-t border-r border-gray-200 fixed bg-white z-20 left-0">
       <div className="flex place-content-center my-6 ">
@@ -95,7 +96,7 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
           width={215}
           height={173}
           alt="bread & roses logo"
-          onClick={() => router.replace("/private")}
+          onClick={() => router.push("/private")}
         />
       </div>
 
@@ -111,7 +112,7 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
                 onClick={() =>
                   tab.name === t("logout")
                     ? signOut({ callbackUrl: "/public/signIn" })
-                    : router.replace(tab.href)
+                    : router.push(tab.href)
                 }
               >
                 <Icon icon={tab.icon} width="24" height="24" /> {tab.name}
