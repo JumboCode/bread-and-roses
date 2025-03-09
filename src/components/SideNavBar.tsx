@@ -41,6 +41,11 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
       icon: "material-symbols:inbox-outline",
       href: "/private/communication",
     },
+    {
+      name: "Check-in/out",
+      icon: "material-symbols:check-circle-outline-rounded",
+      href: "/private/check-in-out",
+    },
     { name: t("profile"), icon: "charm:person", href: "/private/profile" },
     { name: t("logout"), icon: "tabler:logout", href: "" },
   ];

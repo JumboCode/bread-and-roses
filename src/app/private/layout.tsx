@@ -4,6 +4,7 @@ import SideNavBar from "@components/SideNavBar";
 import TopHeader from "@components/TopHeader";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { getLanguageFromCookie } from "../../lib/languages";
 
@@ -13,6 +14,7 @@ interface IHomeLayoutProps {
 
 const HomeLayout = ({ children }: IHomeLayoutProps) => {
   const { data: session } = useSession();
+  const pathname = usePathname();
   const { t, i18n } = useTranslation(["translation"]);
 
   useEffect(() => {
@@ -26,6 +28,10 @@ const HomeLayout = ({ children }: IHomeLayoutProps) => {
         {t("Loading")}...
       </div>
     );
+  }
+
+  if (pathname === "/private/check-in-out") {
+    return <>{children}</>;
   }
 
   return (
