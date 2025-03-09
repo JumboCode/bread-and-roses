@@ -21,6 +21,8 @@ interface SideNavBarProps {
   };
 }
 
+const currentYear = new Date().getFullYear();
+
 const SideNavBar = ({ user }: SideNavBarProps) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -129,7 +131,7 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
           </div>
 
           <div className="flex text-gray-500">
-            <h5 className="text-xs ">ⓒ 2024 Bread & Roses</h5>
+            <h5 className="text-xs ">ⓒ {currentYear} Bread & Roses</h5>
           </div>
         </div>
       </div>
