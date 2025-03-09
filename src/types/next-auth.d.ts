@@ -35,6 +35,7 @@ declare module "next-auth/jwt" {
 
 interface VolunteerDetails {
   ageOver14: boolean;
+  firstTime: boolean;
   country: string;
   address: string;
   city: string;
@@ -44,4 +45,6 @@ interface VolunteerDetails {
   speaksEsp: boolean;
   volunteerType: string;
   hoursWorked: number;
+  whyJoin: string;
+  comments: string;
 }
