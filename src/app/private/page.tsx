@@ -4,29 +4,41 @@ import { useSession } from "next-auth/react";
 import StatsCard from "@components/StatsCard";
 import EventCard from "@components/EventCard";
 import VolunteerTable from "@components/VolunteerTable";
-import { Role, User } from "@prisma/client";
-import React from "react";
+import { Role, Event } from "@prisma/client";
+import React, { useEffect } from "react";
 import { getUsersByRole } from "@api/user/route.client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
+import { UserWithVolunteerDetail } from "../types";
+import { fetchEvent } from "../api/event/route.client";
+import { useTranslation } from "react-i18next";
 
 export default function HomePage() {
   const router = useRouter();
-
+  const { t } = useTranslation(["translation", "home"]);
   const { data: session } = useSession();
-  const [users, setUsers] = React.useState<User[]>();
+  const [users, setUsers] = React.useState<UserWithVolunteerDetail[]>([]);
+  const [events, setEvents] = React.useState<Event[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
 
-  React.useEffect(() => {
-    const fetchUsers = async () => {
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        const response = await getUsersByRole(Role.VOLUNTEER);
-        setUsers(response.data);
+        const [usersResponse, eventsResponse] = await Promise.all([
+          getUsersByRole(Role.VOLUNTEER),
+          fetchEvent(),
+        ]);
+
+        setUsers(usersResponse.data);
+        setEvents(eventsResponse.data);
       } catch (error) {
-        console.error("Error fetching volunteers:", error);
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchUsers();
+    fetchData();
   }, []);
 
   if (!session) {
@@ -41,54 +53,82 @@ export default function HomePage() {
     <div>
       <div>
         <h1 className="text-4xl font-semibold	leading-10 font-['Kepler_Std']">
-          Thanks for checking in, {session.user.firstName} 👋
+          {t("welcome_title", { ns: "home" })}, {session.user.firstName} 👋
         </h1>
         <h1 className="text-lg mt-3 font-normal leading-7 font-serif text-slate-500">
-          What&apos;s the next event you want to join?
+=======
+          Stats updated by:{" "}
+          {(() => {
+            const date = new Date().toLocaleDateString("en-GB", {
+              weekday: "long",
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+            });
+
+            const parts = date.split(" ");
+            return `${parts[0]}, ${parts[1]} ${parts[2]} ${parts[3]}`;
+          })()}
+          .
         </h1>
       </div>
 
       <div className="flex flex-nowrap gap-x-7 pt-8">
+        {session.user.role === Role.ADMIN && (
+          <StatsCard
+            heading="Total volunteers"
+            value={!loading ? users.length : "..."}
+            icon="pepicons-pencil:people"
+          />
+        )}
         <StatsCard
           heading={
             session.user.role === Role.ADMIN
-              ? "Total volunteers"
-              : "Personal volunteer hours"
+              ? "Total volunteer hours"
+              : t("volunteer_hours", { ns: "home" })
           }
-          value="50"
-          icon="pepicons-pencil:people"
-          date="October 5th, 2024"
+          value={
+            !loading
+              ? session.user.role === Role.ADMIN && users
+                ? users.reduce(
+                    (sum, user) =>
+                      sum + (user.volunteerDetails?.hoursWorked || 0),
+                    0
+                  )
+                : session.user.volunteerDetails?.hoursWorked || 0
+              : "..."
+          }
+          icon="tabler:clock-check"
         />
-        {session.user.role === Role.ADMIN ? (
-          <StatsCard
-            heading="Total volunteer hours"
-            value="200"
-            icon="tabler:clock-check"
-            date="October 5th, 2024"
-          />
-        ) : null}
         <StatsCard
           heading={
             session.user.role === Role.ADMIN
               ? "Total events"
-              : "Events attended"
+              : t("events_attended", { ns: "home" })
           }
-          value="10"
+          value={
+            !loading
+              ? session.user.role === Role.ADMIN
+                ? events.length
+                : 9999 // @TODO: Replace with actual user's events in the future
+              : "..."
+          }
           icon="mdi:calendar-outline"
-          date="December 11th, 2024"
         />
       </div>
 
       <div>
         <div className="flex items-center justify-between mt-8">
           <h1 className="text-2xl font-semibold leading-8 font-['Kepler_Std']">
-            Upcoming events
+            {t("upcoming_events", { ns: "home" })}
           </h1>
           <div
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => router.push("/private/events")}
           >
-            <div className="mt-0.5 text-[#145A5A] font-semibold">See all</div>
+            <div className="mt-0.5 text-[#145A5A] font-semibold">
+              {t("see_all")}
+            </div>
             <Icon
               icon="lucide:arrow-right"
               width={20}
@@ -174,7 +214,9 @@ export default function HomePage() {
               className="flex items-center gap-2 cursor-pointer"
               onClick={() => router.push("/private/volunteers")}
             >
-              <div className="mt-0.5 text-[#145A5A] font-semibold">See all</div>
+              <div className="mt-0.5 text-[#145A5A] font-semibold">
+                {t("ver_more")}
+              </div>
               <Icon
                 icon="lucide:arrow-right"
                 width={20}

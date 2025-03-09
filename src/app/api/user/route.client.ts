@@ -27,11 +27,18 @@ export const fetchApi = async (
     body: JSON.stringify(body),
   });
 
+  const responseData = await response.json();
+
   if (!response.ok) {
-    throw new Error("API Error: $(response.statusText)");
+    throw new Error(
+      JSON.stringify({
+        code: responseData.code,
+        message: responseData.message,
+      })
+    );
   }
 
-  return response.json();
+  return responseData;
 };
 
 export const addUser = async (

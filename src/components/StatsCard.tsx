@@ -4,13 +4,12 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 interface StatsCardProps {
   heading: string;
   value: number | string;
-  date: string;
   icon: string;
 }
 
-const StatsCard = ({ heading, value, icon, date }: StatsCardProps) => {
+const StatsCard = ({ heading, value, icon }: StatsCardProps) => {
   return (
-    <div className="w-[360px] h-[160px] px-6 py-4 bg-white rounded-lg shadow border border-[#e4e7ec] flex-col justify-start items-start gap-4 inline-flex">
+    <div className="w-[360px] h-[140px] px-6 py-4 bg-white rounded-lg shadow border border-[#e4e7ec] flex-col justify-start items-start gap-4 inline-flex">
       <div className="self-stretch justify-start items-center gap-2 inline-flex">
         <div className="grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
           <div className="self-stretch justify-start items-start gap-2 inline-flex">
@@ -22,11 +21,6 @@ const StatsCard = ({ heading, value, icon, date }: StatsCardProps) => {
             <div className="grow shrink basis-0 flex-col justify-start items-start gap-2 inline-flex">
               <div className="self-stretch text-[#0f1728] text-5xl font-semibold font-['Kepler_Std'] leading-[60px]">
                 {value}
-              </div>
-              <div className="self-stretch justify-start items-center gap-2 inline-flex">
-                <div className="grow shrink basis-0 text-[#475466] py-1 text-sm font-medium leading-tight">
-                  {date}
-                </div>
               </div>
             </div>
           </div>
