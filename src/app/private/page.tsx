@@ -10,7 +10,7 @@ import { getUsersByRole } from "@api/user/route.client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
 import { UserWithVolunteerDetail } from "../types";
-import { fetchEvent } from "../api/event/route.client";
+import { getAllEvents } from "../api/event/route.client";
 import { useTranslation } from "react-i18next";
 
 export default function HomePage() {
@@ -26,7 +26,7 @@ export default function HomePage() {
       try {
         const [usersResponse, eventsResponse] = await Promise.all([
           getUsersByRole(Role.VOLUNTEER),
-          fetchEvent(),
+          getAllEvents(),
         ]);
 
         setUsers(usersResponse.data);
@@ -56,8 +56,7 @@ export default function HomePage() {
           {t("welcome_title", { ns: "home" })}, {session.user.firstName} 👋
         </h1>
         <h1 className="text-lg mt-3 font-normal leading-7 font-serif text-slate-500">
-=======
-          Stats updated by:{" "}
+          ======= Stats updated by:{" "}
           {(() => {
             const date = new Date().toLocaleDateString("en-GB", {
               weekday: "long",

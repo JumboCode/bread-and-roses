@@ -20,7 +20,6 @@ export default function ProfilePage() {
           Coming Soon!
         </div>
       </div>
-      <div className="text-center mt-8"></div>
     </div>
   );
 }

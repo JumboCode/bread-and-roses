@@ -250,7 +250,7 @@ export const PATCH = async (request: NextRequest) => {
       },
       data: {
         ...volunteerDetails,
-        id: undefined, // needed to prevent prisma update error: overwriting "id"
+        id: undefined,
       },
     });
 
