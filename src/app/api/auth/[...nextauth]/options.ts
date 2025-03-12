@@ -21,6 +21,10 @@ export const options: NextAuthOptions = {
           type: "password",
           placeholder: "your-password",
         },
+        rememberMe: {
+          label: "Remember me",
+          type: "checkbox",
+        },
       },
       async authorize(credentials) {
         if (!credentials) {
@@ -64,12 +68,19 @@ export const options: NextAuthOptions = {
     signIn: "/public/signIn",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
         token.firstName = user.firstName;
         token.lastName = user.lastName;
+
+        if (account?.provider && account.provider === "credentials") {
+          const rememberMe = account?.params?.rememberMe;
+          console.log("account is true ig");
+          // Optionally, you can attach rememberMe to the token for debug or tracking
+          token.rememberMe = rememberMe;
+        }
 
         if (user.role !== "ADMIN") {
           token.volunteerDetails = user.volunteerDetails || null;
@@ -105,7 +116,23 @@ export const options: NextAuthOptions = {
       session.user.firstName = token.firstName;
       session.user.lastName = token.lastName;
       session.user.volunteerDetails = token.volunteerDetails || null;
+
+      if (token.rememberMe) {
+        console.log("Setting for 30 days");
+        session.expires = new Date(
+          Date.now() + 30 * 24 * 60 * 60 * 1000
+        ).toISOString();
+      } else {
+        console.log("Setting for 10 seconds");
+        session.expires = new Date(
+          Date.now() + 0 * 0 * 10 * 1000
+        ).toISOString();
+      }
+
       return session;
     },
+  },
+  session: {
+    strategy: "jwt",
   },
 };
