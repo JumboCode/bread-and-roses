@@ -10,6 +10,11 @@ import { getLanguageFromCookie } from "../../lib/languages";
 
 interface IHomeLayoutProps {
   children: React.ReactNode;
+
+  // maybe affects each child (valid react node)
+  // WindowSizeCheck {
+  //   children: React.ReactNode;
+  // }
 }
 
 const HomeLayout = ({ children }: IHomeLayoutProps) => {
