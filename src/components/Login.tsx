@@ -23,6 +23,7 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [emailDisplayError, setEmailDisplayError] = useState(false);
   const [passwordDisplayError, setPasswordDisplayError] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
   const { status } = useSession();
 
@@ -32,12 +33,23 @@ export default function LoginForm() {
     }
   }, [status, router]);
 
+  useEffect(() => {
+    if (rememberMe) {
+      console.log("remember me is true");
+    } else {
+      console.log("remember me is false");
+    }
+  }, [rememberMe, setRememberMe]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Passin in remember me: ", rememberMe);
+    const remember = rememberMe ? "on" : "off";
 
     const res = await signIn("credentials", {
       email,
       password,
+      remember,
       redirect: false,
     });
 
@@ -139,7 +151,13 @@ export default function LoginForm() {
             />
             <div className="mb-[20px] w-full flex flex-row justify-between">
               <FormControlLabel
-                control={<Checkbox ria-label="Checkbox demo" />}
+                control={
+                  <Checkbox
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    checked={rememberMe}
+                    ria-label="Checkbox demo"
+                  />
+                }
                 label="Remember me"
                 sx={{ color: "#667085" }}
               />

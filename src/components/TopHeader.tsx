@@ -9,8 +9,8 @@ import UserAvatar from "./UserAvatar";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { setLanguageCookie } from "../lib/languages";
-import { getLanguageFromCookie } from "../lib/languages";
+import { setLanguageCookie } from "../lib/cookies/languages";
+import { getLanguageFromCookie } from "../lib/cookies/languages";
 
 interface TopHeaderProps {
   user: {

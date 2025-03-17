@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { getLanguageFromCookie } from "../../lib/languages";
+import { getLanguageFromCookie } from "../../lib/cookies/languages";
 
 interface IHomeLayoutProps {
   children: React.ReactNode;
