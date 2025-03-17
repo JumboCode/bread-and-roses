@@ -6,7 +6,6 @@ import { User, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Keep your existing options but export them as a function that can accept a dynamic maxAge
 export const getAuthOptions = (dynamicMaxAge?: number): NextAuthOptions => {
   return {
     providers: [
@@ -83,8 +82,18 @@ export const getAuthOptions = (dynamicMaxAge?: number): NextAuthOptions => {
           }
         }
 
-        const expiresIn = token.rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60; // 30 days vs 1 day
-        token.exp = Math.floor(Date.now() / 1000) + expiresIn;
+        token.expiresIn = token.rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60;
+        token.exp = token.iat + dynamicMaxAge;
+        console.log(
+          "Token exp calculation in jwt ",
+          token.exp,
+          " ",
+          token.iat,
+          " + ",
+          dynamicMaxAge
+        );
+
+        console.log("inside jwt callback", token.exp);
 
         if (token.id) {
           const dbUser = await prisma.user.findUnique({
@@ -118,13 +127,14 @@ export const getAuthOptions = (dynamicMaxAge?: number): NextAuthOptions => {
         session.user.lastName = token.lastName;
         session.user.volunteerDetails = token.volunteerDetails || null;
         session.expires = new Date(token.exp * 1000).toISOString();
+        console.log("In session, ", token.exp);
 
         return session;
       },
     },
     session: {
       strategy: "jwt",
-      updateAge: 10,
+      updateAge: 600,
       maxAge: dynamicMaxAge || 24 * 60 * 60, // Use the dynamic maxAge if provided, otherwise use 1 day
     },
   };
