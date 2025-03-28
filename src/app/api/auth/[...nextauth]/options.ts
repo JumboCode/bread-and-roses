@@ -83,7 +83,7 @@ export const getAuthOptions = (dynamicMaxAge?: number): NextAuthOptions => {
         }
 
         token.expiresIn = token.rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60;
-        token.exp = token.iat + dynamicMaxAge;
+        token.exp = token.iat + (dynamicMaxAge ?? 24 * 60 * 60);
         console.log(
           "Token exp calculation in jwt ",
           token.exp,
