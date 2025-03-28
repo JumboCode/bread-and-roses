@@ -39,7 +39,7 @@ export default function WindowSizeCheck({ children }: WindowSizeCheckProps) {
     console.log("here1");
 
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="md:hidden lg:hidden flex justify-center items-center h-screen">
         <Image
           src="/empty_list.png"
           alt="Error"

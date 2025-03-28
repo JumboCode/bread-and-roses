@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { getLanguageFromCookie } from "../../lib/languages";
 import WindowSizeCheck from "@components/WindowSizeCheck";
+import Image from "next/image";
 
 interface IHomeLayoutProps {
   children: React.ReactNode;
@@ -36,15 +37,27 @@ const HomeLayout = ({ children }: IHomeLayoutProps) => {
   }
 
   return (
-    <WindowSizeCheck>
-      <div className="flex min-h-screen">
+    // <WindowSizeCheck>
+    <div>
+      <div className="md:hidden lg:hidden flex justify-center items-center h-screen">
+        <Image
+          src="/empty_list.png"
+          alt="Error"
+          layout="intrinsic"
+          width={215}
+          height={173}
+        />
+      </div>
+
+      <div className="sm:hidden lg:block md:block flex min-h-screen">
         <SideNavBar user={session.user} />
         <div className="flex-1 ml-60">
           <TopHeader user={session.user} />
           <div className="py-6 px-7">{children}</div>
         </div>
       </div>
-    </WindowSizeCheck>
+    </div>
+    // </WindowSizeCheck>
   );
 };
 
