@@ -4,40 +4,55 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 function getWindowDimensions() {
-  const { innerWidth: width, innerHeight: height } = window;
-  return {
-    width,
-    height,
-  };
+  if (typeof window !== "undefined") {
+    const { innerWidth: width, innerHeight: height } = window;
+    return { width, height };
+  }
+  return { width: 1024, height: 768 }; // Default size for SSR
 }
 
-export default function WindowSizeCheck() {
-  const [windowDimension] = useState(getWindowDimensions());
-  if (windowDimension.width < 375 || windowDimension.height < 375) {
-    // perhaps change the width and height dimensions?
-    // use useEffect to display the error image?
-    // return a bool? like true
-    // or return the html error page
+interface WindowSizeCheckProps {
+  children: React.ReactNode;
+}
 
-    // error image
-    <Image
-      src={"/empty_list.png"}
-      alt="Logo" // idk what this is
-      layout="responsive"
-      width={215}
-      height={173}
-      className=""
-    />;
+export default function WindowSizeCheck({ children }: WindowSizeCheckProps) {
+  // get the width and height of the current window
+  const [windowDimension] = useState(getWindowDimensions());
+
+  useEffect(() => {
+    function handleResize() {
+      // setWindowDimension(getWindowDimensions()); // Update state on resize
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const { width, height } = getWindowDimensions();
+
+  // DEBUG
+  console.log(width, height);
+
+  // if the width or height is less than 600, display error image
+  if (width < 600 || height < 600) {
+    // DEBUG
+    console.log("here1");
+
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Image
+          src="/empty_list.png"
+          alt="Error"
+          layout="intrinsic"
+          width={215}
+          height={173}
+        />
+      </div>
+    );
   }
 
-  return windowDimension; // TODO return something other than dimension
-}
+  // DEBUG
+  console.log("here2");
 
-// <Image
-//     src={"/logo1.png"}
-//     alt="Logo"
-//     layout="responsive"
-//     width={215}
-//     height={173}
-//     className=""
-//   />
+  return <>{children}</>;
+}
