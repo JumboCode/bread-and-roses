@@ -20,7 +20,6 @@ import { User, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-
 export default function SignUp() {
   interface Name {
     first: string;
