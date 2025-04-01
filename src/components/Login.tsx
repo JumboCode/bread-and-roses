@@ -33,17 +33,8 @@ export default function LoginForm() {
     }
   }, [status, router]);
 
-  useEffect(() => {
-    if (rememberMe) {
-      console.log("remember me is true");
-    } else {
-      console.log("remember me is false");
-    }
-  }, [rememberMe, setRememberMe]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Passin in remember me: ", rememberMe);
     const remember = rememberMe ? "on" : "off";
 
     const res = await signIn("credentials", {

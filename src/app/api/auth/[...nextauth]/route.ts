@@ -17,9 +17,7 @@ const handler = async (req: NextRequest, res: NextResponse) => {
     const remaining = (token.exp as number) - Math.floor(Date.now() / 1000);
     maxAge = Math.min(maxAge, remaining);
   }
-  console.log(token);
-  console.log("Max age in handler: ", maxAge);
-
+  
   const authOptions = getAuthOptions(maxAge);
 
   return NextAuth(
