@@ -45,6 +45,7 @@ export default function SignUp() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [organization, setOrganization] = useState("");
+  const [organizationId, setOrganizationId] = useState("");
   const [address, setAddress] = useState<Address>({
     addressLine: "",
     city: "",
@@ -63,7 +64,7 @@ export default function SignUp() {
   const [comments, setComments] = useState<string>("");
   const [isFormComplete, setIsFormComplete] = useState<boolean>(false);
 
-  const testIfFormComplete = useCallback(() => {
+  const testIfFormComplete = useCallback(() => { // TODO: check that organization isn't 
     if (
       name.first !== "" &&
       name.last !== "" &&
@@ -161,6 +162,16 @@ export default function SignUp() {
 
     return true;
   };
+  
+  const handleOrganization = async () => {
+    const existingOrganization = await prisma.organization.findUnique({
+      where: { name: organization },
+    });
+
+    if (existingOrganization) {
+      
+    }
+  }
 
   const handleSubmit = async () => {
     setName({
@@ -192,7 +203,7 @@ export default function SignUp() {
           email: email,
           role: Role.VOLUNTEER,
           password: password,
-          organizationId: organization,
+          organizationId: organizationId,
         },
         {
           ageOver14: isOverAge14 ?? false,

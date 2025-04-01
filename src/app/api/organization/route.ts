@@ -32,6 +32,38 @@ export const POST = async (request: NextRequest) => {
   }
 };
 
+export const PATCH = async (request: NextRequest) => {
+  try {
+    const { organization } = await request.json();
+
+    const updatedOrganization = await prisma.organization.update({
+      where: {
+        id: organization.id,
+      },
+      data: {
+        ...organization,
+        id: undefined,
+      },
+    });
+    return NextResponse.json(
+      {
+        code: "SUCCESS",
+        message: updatedOrganization.name,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error:", error);
+    return NextResponse.json(
+      {
+        code: "ERROR",
+        message: error,
+      },
+      { status: 500 }
+    );
+  }
+};
+
 export const GET = async (request: NextRequest) => {
     const { searchParams } = new URL(request.url);
     const organizationID = searchParams.get("id");
