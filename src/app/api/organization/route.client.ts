@@ -7,7 +7,7 @@ type CreateOrganizationInput = Pick<
 
 export const fetchApi = async (
   endpoint: string,
-  method: "POST" | "PATCH" | "GET",
+  method: "POST",
   body?: Record<string, unknown>
 ) => {
   const response = await fetch(endpoint, {
@@ -30,19 +30,19 @@ export const fetchApi = async (
   return responseData;
 };
 
-export const addOrganization = async (Organization: CreateOrganizationInput) => {
-  fetchApi("/api/Organization", "POST", { Organization });
+export const addOrganization = async (userId: string, organizationName: string) => {
+  return fetchApi("/api/organization", "POST", { userId, organizationName });
 };
 
-export const getOrganization = async (OrganizationID: string) => {
-  const url = `/api/Organization?id=${OrganizationID}`;
-  return fetchApi(url, "GET");
-};
+// export const getOrganization = async (OrganizationID: string) => {
+//   const url = `/api/Organization?id=${OrganizationID}`;
+//   return fetchApi(url, "GET");
+// };
 
-export const getAllOrganizations = async () => {
-  return fetchApi("/api/Organization", "GET");
-};
+// export const getAllOrganizations = async () => {
+//   return fetchApi("/api/Organization", "GET");
+// };
 
-export const updateOrganization = async (organization: Organization) => {
-  return fetchApi("/api/organization", "PATCH", { organization });
-};
+// export const updateOrganization = async (organization: Organization) => {
+//   return fetchApi("/api/organization", "PATCH", { organization });
+// };

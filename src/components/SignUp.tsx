@@ -17,6 +17,7 @@ import { Role } from "@prisma/client/edge";
 import { IconButton, InputAdornment } from "@mui/material";
 import useApiThrottle from "../hooks/useApiThrottle";
 import { User, PrismaClient } from "@prisma/client";
+import { addOrganization } from "@api/organization/route.client";
 
 const prisma = new PrismaClient();
 
@@ -45,7 +46,6 @@ export default function SignUp() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [organization, setOrganization] = useState("");
-  const [organizationId, setOrganizationId] = useState("");
   const [address, setAddress] = useState<Address>({
     addressLine: "",
     city: "",
@@ -64,7 +64,7 @@ export default function SignUp() {
   const [comments, setComments] = useState<string>("");
   const [isFormComplete, setIsFormComplete] = useState<boolean>(false);
 
-  const testIfFormComplete = useCallback(() => { // TODO: check that organization isn't 
+  const testIfFormComplete = useCallback(() => {
     if (
       name.first !== "" &&
       name.last !== "" &&
@@ -162,16 +162,15 @@ export default function SignUp() {
 
     return true;
   };
-  
+
   const handleOrganization = async () => {
     const existingOrganization = await prisma.organization.findUnique({
       where: { name: organization },
     });
 
     if (existingOrganization) {
-      
     }
-  }
+  };
 
   const handleSubmit = async () => {
     setName({
@@ -196,14 +195,13 @@ export default function SignUp() {
     }
 
     try {
-      await addUser(
+      const response = await addUser(
         {
           firstName: name.first,
           lastName: name.last,
           email: email,
           role: Role.VOLUNTEER,
           password: password,
-          organizationId: organizationId,
         },
         {
           ageOver14: isOverAge14 ?? false,
@@ -221,9 +219,10 @@ export default function SignUp() {
           comments: comments,
         }
       );
-
+      await addOrganization(response.data.id, organization);
       setSuccess(true);
     } catch (error) {
+      console.log(error);
       if (error instanceof Error) {
         const errorData = JSON.parse(error.message);
 
