@@ -138,8 +138,9 @@ export const GET = async (request: NextRequest) => {
   const id: string | undefined = searchParams.get("id") || undefined;
   const email: string | undefined = searchParams.get("email") || undefined;
   const role: string | undefined = searchParams.get("role") || undefined;
+  const date: string | undefined = searchParams.get("date") || undefined;
 
-  if (!id && !email && !role) {
+  if (!id && !email && !role && !date) {
     return NextResponse.json(
       {
         code: "BAD_REQUEST",
@@ -170,6 +171,57 @@ export const GET = async (request: NextRequest) => {
         {
           code: "SUCCESS",
           data: users,
+        },
+        { status: 200 }
+      );
+    } catch (error) {
+      console.error("Error:", error);
+      return NextResponse.json(
+        {
+          code: "ERROR",
+          message: error,
+        },
+        { status: 404 }
+      );
+    }
+  }
+
+  if (date) {
+    try {
+      const [year, month, day] = date.split("-").map(Number);
+      const start = new Date(year, month - 1, day);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 1);
+
+      const usersWithSlots = await prisma.user.findMany({
+        where: {
+          timeSlots: {
+            some: {
+              date: {
+                gte: start,
+                lt: end,
+              },
+            },
+          },
+        },
+        include: {
+          timeSlots: {
+            where: {
+              date: {
+                gte: start,
+                lt: end,
+              },
+            },
+          },
+          volunteerDetails: true,
+        },
+      });
+
+      return NextResponse.json(
+        {
+          code: "SUCCESS",
+          data: usersWithSlots,
         },
         { status: 200 }
       );

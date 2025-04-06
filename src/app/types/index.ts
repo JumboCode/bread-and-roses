@@ -1,5 +1,6 @@
-import { User, VolunteerDetails } from "@prisma/client";
+import { TimeSlot, User, VolunteerDetails } from "@prisma/client";
 
 export type UserWithVolunteerDetail = User & {
-    volunteerDetails?: VolunteerDetails;
+  volunteerDetails?: VolunteerDetails;
+  timeSlots?: TimeSlot[];
 };

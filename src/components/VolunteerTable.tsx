@@ -19,6 +19,7 @@ import { UserWithVolunteerDetail } from "../app/types";
 interface VolunteerTableProps {
   showPagination: boolean;
   fromVolunteerPage: boolean;
+  fromAttendeePage: boolean;
   users: UserWithVolunteerDetail[] | undefined;
   selected?: string[];
   setSelected?: React.Dispatch<React.SetStateAction<string[]>>;
@@ -27,6 +28,7 @@ interface VolunteerTableProps {
 export default function VolunteerTable({
   showPagination,
   fromVolunteerPage,
+  fromAttendeePage,
   users,
   selected,
   setSelected,
@@ -183,7 +185,7 @@ export default function VolunteerTable({
                 width: "255px",
               }}
             >
-              Location
+              {fromAttendeePage ? "Time(s)" : "Location"}
             </TableCell>
             <TableCell
               sx={{ width: "116px", height: "44px  " }}
@@ -251,6 +253,7 @@ export default function VolunteerTable({
                   borderColor: "#E4E7EC",
                   fontWeight: "bold",
                   color: "#101828",
+                  verticalAlign: fromAttendeePage ? "top" : "baseline",
                 }}
                 component="th"
                 scope="row"
@@ -270,6 +273,8 @@ export default function VolunteerTable({
                   color: "#344054",
                   height: "72px",
                   width: "255px",
+                  verticalAlign: fromAttendeePage ? "top" : "baseline",
+                  paddingTop: fromAttendeePage ? "25px" : "16px",
                 }}
                 align="left"
               >
@@ -281,17 +286,40 @@ export default function VolunteerTable({
                   color: "#344054",
                   height: "72px",
                   width: "255px",
+                  verticalAlign: fromAttendeePage ? "top" : "baseline",
+                  paddingTop: fromAttendeePage ? "25px" : "16px",
                 }}
                 align="left"
               >
-                {row?.volunteerDetails?.address &&
-                  row?.volunteerDetails?.address +
-                    ", " +
-                    row?.volunteerDetails?.city +
-                    ", " +
-                    row?.volunteerDetails?.state +
-                    " " +
-                    row?.volunteerDetails?.zipCode}
+                {fromAttendeePage
+                  ? row.timeSlots && row.timeSlots.length > 0
+                    ? [...row.timeSlots]
+                        .sort(
+                          (a, b) =>
+                            new Date(a.startTime).getTime() -
+                            new Date(b.startTime).getTime()
+                        )
+                        .map((slot, idx) => {
+                          const start = new Date(slot.startTime);
+                          const end = new Date(slot.endTime);
+
+                          const format = (date: Date) =>
+                            date.toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            });
+
+                          return (
+                            <div key={idx}>
+                              {format(start)} - {format(end)}
+                            </div>
+                          );
+                        })
+                    : "No Time Slots"
+                  : row?.volunteerDetails?.address
+                  ? `${row.volunteerDetails.address}, ${row.volunteerDetails.city}, ${row.volunteerDetails.state} ${row.volunteerDetails.zipCode}`
+                  : "N/A"}
               </TableCell>
               <TableCell
                 sx={{
@@ -299,10 +327,12 @@ export default function VolunteerTable({
                   padding: "0 15px 0 0",
                   height: "44px",
                   width: "255px",
+                  verticalAlign: fromAttendeePage ? "top" : "baseline",
+                  paddingTop: "16px",
                 }}
                 align="right"
               >
-                {fromVolunteerPage ? (
+                {fromVolunteerPage || fromAttendeePage ? (
                   "View"
                 ) : (
                   <IconButton aria-label="delete volunteer">
