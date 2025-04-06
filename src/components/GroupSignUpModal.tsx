@@ -47,8 +47,11 @@ const GroupSignUpModal = () => {
                 </div>
                 <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 dark:bg-gray/400" />
 
-                <label className="block text-sm font-medium mt-2 mb-2">Time</label> 
-                <div ref={calendarRef}>
+                <label className="block text-sm font-medium mt-2 mb-2 flex flex-row gap-[6px] items-center">
+                    <Icon icon={"lets-icons:time-atack"} width="20"/>
+                    Time
+                </label> 
+                <div ref={calendarRef} className="flex flex-row w-full gap-[15px] mb-4">
                 <TextField
                     className="border border-gray-300 rounded-md px-3 py-2 w-full mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     placeholder="MM/DD/YYYY"
@@ -85,27 +88,49 @@ const GroupSignUpModal = () => {
                         <Calendar/>
                     </div>
                 )}
+                <TextField
+                    label="Start time"
+                    variant="outlined"
+                    autoComplete='off'
+                />
+                <TextField
+                    label="End time"
+                    variant="outlined"
+                    autoComplete='off'
+                />
                 </div>
 
-                <label className="block text-sm font-medium mt-2 mb-2">Name of group</label>
+                <label className="block text-sm font-medium mt-2 mb-2 flex flex-row gap-[6px] items-center">
+                    <Icon icon={"material-symbols:group"} width="20"/>
+                    Name of group
+                </label>
                 <input
                     type="text"
                     className="border border-gray-300 rounded-md px-3 py-2 w-full mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
 
-                <label className="block text-sm font-medium mt-2 mb-2">Group description</label>
+                <label className="block text-sm font-medium mt-2 mb-2 flex flex-row gap-[6px] items-center">
+                    <Icon icon={"basil:document-solid"} width="20"/>
+                    Group description
+                </label>
                 <textarea
                     className="border border-gray-300 rounded-md px-3 py-2 w-full mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     rows="5"
                 ></textarea>
             
-                <label className="block text-sm font-medium mt-2 mb-2">Reason(s) for group signup</label>
+                <label className="block text-sm font-medium mt-2 mb-2 flex flex-row gap-[6px] items-center">
+                    <Icon icon={"material-symbols:group-add"} width="20"/>
+                    Reason(s) for group signup
+                </label>
                 <textarea
                     className="border border-gray-300 rounded-md px-3 py-2 w-full mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     rows="5"
                 ></textarea>
 
-                <label className="block text-sm font-medium mb-1">Capacity</label>
+                <label className="block text-sm font-medium mb-1 flex flex-row gap-[6px] items-center">
+                    <Icon icon={"material-symbols:groups"} width="20"/>
+                    Capacity
+                </label>
                 <input
                     type="text"
                     className="border border-gray-300 rounded-md px-3 py-2 w-10 mb-6 focus:outline-none focus:ring-1 focus:ring-blue-500"
