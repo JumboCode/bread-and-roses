@@ -58,6 +58,7 @@ const GroupSignUpModal = () => {
                     variant="outlined"
                     label="Select Date"
                     autoComplete='off'
+                    size='small'
                     onFocus={() => setShowCalendar(!showCalendar)}
                     slotProps={{
                         input: {
@@ -78,7 +79,7 @@ const GroupSignUpModal = () => {
                     <div
                         style={{
                             position: "absolute",
-                            top: "calc(100% - 620px)",
+                            top: "calc(100% - 630px)",
                             left: "20px", 
                             zIndex: 10,
                             backgroundColor: "white",
@@ -92,11 +93,13 @@ const GroupSignUpModal = () => {
                     label="Start time"
                     variant="outlined"
                     autoComplete='off'
+                    size='small'
                 />
                 <TextField
                     label="End time"
                     variant="outlined"
                     autoComplete='off'
+                    size='small'
                 />
                 </div>
 
