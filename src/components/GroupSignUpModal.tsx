@@ -133,14 +133,16 @@ const GroupSignUpModal = () => {
                 </label>
                 <input
                     type="text"
-                    className="border border-gray-300 rounded-md px-3 py-2 w-10 mb-6 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="border border-gray-300 rounded-md px-3 py-2 w-[46px] h-[36px] mb-6 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
 
-                <button
-                    className="bg-teal-600 p-2.5 px-3 text-white rounded-md font-semibold"
-                >
-                    Send
-                </button>
+                <div className="mb-[20px] flex flex-row justify-end">
+                    <button
+                        className="bg-teal-600 w-[67px] h-[40px] p-2.5 px-3 text-white rounded-md font-semibold"
+                    >
+                        Send
+                    </button>
+                </div>
 
             </div>
             
