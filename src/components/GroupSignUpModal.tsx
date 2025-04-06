@@ -53,7 +53,7 @@ const GroupSignUpModal = () => {
                 </label> 
                 <div ref={calendarRef} className="flex flex-row w-full gap-[15px] mb-4">
                 <TextField
-                    className="border border-gray-300 rounded-md px-3 py-2 w-full mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="border border-gray-300 rounded-md px-3 py-2 w-[700px] mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     placeholder="MM/DD/YYYY"
                     variant="outlined"
                     label="Select Date"
@@ -82,7 +82,7 @@ const GroupSignUpModal = () => {
                             left: "20px", 
                             zIndex: 10,
                             backgroundColor: "white",
-                            borderRadius: "8px",
+                            borderRadius: "20px",
                             boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
                         }}>
                         <Calendar/>
