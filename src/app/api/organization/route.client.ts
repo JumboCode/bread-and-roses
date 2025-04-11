@@ -26,16 +26,3 @@ export const fetchApi = async (
 export const addOrganization = async (userId: string, organizationName: string) => {
   return fetchApi("/api/organization", "POST", { userId, organizationName });
 };
-
-// export const getOrganization = async (OrganizationID: string) => {
-//   const url = `/api/Organization?id=${OrganizationID}`;
-//   return fetchApi(url, "GET");
-// };
-
-// export const getAllOrganizations = async () => {
-//   return fetchApi("/api/Organization", "GET");
-// };
-
-// export const updateOrganization = async (organization: Organization) => {
-//   return fetchApi("/api/organization", "PATCH", { organization });
-// };
