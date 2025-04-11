@@ -1,6 +1,5 @@
 "use client";
 
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import React, { useState, useRef, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -32,28 +31,49 @@ const GroupSignUpModal = () => {
     if (!showModal) return null;
 
     return (
-        <div className="border border-gray-300 w-[596px] h-[867.03px] shadow-md rounded-xl place-content-center">
-            <div className="bg-white border border-gray-300 w-[596px] h-[867px] shadow-md rounded-xl p-6 relative">
+        // <div className="border border-gray-300 w-[596px] h-[867.03px] shadow-md rounded-xl place-content-center">
+            <div className="bg-white border border-gray-300 w-[596px] h-[867px] shadow-md rounded-xl p-6 relative gap-[14px] flex flex-col text-gray-700">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl text-gray-500">Add event title</h2>
+                <div className="flex items-center justify-end">
                     {/* Close Button (optional) */}
                     <button
-                        className="text-gray-500 hover:text-gray-700"
+                        className="text-[#101828] hover:text-gray-700 rounded-full"
                         onClick={() => setShowModal(false)}
                     >
-                        <HighlightOffIcon className="h-10 w-10" />
-                    </button>
+                        <Icon icon={"icon-park-solid:close-one"} width="25" />
+                    </button> 
                 </div>
-                <hr className="my-12 h-0.5 border-t-0 bg-neutral-100 dark:bg-gray/400" />
+                <TextField 
+                    placeholder="Add event title"
+                    variant="standard"
+                    fullWidth
+                    autoComplete="off"
+                    slotProps={{
+                        input: {
+                            sx: {
+                                fontSize: 18,
+                                fontWeight: 600,
+                                color: "#6B7280",
+                                padding: 0,
+                            },
+                        },
+                        root: {
+                            sx: {
+                                '&::before': {
+                                  borderBottom: '1px solid #D0D5DD',
+                                },  
+                            },
+                        },
+                    }}
+                />
 
-                <label className="block text-sm font-medium mt-2 mb-2 flex flex-row gap-[6px] items-center">
+                <label className="block text-sm font-medium flex flex-row gap-[6px] items-center">
                     <Icon icon={"lets-icons:time-atack"} width="20"/>
                     Time
                 </label> 
-                <div ref={calendarRef} className="flex flex-row w-full gap-[15px] mb-4">
+                <div ref={calendarRef} className="flex flex-row w-full gap-[15px]">
                 <TextField
-                    className="border border-gray-300 rounded-md px-3 py-2 w-[700px] mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="border border-gray-300 rounded-md px-3 py-2 w-[700px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                     placeholder="MM/DD/YYYY"
                     variant="outlined"
                     label="Select Date"
@@ -72,6 +92,9 @@ const GroupSignUpModal = () => {
                                     </button>
                                 </InputAdornment>
                             )
+                        },
+                        inputLabel: {
+                            shrink: true,
                         }
                     }}
                 />
@@ -79,7 +102,7 @@ const GroupSignUpModal = () => {
                     <div
                         style={{
                             position: "absolute",
-                            top: "calc(100% - 630px)",
+                            top: "calc(100% - 660px)",
                             left: "20px", 
                             zIndex: 10,
                             backgroundColor: "white",
@@ -94,54 +117,94 @@ const GroupSignUpModal = () => {
                     variant="outlined"
                     autoComplete='off'
                     size='small'
+                    slotProps={{
+                        inputLabel: {
+                            shrink: true,
+                        }
+                    }}
                 />
                 <TextField
                     label="End time"
                     variant="outlined"
                     autoComplete='off'
                     size='small'
+                    slotProps={{
+                        inputLabel: {
+                            shrink: true,
+                        }
+                    }}
                 />
                 </div>
 
-                <label className="block text-sm font-medium mt-2 mb-2 flex flex-row gap-[6px] items-center">
+                <label className="block text-sm font-medium  flex flex-row gap-[6px] items-center">
                     <Icon icon={"material-symbols:group"} width="20"/>
                     Name of group
                 </label>
-                <input
+                {/* <input
                     type="text"
-                    className="border border-gray-300 rounded-md px-3 py-2 w-full mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
+                /> */}
+                <TextField
+                    variant="outlined"
+                    size="small"
+                    autoComplete="off"
+                    fullWidth
                 />
 
-                <label className="block text-sm font-medium mt-2 mb-2 flex flex-row gap-[6px] items-center">
+                <label className="block text-sm font-medium flex flex-row gap-[6px] items-center">
                     <Icon icon={"basil:document-solid"} width="20"/>
                     Group description
                 </label>
-                <textarea
+                {/* <textarea
                     className="border border-gray-300 rounded-md px-3 py-2 w-full mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     rows="5"
-                ></textarea>
+                ></textarea> */}
+                <TextField
+                    // className="border border-gray-300 rounded-md px-3 py-2 w-full mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    variant="outlined"
+                    size="small"
+                    autoComplete="off"
+                    fullWidth
+                    multiline
+                    rows={6}
+                />
             
-                <label className="block text-sm font-medium mt-2 mb-2 flex flex-row gap-[6px] items-center">
+                <label className="block text-sm font-medium flex flex-row gap-[6px] items-center">
                     <Icon icon={"material-symbols:group-add"} width="20"/>
                     Reason(s) for group signup
                 </label>
-                <textarea
+                {/* <textarea
                     className="border border-gray-300 rounded-md px-3 py-2 w-full mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     rows="5"
-                ></textarea>
+                ></textarea> */}
+                <TextField
+                    // className="border border-gray-300 rounded-md px-3 py-2 w-full mb-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    variant="outlined"
+                    size="small"
+                    autoComplete="off"
+                    fullWidth
+                    multiline
+                    rows={6}
+                />
 
-                <label className="block text-sm font-medium mb-1 flex flex-row gap-[6px] items-center">
+                <label className="block text-sm font-medium flex flex-row gap-[6px] items-center">
                     <Icon icon={"material-symbols:groups"} width="20"/>
                     Capacity
                 </label>
-                <input
+                {/* <input
                     type="text"
                     className="border border-gray-300 rounded-md px-3 py-2 w-[46px] h-[36px] mb-6 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                /> */}
+                <TextField
+                    className="w-[46px]"
+                    variant="outlined"
+                    size="small"
+                    autoComplete="off"
                 />
 
-                <div className="mb-[20px] flex flex-row justify-end">
+                <div className="flex flex-row justify-end mt-4">
                     <button
-                        className="bg-teal-600 w-[67px] h-[40px] p-2.5 px-3 text-white rounded-md font-semibold"
+                        className="bg-teal-600 text-[14px] w-[67px] h-[40px] py-[10px] px-[16px] text-white rounded-lg font-semibold flex justify-center items-center"
                     >
                         Send
                     </button>
@@ -149,7 +212,7 @@ const GroupSignUpModal = () => {
 
             </div>
             
-        </div>
+        // </div>
     );
 };
 
