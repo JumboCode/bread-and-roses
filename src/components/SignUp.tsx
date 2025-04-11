@@ -16,6 +16,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Role } from "@prisma/client/edge";
 import { IconButton, InputAdornment } from "@mui/material";
 import useApiThrottle from "../hooks/useApiThrottle";
+import { addOrganization } from "@api/organization/route.client";
 
 export default function SignUp() {
   interface Name {
@@ -41,6 +42,7 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [organization, setOrganization] = useState("");
   const [address, setAddress] = useState<Address>({
     addressLine: "",
     city: "",
@@ -181,7 +183,7 @@ export default function SignUp() {
     }
 
     try {
-      await addUser(
+      const response = await addUser(
         {
           firstName: name.first,
           lastName: name.last,
@@ -205,9 +207,10 @@ export default function SignUp() {
           comments: comments,
         }
       );
-
+      await addOrganization(response.data.id, organization);
       setSuccess(true);
     } catch (error) {
+      console.log(error);
       if (error instanceof Error) {
         const errorData = JSON.parse(error.message);
 
@@ -403,6 +406,18 @@ export default function SignUp() {
                       }}
                       error={passwordError !== ""}
                       helperText={passwordError}
+                    />
+                    <div className="flex flex-row font-semibold">
+                      Organization
+                    </div>
+                    <TextField
+                      sx={{ marginBottom: "10px", width: "100%" }}
+                      id="Organization"
+                      variant="outlined"
+                      value={organization}
+                      onChange={(e) => {
+                        setOrganization(e.target.value);
+                      }}
                     />
                     <div>
                       <div className="flex flex-row font-semibold">
