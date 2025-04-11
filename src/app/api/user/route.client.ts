@@ -28,7 +28,7 @@ export const fetchApi = async (
   });
 
   const responseData = await response.json();
-  
+
   if (!response.ok) {
     throw new Error(
       JSON.stringify({
@@ -61,6 +61,12 @@ export const getUsersByRole = async (role: Role) => {
   return fetchApi(url, "GET");
 };
 
+export const getUsersByDate = async (date: Date) => {
+  const isoDate = date.toISOString().split("T")[0];
+  const url = `/api/user?date=${isoDate}`;
+  return fetchApi(url, "GET");
+};
+
 export const deleteUser = async (userID: string) => {
   const url = `/api/user?id=${userID}`;
   return fetchApi(url, "DELETE");
@@ -72,4 +78,3 @@ export const updateUser = async (
 ) => {
   return fetchApi("/api/user", "PATCH", { user, volunteerDetails });
 };
-

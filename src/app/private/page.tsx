@@ -227,6 +227,7 @@ export default function HomePage() {
           <VolunteerTable
             showPagination={false}
             fromVolunteerPage={false}
+            fromAttendeePage={false}
             users={users}
           />
         </>
