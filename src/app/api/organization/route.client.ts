@@ -1,10 +1,3 @@
-import { Organization } from "@prisma/client";
-
-type CreateOrganizationInput = Pick<
-  Organization,
-  "name"
->;
-
 export const fetchApi = async (
   endpoint: string,
   method: "POST",
