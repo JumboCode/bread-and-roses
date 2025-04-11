@@ -16,30 +16,29 @@ interface WindowSizeCheckProps {
 }
 
 export default function WindowSizeCheck({ children }: WindowSizeCheckProps) {
-  // get the width and height of the current window
-  const [windowDimension] = useState(getWindowDimensions());
+  const [windowDimension, setWindowDimension] = useState(getWindowDimensions());
 
   useEffect(() => {
     function handleResize() {
-      // setWindowDimension(getWindowDimensions()); // Update state on resize
+      setWindowDimension(getWindowDimensions());
     }
-
     window.addEventListener("resize", handleResize);
+    // Optional: Call handleResize on mount to get current dimensions.
+    handleResize();
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const { width, height } = getWindowDimensions();
+  const { width, height } = windowDimension;
+  console.log("Window dimensions:", width, height);
 
-  // DEBUG
-  console.log(width, height);
-
-  // if the width or height is less than 600, display error image
-  if (width < 600 || height < 600) {
-    // DEBUG
-    console.log("here1");
-
+  // Adjust the thresholds below as needed.
+  // For example, if you only want to show the error on small (sm) and medium (md)
+  // screens, you might use a breakpoint like 768 (or another value matching your design).
+  if (width < 700 || height < 530) {
+    console.log("Displaying error image due to small window size");
     return (
-      <div className="md:hidden lg:hidden flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen">
         <Image
           src="/empty_list.png"
           alt="Error"
@@ -50,9 +49,6 @@ export default function WindowSizeCheck({ children }: WindowSizeCheckProps) {
       </div>
     );
   }
-
-  // DEBUG
-  console.log("here2");
 
   return <>{children}</>;
 }
