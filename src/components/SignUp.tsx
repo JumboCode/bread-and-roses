@@ -16,10 +16,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Role } from "@prisma/client/edge";
 import { IconButton, InputAdornment } from "@mui/material";
 import useApiThrottle from "../hooks/useApiThrottle";
-import { User, PrismaClient } from "@prisma/client";
 import { addOrganization } from "@api/organization/route.client";
-
-const prisma = new PrismaClient();
 
 export default function SignUp() {
   interface Name {
@@ -161,15 +158,6 @@ export default function SignUp() {
     }
 
     return true;
-  };
-
-  const handleOrganization = async () => {
-    const existingOrganization = await prisma.organization.findUnique({
-      where: { name: organization },
-    });
-
-    if (existingOrganization) {
-    }
   };
 
   const handleSubmit = async () => {
