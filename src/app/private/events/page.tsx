@@ -15,6 +15,8 @@ import {
 } from "@api/timeSlot/route.client";
 import VolunteerTable from "@components/VolunteerTable";
 import { getUsersByDate } from "@api/user/route.client";
+import { Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+
 
 export default function EventsPage() {
   const { data: session } = useSession();
@@ -35,6 +37,15 @@ export default function EventsPage() {
       return [...updated, { start: "", end: "", submitted: false }];
     });
   };
+  
+  const [groupFormVisible, setGroupFormVisible] = React.useState(false);
+  const [groupDetails, setGroupDetails] = React.useState({
+    groupName: "",
+    groupDescription: "",
+    reason: "",
+    capacity: 1,
+  });
+  
 
   const formattedDate = selectedDate
     ? selectedDate.toLocaleDateString("en-US", {
@@ -198,12 +209,106 @@ export default function EventsPage() {
     fetchTimeSlots();
   }, [session?.user.id, selectedDate, session?.user.role]);
 
+  const handleGroupSignUp = async () => {
+    try {
+      console.log(groupDetails); // You can replace this with logic to send the data to the backend
+  
+      // Example: Send groupDetails to your backend or save it to the database
+      
+      // Hide the form after submission
+      setGroupFormVisible(false);
+    } catch (error) {
+      console.error("Error with group sign-up:", error);
+    }
+  };
+  
+
   return (
     <div>
       <div className="text-4xl font-['Kepler_Std'] font-semibold flex flex-row items-center gap-x-[12px] mb-10">
         <Icon icon="uil:calender" width="44" height="44" />
-        Events
+        <Button
+            onClick={() => setGroupFormVisible(true)}
+            sx={{
+            backgroundColor: "#138D8A",
+            textTransform: "none",
+            fontFamily: "Kepler_Std",
+            color: "white",
+            fontWeight: 600,
+            fontSize: "14px",
+            paddingBlock: "10px",
+            paddingInline: "16px",
+            borderRadius: "8px",
+            }}
+        >
+         Request Group Sign-Up
+        </Button>
       </div>
+
+      <Dialog open={groupFormVisible} onClose={() => setGroupFormVisible(false)}>
+        <DialogTitle>Group Sign-Up</DialogTitle>
+        <DialogContent>
+          {/* Group Name Field */}
+          <TextField
+            label="Group Name"
+            variant="outlined"
+            fullWidth
+            value={groupDetails.groupName}
+            onChange={(e) => setGroupDetails({ ...groupDetails, groupName: e.target.value })}
+            sx={{ mb: 3 }}  
+          />
+
+          {/* Group Description Field */}
+          <TextField
+            label="Group Description"
+            variant="outlined"
+            fullWidth
+            multiline
+            rows={4}
+            value={groupDetails.groupDescription}
+            onChange={(e) => setGroupDetails({ ...groupDetails, groupDescription: e.target.value })}
+            sx={{ mb: 3 }}  
+          />
+
+          {/* Reason for Sign-Up Field */}
+          <TextField
+            label="Reason for Sign-Up"
+            variant="outlined"
+            fullWidth
+            value={groupDetails.reason}
+            onChange={(e) => setGroupDetails({ ...groupDetails, reason: e.target.value })}
+            sx={{ mb: 3 }} 
+          />
+
+          {/* Group Capacity Field */}
+          <TextField
+            label="Group Capacity"
+            variant="outlined"
+            fullWidth
+            value={groupDetails.capacity}  
+            onChange={(e) => {
+              const newValue = e.target.value;
+              if (/^\d*$/.test(newValue)) {
+                setGroupDetails({ ...groupDetails, capacity: parseInt(newValue, 10) });
+              }
+            }}
+            InputProps={{
+              inputMode: 'numeric',  
+            }}
+            sx={{ mb: 3 }}  
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleGroupSignUp} sx={{ backgroundColor: "#138D8A", color: "white" }}>
+            Submit Group Sign-Up
+          </Button>
+          <Button onClick={() => setGroupFormVisible(false)} color="primary">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
       <div className="relative text-center w-full flex flex-row gap-x-[24px] pb-1">
         <div className="flex-2 flex flex-col">
           <Calendar
@@ -420,7 +525,7 @@ export default function EventsPage() {
                       width="20"
                       height="20"
                     />
-                    <div className="text-[#344054]">
+                    <div className="text-[#344054]">x
                       {timeSlots
                         .filter((slot) => slot.submitted)
                         .map(
