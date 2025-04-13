@@ -16,6 +16,10 @@ import {
 import VolunteerTable from "@components/VolunteerTable";
 import { getUsersByDate } from "@api/user/route.client";
 import { Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import DatePicker from "react-datepicker";
+import TimePicker from 'react-time-picker';
+import "react-datepicker/dist/react-datepicker.css"; // import datepicker styles
+import 'react-time-picker/dist/TimePicker.css'; // import time picker styles
 
 
 export default function EventsPage() {
@@ -44,6 +48,9 @@ export default function EventsPage() {
     groupDescription: "",
     reason: "",
     capacity: 1,
+    startTime: "",  
+    endTime: "",    
+    date: new Date() as Date | null,  
   });
   
 
@@ -248,6 +255,47 @@ export default function EventsPage() {
       <Dialog open={groupFormVisible} onClose={() => setGroupFormVisible(false)}>
         <DialogTitle>Group Sign-Up</DialogTitle>
         <DialogContent>
+            
+        <div className="mb-3">
+            <label htmlFor="groupDate">Select Date</label>
+            <DatePicker
+                id="groupDate"
+                selected={groupDetails.date}
+                onChange={(date: Date | null) => setGroupDetails({ ...groupDetails, date })}
+                dateFormat="MM/dd/yyyy"
+                isClearable
+                className="w-full p-2 border border-gray-300 rounded-md"
+            />
+
+        </div>
+
+        {/* Start Time and End Time Pickers */}
+        <div className="mb-3 flex gap-4">
+            <div className="flex-1">
+            <label htmlFor="startTime">Start Time</label>
+            <TimePicker
+                id="startTime"
+                value={groupDetails.startTime}
+                onChange={(time) => setGroupDetails({ ...groupDetails, startTime: time ?? "" })}  // Ensure time is never null
+                disableClock
+                clearIcon={null}
+                format="hh:mm a"
+                className="w-full p-2 border border-gray-300 rounded-md"
+                />
+
+                <TimePicker
+                id="endTime"
+                value={groupDetails.endTime}
+                onChange={(time) => setGroupDetails({ ...groupDetails, endTime: time ?? "" })}  // Ensure time is never null
+                disableClock
+                clearIcon={null}
+                format="hh:mm a"
+                className="w-full p-2 border border-gray-300 rounded-md"
+                />
+            </div>
+        </div>
+
+
           {/* Group Name Field */}
           <TextField
             label="Group Name"
