@@ -1,7 +1,6 @@
 import { VolunteerSession } from "@prisma/client";
 
-type CreateVolunteerSession = Omit<
-  VolunteerSession, "id" | "User">;
+type CreateVolunteerSession = Omit<VolunteerSession, "id" | "User">;
 
 /**
  * Sends an HTTP request to the specified endpoint with the provided method and body.
@@ -15,7 +14,7 @@ type CreateVolunteerSession = Omit<
  */
 export const fetchApi = async (
   endpoint: string,
-  method: "POST" | "GET" | "DELETE" | "PUT",
+  method: "POST" | "GET" | "DELETE" | "PATCH",
   body?: Record<string, unknown>
 ) => {
   const response = await fetch(endpoint, {
@@ -38,8 +37,12 @@ export const fetchApi = async (
   return responseData;
 };
 
-export const addUserVolunteerSession = async (
+export const addVolunteerSession = async (
   volunteerSession: CreateVolunteerSession
 ) => {
   return fetchApi("/api/volunteerSession", "POST", { volunteerSession });
+};
+
+export const updateVolunteerSession = async (userId: string) => {
+  return fetchApi("/api/volunteerSession", "PATCH", { userId });
 };

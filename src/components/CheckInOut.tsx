@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Image from "next/image";
@@ -8,37 +8,161 @@ import logo1 from "../../public/logo1.png";
 import CheckConfirmation from "./CheckConfirmation";
 import Autocomplete from "@mui/material/Autocomplete";
 import confirmation from "../../public/confirmation.png";
+import { TimeSlot, User } from "@prisma/client";
+import { getUsersByDate } from "@api/user/route.client";
+import { getTimeSlotsByDate } from "@api/timeSlot/route.client";
+import {
+  addVolunteerSession,
+  updateVolunteerSession,
+} from "@api/volunteerSession/route.client";
 
 export default function CheckInOutForm() {
   const [email, setEmail] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [emailDisplayError, setEmailDisplayError] = useState(false);
   const [activeButton, setActiveButton] = useState<
     "checkin" | "checkout" | null
   >(null);
-  const [selectedShift, setSelectedShift] = useState<number | null>(null);
-
-  // use state to keep track of what stage of check-in flow user is on
+  const [users, setUsers] = useState<User[]>([]);
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(
+    null
+  );
+  const [checkInOutTime, setCheckInOutTime] = useState<Date | null>(null);
   const [stage, setStage] = useState<"initial" | "shifts" | "confirmation">(
     "initial"
   );
 
-  // store shifts in an array (sample data for now)
-  const shifts = [1, 2];
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const today = new Date();
+        const res = await getUsersByDate(today);
+        if (res && res.data) {
+          const sortedUsers = [...res.data].sort((a, b) =>
+            a.email.localeCompare(b.email)
+          );
+          setUsers(sortedUsers);
+        }
+      } catch (err) {
+        console.error("Failed to fetch users by date:", err);
+      }
+    };
 
-  // mock text for now until backend is implemented
-  const emailOptions = [
-    "johnnytan@example.com",
-    "wonkim@example.com",
-    "antran@example.com",
-  ];
+    fetchUsers();
+  }, []);
 
-  // submit logic
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   };
 
-  // checking in with shifts stage
+  const handleContinue = async (e: React.FormEvent) => {
+    if (
+      email !== "" &&
+      activeButton !== null &&
+      users.find((user) => user.email === email)
+    ) {
+      e.preventDefault();
+      const user = users.find((user) => user.email === email);
+
+      if (activeButton === "checkin") {
+        try {
+          const today = new Date();
+
+          if (user) {
+            const res = await getTimeSlotsByDate(user.id, today);
+
+            if (res && res.data) {
+              const sortedSlots = [...res.data].sort(
+                (a, b) =>
+                  new Date(a.startTime).getTime() -
+                  new Date(b.startTime).getTime()
+              );
+              setTimeSlots(sortedSlots);
+            }
+          }
+
+          setStage("shifts");
+        } catch (err) {
+          console.error("Failed to fetch time slots by date:", err);
+        }
+      } else {
+        try {
+          if (user) {
+            const res = await updateVolunteerSession(user.id);
+            if (res && res.code && res.code !== "ALREADY_CHECKED_OUT") {
+              const now = new Date();
+              setCheckInOutTime(now);
+              setStage("confirmation");
+            }
+          }
+        } catch (err) {
+          if (err instanceof Error) {
+            const errorData = JSON.parse(err.message);
+
+            if (errorData.code === "ALREADY_CHECKED_OUT") {
+              alert(
+                "You have already checked out and must check in before checking out again."
+              );
+            } else {
+              console.error("Check-out failed:", errorData.message);
+              alert("There was an error during check-out. Please try again.");
+            }
+          } else {
+            console.error("Unexpected error:", err);
+          }
+        }
+      }
+    }
+  };
+
+  const handleConfirm = async () => {
+    const now = new Date();
+    const dateWorked = new Date(now);
+    dateWorked.setHours(0, 0, 0, 0);
+
+    setCheckInOutTime(now);
+
+    if (!selectedTimeSlot || !email) {
+      console.error("Missing time slot or email.");
+      return;
+    }
+
+    const user = users.find((user) => user.email === email);
+    if (!user) {
+      console.error("User not found.");
+      return;
+    }
+
+    const volunteerSession = {
+      userId: user.id,
+      durationHours: null,
+      checkInTime: now,
+      checkOutTime: null,
+      dateWorked: dateWorked,
+      timeSlotId: selectedTimeSlot.id,
+    };
+
+    try {
+      const res = await addVolunteerSession(volunteerSession);
+      console.log("Volunteer session successfully created:", res);
+      setStage("confirmation");
+    } catch (err) {
+      if (err instanceof Error) {
+        const errorData = JSON.parse(err.message);
+
+        if (errorData.code === "ALREADY_CHECKED_IN") {
+          alert(
+            "You have already checked in and must check out before checking in again."
+          );
+        } else {
+          console.error("Check-in failed:", errorData.message);
+          alert("There was an error during check-in. Please try again.");
+        }
+      } else {
+        console.error("Unexpected error:", err);
+      }
+    }
+  };
+
   if (stage === "shifts") {
     return (
       <div className="flex flex-col items-center w-full">
@@ -47,7 +171,10 @@ export default function CheckInOutForm() {
             <button
               className="flex flex-row gap-[8px] text-[16px] text-[#145A5A] font-bold"
               type="button"
-              onClick={() => setStage("initial")}
+              onClick={() => {
+                setSelectedTimeSlot(null);
+                setStage("initial");
+              }}
             >
               <Icon icon={"tabler:arrow-left"} width="20" />
               Back
@@ -74,7 +201,12 @@ export default function CheckInOutForm() {
                   Daily Check-In/Check-Out
                 </div>
                 <div className="text-[#667085] text-[16px] font-normal mb-[10px]">
-                  Friday, January 31, 2025
+                  {new Date().toLocaleDateString("en-US", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </div>
               </div>
               <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
@@ -83,52 +215,69 @@ export default function CheckInOutForm() {
                 Here is your shift signup information:
                 <div className="flex flex-col gap-[20px] text-[16px] font-bold text-[#344054]">
                   Shift(s) (choose one)
-                  {shifts.map((shift, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-row gap-[16px] items-center mt-[8px]"
-                    >
-                      <input
-                        id={`shift-${index}`}
-                        value={shift}
-                        type="radio"
-                        className="size-[20px] cursor-pointer"
-                        checked={selectedShift === shift}
-                        onChange={() => setSelectedShift(shift)}
-                      />
-                      <TextField
-                        sx={{ width: "50%", pointerEvents: "none" }}
-                        id="outlined-basic"
-                        label="Start"
-                        variant="filled"
-                        value="10:00 AM"
-                        slotProps={{
-                          input: { readOnly: true },
-                          inputLabel: { shrink: true },
-                        }}
-                      />
-                      <TextField
-                        sx={{ width: "50%", pointerEvents: "none" }}
-                        id="outlined-basic"
-                        label="End"
-                        variant="filled"
-                        value="4:00 PM"
-                        slotProps={{
-                          input: { readOnly: true },
-                          inputLabel: { shrink: true },
-                        }}
-                      />
-                    </div>
-                  ))}
+                  {timeSlots.map((slot, index) => {
+                    const start = new Date(slot.startTime);
+                    const end = new Date(slot.endTime);
+
+                    const format = (date: Date) =>
+                      date.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      });
+
+                    const isAvailable = slot.status === "AVAILABLE";
+
+                    return (
+                      <div
+                        key={slot.id}
+                        className={`flex flex-row gap-[16px] items-center mt-[8px] ${
+                          !isAvailable ? "opacity-50 pointer-events-none" : ""
+                        }`}
+                      >
+                        <input
+                          id={`slot-${index}`}
+                          type="radio"
+                          className="size-[20px] cursor-pointer"
+                          checked={selectedTimeSlot?.id === slot.id}
+                          onChange={() => setSelectedTimeSlot(slot)}
+                          disabled={!isAvailable}
+                        />
+                        <TextField
+                          sx={{ width: "50%", pointerEvents: "none" }}
+                          label="Start"
+                          variant="filled"
+                          value={format(start)}
+                          slotProps={{
+                            input: { readOnly: true },
+                            inputLabel: { shrink: true },
+                          }}
+                        />
+                        <TextField
+                          sx={{ width: "50%", pointerEvents: "none" }}
+                          label="End"
+                          variant="filled"
+                          value={format(end)}
+                          slotProps={{
+                            input: { readOnly: true },
+                            inputLabel: { shrink: true },
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
               <button
-                className="bg-[#138D8A] mt-[32px] text-white text-[16px] py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold"
+                className={`${
+                  selectedTimeSlot !== null
+                    ? "bg-[#138D8A] cursor-pointer"
+                    : "bg-[#96E3DA] cursor-default"
+                } mt-[32px] text-white text-[16px] py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
                 type="submit"
-                onClick={() => {
-                  setStage("confirmation");
-                }}
+                onClick={handleConfirm}
+                disabled={selectedTimeSlot === null}
               >
                 Confirm Your Check-In
               </button>
@@ -139,23 +288,36 @@ export default function CheckInOutForm() {
     );
   } else if (stage === "confirmation") {
     return (
-      // can replace text of modal if user hasn't signed up for shift yet
       <CheckConfirmation
-        title="Hooray! You have checked in at 10:00:39 AM."
-        captionText="Do not forget to check out before you leave!"
+        title={`Hooray! You have checked ${
+          activeButton === "checkin" ? "in" : "out"
+        } at ${
+          checkInOutTime
+            ? checkInOutTime.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })
+            : ""
+        }.`}
+        captionText={
+          activeButton === "checkin"
+            ? "Do not forget to check out before you leave!"
+            : "Thank you for your hard work today! We look forward to seeing you again soon."
+        }
         buttonText="Back to First Page"
         image={confirmation}
         onClick={() => {
           setEmail("");
           setActiveButton(null);
-          setSelectedShift(null);
+          setSelectedTimeSlot(null);
+          setCheckInOutTime(null);
           setStage("initial");
         }}
       />
     );
   }
 
-  // initial checking in stage
   return (
     <div className="flex flex-col items-center w-full">
       <div className="flex flex-col justify-center items-center min-h-screen w-full">
@@ -180,7 +342,12 @@ export default function CheckInOutForm() {
                 Daily Check-In/Check-Out
               </div>
               <div className="text-[#667085] text-[16px] font-normal mb-[10px]">
-                Friday, January 31, 2025
+                {new Date().toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
               </div>
             </div>
             <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
@@ -221,7 +388,7 @@ export default function CheckInOutForm() {
                 includeInputInList
                 disableClearable
                 freeSolo
-                options={emailOptions}
+                options={users.map((user) => user.email)}
                 inputValue={email}
                 onInputChange={(_, value) => {
                   setEmail(value);
@@ -240,10 +407,6 @@ export default function CheckInOutForm() {
                         handleSubmit(e);
                       }
                     }}
-                    error={emailDisplayError}
-                    helperText={
-                      emailDisplayError && "Couldn't find your account"
-                    }
                   />
                 )}
               />
@@ -251,16 +414,15 @@ export default function CheckInOutForm() {
 
             <button
               className={`${
-                email !== "" && activeButton !== null
+                email !== "" &&
+                activeButton !== null &&
+                users.find((user) => user.email === email)
                   ? "bg-[#138D8A] cursor-pointer"
                   : "bg-[#96E3DA] cursor-default"
               } text-white text-[16px] py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
               type="submit"
               onClick={(e) => {
-                if (email !== "" && activeButton !== null) {
-                  handleSubmit(e);
-                  setStage("shifts");
-                }
+                handleContinue(e);
               }}
             >
               Continue
