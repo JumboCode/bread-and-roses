@@ -7,7 +7,7 @@ import { InputAdornment } from '@mui/material';
 import { Calendar } from "@components/Calendar";
 import "react-day-picker/style.css";
 
-const GroupSignUpModal = () => {
+const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
     const [showModal, setShowModal] = useState(true);
     const [showCalendar, setShowCalendar] = useState(false);
     const buttonRef = useRef(null);
@@ -38,7 +38,7 @@ const GroupSignUpModal = () => {
                     {/* Close Button (optional) */}
                     <button
                         className="text-[#101828] hover:text-gray-700 rounded-full"
-                        onClick={() => setShowModal(false)}
+                        onClick={onClose}
                     >
                         <Icon icon={"icon-park-solid:close-one"} width="25" />
                     </button> 
@@ -102,7 +102,7 @@ const GroupSignUpModal = () => {
                     <div
                         style={{
                             position: "absolute",
-                            top: "calc(100% - 660px)",
+                            top: "calc(100% - 670px)",
                             left: "20px", 
                             zIndex: 10,
                             backgroundColor: "white",
