@@ -26,6 +26,8 @@ model User {
   email              String             @unique
   password           String             @default("")
   volunteerDetails   VolunteerDetails?
+  organizationId     String?            @db.ObjectId
+  organization       Organization?      @relation(fields: [organizationId], references: [id])
   code               Code?
   eventIds           String[]           @db.ObjectId
   events             Event[]            @relation(fields: [eventIds], references: [id])
@@ -67,6 +69,13 @@ model Event {
   dateTime           DateTime           @default(now())
   description        String             @default("")
   maxPeople          Int                @default(0)
+}
+
+model Organization {
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  name               String             @unique
+  normalizedName     String             @unique
+  users              User[]
 }
 
 model TimeSlot {
