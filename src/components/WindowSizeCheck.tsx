@@ -35,10 +35,12 @@ export default function WindowSizeCheck({ children }: WindowSizeCheckProps) {
   // Adjust the thresholds below as needed.
   // For example, if you only want to show the error on small (sm) and medium (md)
   // screens, you might use a breakpoint like 768 (or another value matching your design).
-  if (width < 700 || height < 530) {
+
+  // to account for ipads
+  if (width < 700 || height < 530 || height > width) {
     console.log("Displaying error image due to small window size");
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex flex-col justify-center items-center h-screen text-center">
         <Image
           src="/empty_list.png"
           alt="Error"
@@ -46,6 +48,9 @@ export default function WindowSizeCheck({ children }: WindowSizeCheckProps) {
           width={215}
           height={173}
         />
+        <h1 className="mt-4">
+          Oh no! please open this website on a larger device.
+        </h1>
       </div>
     );
   }
