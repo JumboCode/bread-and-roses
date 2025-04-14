@@ -8,7 +8,6 @@ import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { getLanguageFromCookie } from "../../lib/languages";
 import WindowSizeCheck from "@components/WindowSizeCheck";
-import Image from "next/image";
 
 interface IHomeLayoutProps {
   children: React.ReactNode;
