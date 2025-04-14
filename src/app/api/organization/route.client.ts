@@ -1,6 +1,6 @@
 export const fetchApi = async (
   endpoint: string,
-  method: "POST",
+  method: "POST" | "GET" | "DELETE" | "PATCH",
   body?: Record<string, unknown>
 ) => {
   const response = await fetch(endpoint, {
@@ -23,6 +23,14 @@ export const fetchApi = async (
   return responseData;
 };
 
-export const addOrganization = async (userId: string, organizationName: string) => {
+export const addOrganization = async (
+  userId: string,
+  organizationName: string
+) => {
   return fetchApi("/api/organization", "POST", { userId, organizationName });
+};
+
+export const getOrganizations = async () => {
+  const url = `/api/organization`;
+  return fetchApi(url, "GET");
 };

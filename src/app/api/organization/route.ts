@@ -5,38 +5,58 @@ const prisma = new PrismaClient();
 
 export const POST = async (request: NextRequest) => {
   try {
-    /* @TODO: Add auth (?) */
-
     const { userId, organizationName } = await request.json();
+    const normalizedName = organizationName.trim().toLowerCase();
 
-    const fetchedOrganization = await prisma.organization.findUnique({
-      where: { name: organizationName },
+    let savedOrganization = await prisma.organization.findUnique({
+      where: { normalizedName },
     });
 
-    let savedorganization = fetchedOrganization;
-
-    if (!fetchedOrganization) {
-      savedorganization = await prisma.organization.create({
-        data: {name: organizationName},
-      });  
+    if (!savedOrganization) {
+      savedOrganization = await prisma.organization.create({
+        data: {
+          name: organizationName.trim(),
+          normalizedName,
+        },
+      });
     }
 
     await prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        organizationId: savedorganization?.id
-      }
-    })
-    
+      where: { id: userId },
+      data: { organizationId: savedOrganization.id },
+    });
+
     return NextResponse.json(
       {
         code: "SUCCESS",
-        message: "Successfully created new organization",
-        data: organizationName
+        message: "Organization saved",
+        data: savedOrganization.name,
       },
       { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error:", error);
+    return NextResponse.json(
+      {
+        code: "ERROR",
+        message: error,
+      },
+      { status: 500 }
+    );
+  }
+};
+
+export const GET = async () => {
+  try {
+    const fetchedOrganizations = await prisma.organization.findMany();
+
+    return NextResponse.json(
+      {
+        code: "SUCCESS",
+        message: "Successfully fetched organizations",
+        data: fetchedOrganizations,
+      },
+      { status: 200 }
     );
   } catch (error) {
     console.error("Error:", error);

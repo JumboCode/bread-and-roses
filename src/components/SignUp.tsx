@@ -13,10 +13,13 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { addUser } from "@api/user/route.client";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Role } from "@prisma/client/edge";
-import { IconButton, InputAdornment } from "@mui/material";
+import { Organization, Role } from "@prisma/client/edge";
+import { Autocomplete, IconButton, InputAdornment } from "@mui/material";
 import useApiThrottle from "../hooks/useApiThrottle";
-import { addOrganization } from "@api/organization/route.client";
+import {
+  addOrganization,
+  getOrganizations,
+} from "@api/organization/route.client";
 
 export default function SignUp() {
   interface Name {
@@ -60,6 +63,26 @@ export default function SignUp() {
   const [why, setWhy] = useState<string>("");
   const [comments, setComments] = useState<string>("");
   const [isFormComplete, setIsFormComplete] = useState<boolean>(false);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getOrganizations();
+
+        if (res && res.data) {
+          const sorted = [...res.data].sort((a, b) =>
+            a.normalizedName.localeCompare(b.normalizedName)
+          );
+          setOrganizations(sorted);
+        }
+      } catch (err) {
+        console.error("Failed to fetch organizations:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const testIfFormComplete = useCallback(() => {
     if (
@@ -207,7 +230,7 @@ export default function SignUp() {
           comments: comments,
         }
       );
-      await addOrganization(response.data.id, organization);
+      await addOrganization(response.data.id, organization.trim());
       setSuccess(true);
     } catch (error) {
       console.log(error);
@@ -410,14 +433,34 @@ export default function SignUp() {
                     <div className="flex flex-row font-semibold">
                       Organization
                     </div>
-                    <TextField
-                      sx={{ marginBottom: "10px", width: "100%" }}
-                      id="Organization"
-                      variant="outlined"
-                      value={organization}
-                      onChange={(e) => {
-                        setOrganization(e.target.value);
+                    <Autocomplete
+                      includeInputInList
+                      disableClearable
+                      freeSolo
+                      options={organizations.map(
+                        (organization) => organization.name
+                      )}
+                      filterOptions={(options, { inputValue }) => {
+                        return options.filter((option) =>
+                          option
+                            .toLowerCase()
+                            .includes(inputValue.toLowerCase())
+                        );
                       }}
+                      inputValue={organization}
+                      onInputChange={(_, value) => {
+                        setOrganization(value);
+                      }}
+                      sx={{ width: "100%" }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          sx={{ marginBottom: "10px", width: "100%" }}
+                          id="Organization"
+                          variant="outlined"
+                          value={organization}
+                        />
+                      )}
                     />
                     <div>
                       <div className="flex flex-row font-semibold">

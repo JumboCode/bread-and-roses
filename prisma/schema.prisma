@@ -72,9 +72,10 @@ model Event {
 }
 
 model Organization {
-  id    String  @id @default(auto()) @map("_id") @db.ObjectId
-  name  String  @unique
-  users User[]
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  name               String             @unique
+  normalizedName     String             @unique
+  users              User[]
 }
 
 model TimeSlot {
