@@ -232,7 +232,7 @@ export default function CommunicationPage() {
           <div className="gap-8 flex flex-col items-center justify-center">
             <div className="relative flex flex-col items-center justify-center gap-8">
               <Image
-                src="/sentMassEmail.png"
+                src="/confirmation.png"
                 alt="Sent Mass Email"
                 width={400}
                 height={350}

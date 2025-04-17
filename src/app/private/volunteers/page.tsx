@@ -111,6 +111,7 @@ export default function VolunteersPage() {
         <VolunteerTable
           showPagination={true}
           fromVolunteerPage
+          fromAttendeePage={false}
           users={filteredUsers}
           selected={selected}
           setSelected={setSelected}

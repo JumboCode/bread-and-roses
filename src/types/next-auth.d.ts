@@ -19,6 +19,7 @@ declare module "next-auth" {
     lastName: string;
     email: string;
     volunteerDetails?: VolunteerDetails | null;
+    rememberMe?: boolean;
   }
 }
 
@@ -30,6 +31,9 @@ declare module "next-auth/jwt" {
     lastName: string;
     email: string;
     volunteerDetails?: VolunteerDetails | null;
+    rememberMe?: boolean;
+    exp: number;
+    iat: number;
   }
 }
 
