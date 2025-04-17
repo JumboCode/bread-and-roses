@@ -15,8 +15,11 @@ import {
   addVolunteerSession,
   updateVolunteerSession,
 } from "@api/volunteerSession/route.client";
+import { useRouter } from "next/navigation";
 
 export default function CheckInOutForm() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [activeButton, setActiveButton] = useState<
     "checkin" | "checkout" | null
@@ -321,6 +324,18 @@ export default function CheckInOutForm() {
   return (
     <div className="flex flex-col items-center w-full">
       <div className="flex flex-col justify-center items-center min-h-screen w-full">
+        <div className="w-1/2">
+          <button
+            className="flex flex-row gap-[8px] text-[16px] text-[#145A5A] font-bold"
+            type="button"
+            onClick={() => {
+              router.push("/private");
+            }}
+          >
+            <Icon icon={"tabler:arrow-left"} width="20" />
+            Back to Home Page
+          </button>
+        </div>
         <Image
           src={logo1}
           alt="Logo"

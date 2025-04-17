@@ -16,12 +16,21 @@ export const POST = async (request: NextRequest) => {
     const { userId, dateWorked, timeSlotId } = volunteerSession;
 
     const parsedDateWorked = new Date(dateWorked);
+    const startOfDay = new Date(parsedDateWorked);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(parsedDateWorked);
+    endOfDay.setHours(23, 59, 59, 999);
 
     const openSession = await prisma.volunteerSession.findFirst({
       where: {
         userId,
         checkOutTime: null,
         durationHours: null,
+        dateWorked: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
       },
     });
 
@@ -104,11 +113,22 @@ export const PATCH = async (request: NextRequest) => {
   try {
     const { userId } = await request.json();
 
+    const today = new Date();
+    const startOfToday = new Date(today);
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const endOfToday = new Date(today);
+    endOfToday.setHours(23, 59, 59, 999);
+
     const activeSession = await prisma.volunteerSession.findFirst({
       where: {
         userId,
         checkOutTime: null,
         durationHours: null,
+        dateWorked: {
+          gte: startOfToday,
+          lte: endOfToday,
+        },
       },
     });
 
