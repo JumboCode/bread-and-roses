@@ -145,8 +145,7 @@ export default function CheckInOutForm() {
     };
 
     try {
-      const res = await addVolunteerSession(volunteerSession);
-      console.log("Volunteer session successfully created:", res);
+      await addVolunteerSession(volunteerSession);
       setStage("confirmation");
     } catch (err) {
       if (err instanceof Error) {
