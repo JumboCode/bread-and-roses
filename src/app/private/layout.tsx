@@ -7,7 +7,6 @@ import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { getLanguageFromCookie } from "../../lib/languages";
-import WindowSizeCheck from "@components/WindowSizeCheck";
 
 interface IHomeLayoutProps {
   children: React.ReactNode;
@@ -36,15 +35,13 @@ const HomeLayout = ({ children }: IHomeLayoutProps) => {
   }
 
   return (
-    <WindowSizeCheck>
-      <div className="flex min-h-screen">
-        <SideNavBar user={session.user} />
-        <div className="flex-1 ml-60">
-          <TopHeader user={session.user} />
-          <div className="py-6 px-7">{children}</div>
-        </div>
+    <div className="flex min-h-screen">
+      <SideNavBar user={session.user} />
+      <div className="flex-1 ml-60">
+        <TopHeader user={session.user} />
+        <div className="py-6 px-7">{children}</div>
       </div>
-    </WindowSizeCheck>
+    </div>
   );
 };
 
