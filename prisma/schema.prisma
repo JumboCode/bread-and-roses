@@ -18,6 +18,12 @@ enum Role {
   ADMIN
 }
 
+enum TimeSlotStatus {
+  AVAILABLE
+  CHECKED_IN
+  COMPLETED
+}
+
 model User {
   id                 String             @id @default(auto()) @map("_id") @db.ObjectId
   role               Role               @default(VOLUNTEER)
@@ -32,6 +38,7 @@ model User {
   eventIds           String[]           @db.ObjectId
   events             Event[]            @relation(fields: [eventIds], references: [id])
   timeSlots          TimeSlot[]
+  volunteerSessions   VolunteerSession[]
 }
 
 model VolunteerDetails {
@@ -51,6 +58,18 @@ model VolunteerDetails {
   comments           String             @default("")
   user               User               @relation(fields: [userId], references: [id])
   userId             String             @unique @db.ObjectId
+}
+
+model VolunteerSession {
+  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
+  user               User       @relation(fields: [userId], references: [id])
+  userId             String     @db.ObjectId
+  checkInTime        DateTime
+  checkOutTime       DateTime?
+  durationHours      Float?
+  dateWorked         DateTime
+  timeSlot           TimeSlot?  @relation(fields: [timeSlotId], references: [id])
+  timeSlotId         String?    @db.ObjectId @unique
 }
 
 model Code {
@@ -87,4 +106,6 @@ model TimeSlot {
   durationHours      Float
   date               DateTime
   approved           Boolean           @default(true)
+  status             TimeSlotStatus    @default(AVAILABLE)
+  volunteerSession   VolunteerSession?
 }
