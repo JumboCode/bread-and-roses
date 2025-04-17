@@ -8,7 +8,7 @@ function getWindowDimensions() {
     const { innerWidth: width, innerHeight: height } = window;
     return { width, height };
   }
-  return { width: 1024, height: 768 }; // Default size for SSR
+  return { width: 1024, height: 768 };
 }
 
 interface WindowSizeCheckProps {
@@ -22,19 +22,14 @@ export default function WindowSizeCheck({ children }: WindowSizeCheckProps) {
     function handleResize() {
       setWindowDimension(getWindowDimensions());
     }
-    window.addEventListener("resize", handleResize);
-    // Optional: Call handleResize on mount to get current dimensions.
-    handleResize();
 
+    window.addEventListener("resize", handleResize);
+    handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const { width, height } = windowDimension;
   console.log("Window dimensions:", width, height);
-
-  // Adjust the thresholds below as needed.
-  // For example, if you only want to show the error on small (sm) and medium (md)
-  // screens, you might use a breakpoint like 768 (or another value matching your design).
 
   // to account for ipads
   if (width < 700 || height < 530 || height > width) {
