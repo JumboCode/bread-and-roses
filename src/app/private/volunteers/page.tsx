@@ -103,7 +103,7 @@ export default function VolunteersPage() {
       </div>
       <SearchBar
         onSearchChange={(value) => {
-          setSearchText(value);
+          setSearchText(value.trim());
           setSelected([]);
         }}
       />
