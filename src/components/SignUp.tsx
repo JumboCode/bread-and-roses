@@ -233,7 +233,7 @@ export default function SignUp() {
       await addOrganization(response.data.id, organization.trim());
       setSuccess(true);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       if (error instanceof Error) {
         const errorData = JSON.parse(error.message);
 
