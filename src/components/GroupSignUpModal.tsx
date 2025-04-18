@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { format } from 'date-fns';
 import TextField from "@mui/material/TextField";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { InputAdornment } from '@mui/material';
@@ -8,6 +9,7 @@ import { Calendar } from "@components/Calendar";
 import "react-day-picker/style.css";
 
 const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [showModal, setShowModal] = useState(true);
     const [showCalendar, setShowCalendar] = useState(false);
     const buttonRef = useRef(null);
@@ -80,6 +82,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
                     autoComplete='off'
                     size='small'
                     onFocus={() => setShowCalendar(!showCalendar)}
+                    value={selectedDate ? format(selectedDate, "MM/dd/yyyy") : ""}
                     slotProps={{
                         input: {
                             endAdornment: (
@@ -109,7 +112,15 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
                             borderRadius: "20px",
                             boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
                         }}>
-                        <Calendar/>
+                        <Calendar
+                            selected={selectedDate ?? undefined}
+                            onSelect={(date) => {
+                            if (date) {
+                                setSelectedDate(date);
+                                setShowCalendar(false);
+                            }
+                            }}
+                        />
                     </div>
                 )}
                 <TextField

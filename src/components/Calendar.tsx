@@ -4,8 +4,13 @@ import React from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 
-export function Calendar() {
-  const [selected, setSelected] = React.useState<Date>();
+export function Calendar({
+  selected,
+  onSelect,
+}: {
+  selected?: Date;
+  onSelect: (date: Date) => void;
+}) {
   const customDays = ["m", "t", "w", "t", "f", "s", "s"];
 
   return (
@@ -13,12 +18,12 @@ export function Calendar() {
       <DayPicker
         mode="single"
         selected={selected}
-        onSelect={setSelected}
+        onSelect={onSelect}
         showOutsideDays
         formatters={{
           formatWeekdayName: (weekday) => customDays[weekday.getDay()],
           formatCaption: (month) =>
-            month.toLocaleDateString("en-US", { month: "long" }), // displays only the month
+            month.toLocaleDateString("en-US", { month: "long" }),
         }}
         classNames={{
           selected: "bg-teal-500 border-teal-500 text-white rounded-full",
