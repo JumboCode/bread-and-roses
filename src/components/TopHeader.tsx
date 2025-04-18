@@ -72,7 +72,7 @@ const TopHeader = ({ user }: TopHeaderProps) => {
       <>
         <button className="flex gap-x-2 font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
           onClick={() => {
-            if (pathname === "/private/events") {
+            if (pathname === "/private/events" && (user.role === Role.ADMIN)) {
               setShowModal(true);
             }
           }}
