@@ -8,7 +8,6 @@ import { Calendar } from "@components/Calendar";
 import "react-day-picker/style.css";
 
 const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
-  const [showModal, setShowModal] = useState(true);
   const [showCalendar, setShowCalendar] = useState(false);
   const buttonRef = useRef(null);
   const calendarRef = useRef(null);
@@ -68,8 +67,6 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showCalendar]);
-
-  if (!showModal) return null;
 
   return (
     <div className="bg-white border border-gray-300 w-[596px] h-[867px] shadow-md rounded-xl p-6 relative gap-[14px] flex flex-col text-gray-700">
