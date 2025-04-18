@@ -54,7 +54,7 @@ export default function VolunteerTable({
 
   useEffect(() => {
     setPage(0);
-  }, [users]);
+  }, [users?.length]);
 
   useEffect(() => {
     const updateRowsPerPage = () => {
