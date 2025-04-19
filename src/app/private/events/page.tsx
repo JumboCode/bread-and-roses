@@ -20,7 +20,7 @@ import DatePicker from "react-datepicker";
 import TimePicker from 'react-time-picker';
 import "react-datepicker/dist/react-datepicker.css"; // import datepicker styles
 import 'react-time-picker/dist/TimePicker.css'; // import time picker styles
-
+import { sendGroupSignupMail } from '../../../lib/groupSignupMail';
 
 export default function EventsPage() {
   const { data: session } = useSession();
@@ -44,6 +44,7 @@ export default function EventsPage() {
   
   const [groupFormVisible, setGroupFormVisible] = React.useState(false);
   const [groupDetails, setGroupDetails] = React.useState({
+    eventTitle: "",
     groupName: "",
     groupDescription: "",
     reason: "",
@@ -218,23 +219,39 @@ export default function EventsPage() {
 
   const handleGroupSignUp = async () => {
     try {
-      console.log(groupDetails); // You can replace this with logic to send the data to the backend
+      const res = await fetch("/api/group-signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          eventTitle: groupDetails.eventTitle,
+          date: groupDetails.date?.toLocaleDateString("en-US") || "",
+          startTime: groupDetails.startTime,
+          endTime: groupDetails.endTime,
+          groupName: groupDetails.groupName,
+          groupDescription: groupDetails.groupDescription,
+          groupReason: groupDetails.reason,
+          groupCapacity: groupDetails.capacity,
+        }),
+      });
   
-      // Example: Send groupDetails to your backend or save it to the database
-      
-      // Hide the form after submission
+      if (!res.ok) throw new Error("Failed to submit group sign-up");
+  
+      // Optionally reset form or show confirmation
       setGroupFormVisible(false);
+      alert("Group signup request submitted!");
     } catch (error) {
       console.error("Error with group sign-up:", error);
+      alert("There was an error submitting your group sign-up. Please try again.");
     }
   };
+  
   
 
   return (
     <div>
-      <div className="text-4xl font-['Kepler_Std'] font-semibold flex flex-row items-center gap-x-[12px] mb-10">
-        <Icon icon="uil:calender" width="44" height="44" />
-        <Button
+         <Button
             onClick={() => setGroupFormVisible(true)}
             sx={{
             backgroundColor: "#138D8A",
@@ -250,12 +267,21 @@ export default function EventsPage() {
         >
          Request Group Sign-Up
         </Button>
+      <div className="text-4xl font-['Kepler_Std'] font-semibold flex flex-row items-center gap-x-[12px] mb-10">
+        <Icon icon="uil:calender" width="44" height="44" />
       </div>
 
       <Dialog open={groupFormVisible} onClose={() => setGroupFormVisible(false)}>
         <DialogTitle>Group Sign-Up</DialogTitle>
         <DialogContent>
-            
+        <TextField
+            label="Event Title"
+            variant="outlined"
+            fullWidth
+            value={groupDetails.eventTitle || ""}
+            onChange={(e) => setGroupDetails({ ...groupDetails, eventTitle: e.target.value })}
+            sx={{ mb: 3 }}
+        />
         <div className="mb-3">
             <label htmlFor="groupDate">Select Date</label>
             <DatePicker
