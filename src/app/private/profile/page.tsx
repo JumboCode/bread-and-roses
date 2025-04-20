@@ -3,14 +3,59 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import ProfileAvatar from "@components/ProfileAvatar";
-import { Role } from "@prisma/client";
+import { Role, VolunteerSession } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import RadioButton from "@components/RadioButton";
+import StatsCard from "@components/StatsCard";
+import { getVolunteerSessions } from "@api/volunteerSession/route.client";
+import TimeTable from "@components/TimeTable";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { data: session } = useSession();
+
+  const [hours, setHours] = React.useState<string>("0.0");
+  const [days, setDays] = React.useState<number>(0);
+
+  const [volunteerSessions, setVolunteerSessions] = React.useState<
+    VolunteerSession[]
+  >([]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getVolunteerSessions(session ? session.user.id : "");
+
+        if (res && res.data) {
+          const sessions = res.data;
+
+          // Total hours worked (sum of defined durationHours)
+          const totalHours = sessions.reduce(
+            (acc: number, session: VolunteerSession) => {
+              return acc + (session.durationHours ?? 0);
+            },
+            0
+          );
+
+          // Total days volunteered (unique days based on dateWorked)
+          const uniqueDays = new Set(
+            sessions.map((session: VolunteerSession) =>
+              new Date(session.dateWorked).toDateString()
+            )
+          );
+
+          setHours(totalHours.toFixed(1)); // rounded to 1 decimal
+          setDays(uniqueDays.size);
+          setVolunteerSessions(sessions);
+        }
+      } catch (err) {
+        console.error("Failed to fetch volunteer sessions:", err);
+      }
+    };
+
+    fetchData();
+  }, [session]);
 
   if (!session) {
     return (
@@ -42,20 +87,64 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
-        <button
-          onClick={() => router.push("/private/profile/edit")}
-          className="flex items-center gap-2 bg-teal-600 p-2.5 px-3 text-white rounded-md font-semibold"
-        >
-          <Icon icon="ic:round-edit" width="24" height="20" />
-          Edit
-        </button>
+        {session.user.role === Role.ADMIN ? (
+          <button
+            onClick={() => router.push("/private/profile/edit")}
+            className="flex items-center gap-2 bg-teal-600 p-2.5 px-3 text-white rounded-md font-semibold"
+          >
+            <Icon icon="ic:round-edit" width="24" height="20" />
+            Edit
+          </button>
+        ) : null}
       </div>
 
       {/* Main Form */}
       <div className="flex flex-col gap-8">
-        {/* Are You Over 14 Field */}
         {session.user.role === Role.VOLUNTEER ? (
           <>
+            <div className="flex items-center gap-3">
+              <Icon icon="ic:round-timeline" height={44} />
+              <div className="font-bold font-['Kepler_Std'] text-4xl">
+                Volunteer Sessions
+              </div>
+            </div>
+            <div className="flex justify-between">
+              <div>Personal Stats</div>
+              <div className="flex gap-4">
+                <StatsCard
+                  heading="Personal volunteer hours"
+                  value={hours}
+                  icon="tabler:clock-check"
+                />
+                <StatsCard
+                  heading="Days volunteered"
+                  value={days}
+                  icon="mdi:calendar-outline"
+                />
+              </div>
+            </div>
+            <div className="flex justify-between">
+              <div>Volunteer Timesheet</div>
+              <div className="w-[736px]">
+                <TimeTable volunteerSessions={volunteerSessions} />
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <Icon icon="material-symbols:person-rounded" height={44} />
+                <div className="font-bold font-['Kepler_Std'] text-4xl">
+                  Personal Information
+                </div>
+              </div>
+              <button
+                onClick={() => router.push("/private/profile/edit")}
+                className="flex items-center gap-2 bg-teal-600 p-2.5 px-3 text-white rounded-md font-semibold"
+              >
+                <Icon icon="ic:round-edit" width="24" height="20" />
+                Edit
+              </button>
+            </div>
+            {/* Are You Over 14 Field */}
             <div className="flex">
               <div className="w-1/3">
                 <div className="font-bold text-[#344054] mb-1">
