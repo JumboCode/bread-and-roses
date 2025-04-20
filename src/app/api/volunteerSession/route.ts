@@ -127,7 +127,10 @@ export const GET = async (request: NextRequest) => {
 
   try {
     const volunteerSessions = await prisma.volunteerSession.findMany({
-      where: { userId: userId },
+      where: {
+        userId: userId,
+        NOT: [{ checkOutTime: null }, { durationHours: null }],
+      },
     });
 
     if (!volunteerSessions) {
