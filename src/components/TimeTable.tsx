@@ -83,7 +83,7 @@ export default function TimeTable({ volunteerSessions }: TimeTableProps) {
                 width: "255px",
               }}
             >
-              Time Slot(s)
+              Volunteer Session(s)
             </TableCell>
           </TableRow>
         </TableHead>
