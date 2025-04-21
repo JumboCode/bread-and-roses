@@ -85,10 +85,8 @@ const TopHeader = ({ user }: TopHeaderProps) => {
 
           {showModal && (
             <div className="fixed inset-0 flex items-center justify-center pl-[160px] overflow-y-auto scrollbar-hide">
-              {" "}
               {/* backdrop for modal that allows for scrolling */}
               <div className="rounded-xl w-full max-w-[600px] max-h-[100vh] overflow-y-auto relative scrollbar-hide mt-10">
-                {" "}
                 {/* modal container */}
                 <GroupSignUpModal onClose={() => setShowModal(false)} />
               </div>
