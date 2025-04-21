@@ -18,6 +18,12 @@ enum Role {
   ADMIN
 }
 
+enum TimeSlotStatus {
+  AVAILABLE
+  CHECKED_IN
+  COMPLETED
+}
+
 model User {
   id                 String             @id @default(auto()) @map("_id") @db.ObjectId
   role               Role               @default(VOLUNTEER)
@@ -26,9 +32,13 @@ model User {
   email              String             @unique
   password           String             @default("")
   volunteerDetails   VolunteerDetails?
+  organizationId     String?            @db.ObjectId
+  organization       Organization?      @relation(fields: [organizationId], references: [id])
   code               Code?
   eventIds           String[]           @db.ObjectId
   events             Event[]            @relation(fields: [eventIds], references: [id])
+  timeSlots          TimeSlot[]
+  volunteerSessions   VolunteerSession[]
 }
 
 model VolunteerDetails {
@@ -50,6 +60,18 @@ model VolunteerDetails {
   userId             String             @unique @db.ObjectId
 }
 
+model VolunteerSession {
+  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
+  user               User       @relation(fields: [userId], references: [id])
+  userId             String     @db.ObjectId
+  checkInTime        DateTime
+  checkOutTime       DateTime?
+  durationHours      Float?
+  dateWorked         DateTime
+  timeSlot           TimeSlot?  @relation(fields: [timeSlotId], references: [id])
+  timeSlotId         String?    @db.ObjectId @unique
+}
+
 model Code {
   id                 String             @id @default(auto()) @map("_id") @db.ObjectId
   codeString         String             @default("")
@@ -66,4 +88,24 @@ model Event {
   dateTime           DateTime           @default(now())
   description        String             @default("")
   maxPeople          Int                @default(0)
+}
+
+model Organization {
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  name               String             @unique
+  normalizedName     String             @unique
+  users              User[]
+}
+
+model TimeSlot {
+  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String            @db.ObjectId
+  user               User              @relation(fields: [userId], references: [id])
+  startTime          DateTime
+  endTime            DateTime
+  durationHours      Float
+  date               DateTime
+  approved           Boolean           @default(true)
+  status             TimeSlotStatus    @default(AVAILABLE)
+  volunteerSession   VolunteerSession?
 }

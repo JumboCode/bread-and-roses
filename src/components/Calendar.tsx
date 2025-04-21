@@ -4,22 +4,34 @@ import React from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 
-export function Calendar({
-  selected,
-  onSelect,
-}: {
-  selected?: Date;
-  onSelect: (date: Date) => void;
-}) {
-  const customDays = ["m", "t", "w", "t", "f", "s", "s"];
+interface CalendarProps {
+  selectedDate: Date | undefined;
+  setSelectedDate: (date: Date | undefined) => void;
+}
+
+export function Calendar({ selectedDate, setSelectedDate }: CalendarProps) {
+  const customDays = ["s", "m", "t", "w", "t", "f", "s"];
 
   return (
     <div className="border-2 rounded-[20px] size-fit py-4 px-4">
       <DayPicker
         mode="single"
-        selected={selected}
-        onSelect={onSelect}
+        selected={selectedDate}
+        onSelect={(date) => {
+          if (!date) return;
+          if (selectedDate?.toDateString() !== date.toDateString()) {
+            setSelectedDate(date);
+          }
+        }}
         showOutsideDays
+        disabled={(date) => {
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          tomorrow.setHours(0, 0, 0, 0);
+
+          const cutoff = new Date(tomorrow.getTime() - 24 * 60 * 60 * 1000);
+          return date < cutoff;
+        }}
         formatters={{
           formatWeekdayName: (weekday) => customDays[weekday.getDay()],
           formatCaption: (month) =>
