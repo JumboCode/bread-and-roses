@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import AuthProvider from "./context/AuthProvider";
 import TranslationProvider from "./context/TranslationsProvider";
+import WindowSizeCheck from "@components/WindowSizeCheck";
+
 const sofiaPro = localFont({
   src: "./fonts/sofia-pro.woff2",
   variable: "--font-sofia-pro",
@@ -23,7 +25,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${sofiaPro.variable} antialiased overscroll-none`}>
         <TranslationProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <WindowSizeCheck>{children}</WindowSizeCheck>
+          </AuthProvider>
         </TranslationProvider>
       </body>
     </html>

@@ -7,7 +7,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import Image from "next/image";
 import { Button, TextField } from "@mui/material";
 import { useSession } from "next-auth/react";
-import { Role, TimeSlot, User } from "@prisma/client";
+import { Role, TimeSlot, TimeSlotStatus, User } from "@prisma/client";
 import {
   addTimeSlot,
   deleteTimeSlot,
@@ -134,6 +134,7 @@ export default function EventsPage() {
           durationHours,
           date: selectedDate,
           approved: true,
+          status: TimeSlotStatus.AVAILABLE,
         });
       }
 
