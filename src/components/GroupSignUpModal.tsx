@@ -167,6 +167,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
                   setShowCalendar(false);
                 }
               }}
+              previousDisabled
             />
           </div>
         )}
