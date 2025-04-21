@@ -12,7 +12,6 @@ import { useTranslation } from "react-i18next";
 import { setLanguageCookie } from "../lib/languages";
 import { getLanguageFromCookie } from "../lib/languages";
 import GroupSignUpModal from "@components/GroupSignUpModal";
-import { Modal, Box } from "@mui/material";
 
 interface TopHeaderProps {
   user: {
@@ -41,11 +40,13 @@ const TopHeader = ({ user }: TopHeaderProps) => {
   let icon = "";
 
   if (pathname === "/private/events") {
-    buttonText = user.role === Role.ADMIN ? "Customize Event" : "Request Group Sign Up";
+    buttonText =
+      user.role === Role.ADMIN ? "Customize Event" : "Request Group Sign Up";
     icon = "ic:baseline-plus";
   } else {
     buttonText = user.role === Role.ADMIN ? "Add Event" : t("check_in");
-    icon = user.role === Role.ADMIN ? "ic:baseline-plus" : "mdi:checkbox-outline";
+    icon =
+      user.role === Role.ADMIN ? "ic:baseline-plus" : "mdi:checkbox-outline";
   }
 
   const [isEnglish, setIsEnglish] = React.useState(
@@ -68,27 +69,32 @@ const TopHeader = ({ user }: TopHeaderProps) => {
 
   return (
     <div className="w-[calc(100vw-240px)] top-0 left-60 right-0 flex items-center justify-between border-gray-200 border-y py-5 px-6 sticky z-10 bg-white">
-      {(pathname === "/private" || pathname === "/private/events") ? (
-      <>
-        <button className="flex gap-x-2 font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
-          onClick={() => {
-            if (pathname === "/private/events" && (user.role === Role.ADMIN)) {
-              setShowModal(true);
-            }
-          }}
-        >
-          <Icon icon={icon} width="20" height="20" />
-          <div className="mt-0.5">{buttonText}</div>
-        </button>
+      {pathname === "/private" || pathname === "/private/events" ? (
+        <>
+          <button
+            className="flex gap-x-2 font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
+            onClick={() => {
+              if (pathname === "/private/events" && user.role === Role.ADMIN) {
+                setShowModal(true);
+              }
+            }}
+          >
+            <Icon icon={icon} width="20" height="20" />
+            <div className="mt-0.5">{buttonText}</div>
+          </button>
 
-        {showModal && (
-          <div className="fixed inset-0 flex items-center justify-center pl-[160px] overflow-y-auto scrollbar-hide"> {/* backdrop for modal that allows for scrolling */}
-            <div className="rounded-xl w-full max-w-[600px] max-h-[100vh] overflow-y-auto relative scrollbar-hide mt-10"> {/* modal container */}
-              <GroupSignUpModal onClose={() => setShowModal(false)}/>
+          {showModal && (
+            <div className="fixed inset-0 flex items-center justify-center pl-[160px] overflow-y-auto scrollbar-hide">
+              {" "}
+              {/* backdrop for modal that allows for scrolling */}
+              <div className="rounded-xl w-full max-w-[600px] max-h-[100vh] overflow-y-auto relative scrollbar-hide mt-10">
+                {" "}
+                {/* modal container */}
+                <GroupSignUpModal onClose={() => setShowModal(false)} />
+              </div>
             </div>
-          </div>
-        )}
-      </>
+          )}
+        </>
       ) : (
         <div className="text-gray-500 text-lg">{getTitle()}</div>
       )}

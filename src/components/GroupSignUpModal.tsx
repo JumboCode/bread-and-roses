@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { format } from 'date-fns';
+import { format } from "date-fns";
 import TextField from "@mui/material/TextField";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { InputAdornment } from "@mui/material";
@@ -12,7 +12,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const buttonRef = useRef(null);
-  const calendarRef = useRef(null);
+  const calendarRef = useRef<HTMLDivElement>(null);
 
   // separate useStates for each field (for backend)
   const [title, setTitle] = useState("");
@@ -58,7 +58,11 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       // if user clicks outside the calendar, close it
-      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+      if (
+        calendarRef.current &&
+        event.target instanceof Node &&
+        !calendarRef.current.contains(event.target)
+      ) {
         setShowCalendar(false);
       }
     }
@@ -109,7 +113,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
         }}
       />
 
-      <label className="block text-sm font-medium flex flex-row gap-[6px] items-center">
+      <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
         <Icon icon={"lets-icons:time-atack"} width="20" />
         Time
       </label>
@@ -156,8 +160,8 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
             }}
           >
             <Calendar
-              selected={selectedDate ?? undefined}
-              onSelect={(date) => {
+              selectedDate={selectedDate ?? undefined}
+              setSelectedDate={(date) => {
                 if (date) {
                   setSelectedDate(date);
                   setShowCalendar(false);
@@ -196,7 +200,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
         />
       </div>
 
-      <label className="block text-sm font-medium  flex flex-row gap-[6px] items-center">
+      <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
         <Icon icon={"material-symbols:group"} width="20" />
         Name of group
       </label>
@@ -210,7 +214,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
         error={errors.groupName}
       />
 
-      <label className="block text-sm font-medium flex flex-row gap-[6px] items-center">
+      <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
         <Icon icon={"basil:document-solid"} width="20" />
         Group description
       </label>
@@ -226,7 +230,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
         error={errors.description}
       />
 
-      <label className="block text-sm font-medium flex flex-row gap-[6px] items-center">
+      <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
         <Icon icon={"material-symbols:group-add"} width="20" />
         Reason(s) for group signup
       </label>
@@ -242,7 +246,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
         error={errors.reasons}
       />
 
-      <label className="block text-sm font-medium flex flex-row gap-[6px] items-center">
+      <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
         <Icon icon={"material-symbols:groups"} width="20" />
         Capacity
       </label>
