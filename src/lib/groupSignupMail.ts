@@ -48,7 +48,7 @@ Capacity: ${groupCapacity}
   `;
 
   const htmlBody = `
-    <h2>📅 New Group Sign-Up Request</h2>
+    <h2>New Group Sign-Up Request</h2>
     <p><strong>Event Title:</strong> ${eventTitle}</p>
     <p><strong>Date:</strong> ${date}</p>
     <p><strong>Start Time:</strong> ${startTime}</p>
@@ -61,7 +61,7 @@ Capacity: ${groupCapacity}
 
   const message = {
     from: process.env.NODEMAILER_EMAIL,
-    to: "jason.miller@tufts.edu",
+    to: process.env.NODEMAILER_EMAIL,
     subject,
     text: textBody,
     html: htmlBody,
