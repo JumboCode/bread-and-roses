@@ -660,13 +660,12 @@ export default function SignUp() {
                     rows={4}
                     multiline
                   />
-                  <div>
+                  <div className="font-semibold">
+                    Do you have any other questions/comments?
                     <FormLabel
                       id="Any Questions"
                       sx={{ color: "black", fontWeight: 600 }}
-                    >
-                      Do you have any other questions/comments?
-                    </FormLabel>
+                    ></FormLabel>
                     <TextField
                       sx={{ margin: "5px 0 20px 0", width: "100%" }}
                       onChange={(e) => setComments(e.target.value)}

@@ -30,12 +30,19 @@ export default function VolunteersPage() {
     fetchUsers();
   }, []);
 
+  const normalizedSearchText = searchText.trim().split(/\s+/).join(" ");
+
   // Filter users based on the search text
   const filteredUsers = users?.filter(
     (user) =>
       user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
       user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchText.toLowerCase())
+      user.email.toLowerCase().includes(searchText.toLowerCase()) ||
+      (
+        user.firstName.toLowerCase() +
+        " " +
+        user.lastName.toLowerCase()
+      ).includes(normalizedSearchText.toLowerCase())
   );
 
   const deleteUsers = async () => {
@@ -103,7 +110,7 @@ export default function VolunteersPage() {
       </div>
       <SearchBar
         onSearchChange={(value) => {
-          setSearchText(value);
+          setSearchText(value.trim());
           setSelected([]);
         }}
       />

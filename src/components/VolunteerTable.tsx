@@ -53,6 +53,10 @@ export default function VolunteerTable({
     users?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) || [];
 
   useEffect(() => {
+    setPage(0);
+  }, [users?.length]);
+
+  useEffect(() => {
     const updateRowsPerPage = () => {
       if (tableContainerRef.current && fromVolunteerPage) {
         const containerHeight = tableContainerRef.current.clientHeight;
