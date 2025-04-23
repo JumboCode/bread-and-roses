@@ -203,8 +203,8 @@ export default function EventsPage() {
     <div>
       <div className="text-4xl font-['Kepler_Std'] font-semibold flex flex-row items-center gap-x-[12px] mb-10">
         <Icon icon="uil:calender" width="44" height="44" />
+        Events
       </div>
-
       <div className="relative text-center w-full flex flex-row gap-x-[24px] pb-1">
         <div className="flex-2 flex flex-col">
           <Calendar
