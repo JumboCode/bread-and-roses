@@ -40,11 +40,6 @@ const TimeSlotFields = (props: TimeSlotProps) => {
     return h * 60 + m;
   };
 
-  const isOutOfBounds = (time: string) => {
-    if (!time) return false;
-    const minutes = toMinutes(time);
-    return minutes < 600 || minutes > 1080;
-  };
   return (
     <div>
       <div className="flex flex-col gap-4 flex-grow">
@@ -92,8 +87,7 @@ const TimeSlotFields = (props: TimeSlotProps) => {
                     (slot.start && slot.end && slot.start > slot.end) ||
                       (slot.start &&
                         slot.end &&
-                        doesOverlap(slot.start, slot.end, index)) ||
-                      isOutOfBounds(slot.start)
+                        doesOverlap(slot.start, slot.end, index))
                   )}
                   slotProps={{
                     inputLabel: { shrink: true },
@@ -117,8 +111,7 @@ const TimeSlotFields = (props: TimeSlotProps) => {
                     (slot.start && slot.end && slot.end < slot.start) ||
                       (slot.start &&
                         slot.end &&
-                        doesOverlap(slot.start, slot.end, index)) ||
-                      isOutOfBounds(slot.end)
+                        doesOverlap(slot.start, slot.end, index))
                   )}
                   slotProps={{
                     inputLabel: { shrink: true },

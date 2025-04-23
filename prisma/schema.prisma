@@ -109,3 +109,12 @@ model TimeSlot {
   status             TimeSlotStatus    @default(AVAILABLE)
   volunteerSession   VolunteerSession?
 }
+
+model CustomDay {
+  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
+  date               DateTime
+  startTime          DateTime
+  endTime            DateTime
+  title              String?
+  description        String?
+}

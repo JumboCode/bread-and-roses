@@ -15,6 +15,7 @@ import {
 } from "@api/timeSlot/route.client";
 import VolunteerTable from "@components/VolunteerTable";
 import { getUsersByDate } from "@api/user/route.client";
+import { getCustomDay } from "@api/customDay/route.client";
 
 export default function EventsPage() {
   const { data: session } = useSession();
@@ -27,6 +28,11 @@ export default function EventsPage() {
   ]);
   const [users, setUsers] = React.useState<User[]>([]);
   const [page, setPage] = React.useState(0);
+
+  const [customDayHours, setCustomDayHours] = React.useState<{
+    start: string;
+    end: string;
+  }>({ start: "10:00", end: "18:00" });
 
   const handleAddTimeSlot = () => {
     setTimeSlots((prev) => {
@@ -78,7 +84,9 @@ export default function EventsPage() {
   const isOutOfBounds = (time: string) => {
     if (!time) return false;
     const minutes = toMinutes(time);
-    return minutes < 600 || minutes > 1080;
+    const lowerBound = toMinutes(customDayHours.start);
+    const upperBound = toMinutes(customDayHours.end);
+    return minutes < lowerBound || minutes > upperBound;
   };
 
   const isCurrentSlotValid =
@@ -196,7 +204,32 @@ export default function EventsPage() {
       }
     };
 
+    const fetchCustomDay = async () => {
+      if (!selectedDate) return;
+
+      try {
+        const result = await getCustomDay(selectedDate);
+        const customDay = result.data;
+
+        console.log(customDay);
+
+        if (customDay) {
+          const start = new Date(customDay.startTime)
+            .toTimeString()
+            .slice(0, 5);
+          const end = new Date(customDay.endTime).toTimeString().slice(0, 5);
+          setCustomDayHours({ start, end });
+        } else {
+          setCustomDayHours({ start: "10:00", end: "18:00" });
+        }
+      } catch (error) {
+        console.error("Failed to fetch custom day:", error);
+        setCustomDayHours({ start: "10:00", end: "18:00" });
+      }
+    };
+
     fetchTimeSlots();
+    fetchCustomDay();
   }, [session?.user.id, selectedDate, session?.user.role]);
 
   return (
@@ -227,8 +260,9 @@ export default function EventsPage() {
                     />
                     <div className="flex flex-col gap-5 mt-2 w-full">
                       <div className="font-bold text-lg text-[#101828]">
-                        Sign up for your volunteering time! We are open from 10
-                        AM - 6 PM.
+                        Sign up for your volunteering time! We are open from{" "}
+                        {formatTime(customDayHours.start)} -{" "}
+                        {formatTime(customDayHours.end)}.
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Icon
@@ -481,7 +515,8 @@ export default function EventsPage() {
                       height="20"
                     />
                     <div className="text-sm text-[#344054]">
-                      Opening Time: 10 AM - 6 PM
+                      Opening Time: {formatTime(customDayHours.start)} -{" "}
+                      {formatTime(customDayHours.end)}
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">
