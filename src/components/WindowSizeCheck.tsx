@@ -29,11 +29,9 @@ export default function WindowSizeCheck({ children }: WindowSizeCheckProps) {
   }, []);
 
   const { width, height } = windowDimension;
-  console.log("Window dimensions:", width, height);
 
   // to account for ipads
   if (width < 700 || height < 530 || height > width) {
-    console.log("Displaying error image due to small window size");
     return (
       <div className="flex flex-col justify-center items-center h-screen text-center">
         <Image

@@ -33,6 +33,8 @@ export default function EventsPage() {
     start: string;
     end: string;
   }>({ start: "10:00", end: "18:00" });
+  const [customDayTitle, setCustomDayTitle] = React.useState("");
+  const [customDayDescription, setCustomDayDescription] = React.useState("");
 
   const handleAddTimeSlot = () => {
     setTimeSlots((prev) => {
@@ -211,20 +213,24 @@ export default function EventsPage() {
         const result = await getCustomDay(selectedDate);
         const customDay = result.data;
 
-        console.log(customDay);
-
         if (customDay) {
           const start = new Date(customDay.startTime)
             .toTimeString()
             .slice(0, 5);
           const end = new Date(customDay.endTime).toTimeString().slice(0, 5);
           setCustomDayHours({ start, end });
+          setCustomDayTitle(customDay.title ?? "");
+          setCustomDayDescription(customDay.description ?? "");
         } else {
           setCustomDayHours({ start: "10:00", end: "18:00" });
+          setCustomDayTitle("");
+          setCustomDayDescription("");
         }
       } catch (error) {
         console.error("Failed to fetch custom day:", error);
         setCustomDayHours({ start: "10:00", end: "18:00" });
+        setCustomDayTitle("");
+        setCustomDayDescription("");
       }
     };
 
@@ -259,10 +265,19 @@ export default function EventsPage() {
                       height={175}
                     />
                     <div className="flex flex-col gap-5 mt-2 w-full">
-                      <div className="font-bold text-lg text-[#101828]">
-                        Sign up for your volunteering time! We are open from{" "}
-                        {formatTime(customDayHours.start)} -{" "}
-                        {formatTime(customDayHours.end)}.
+                      <div>
+                        <div className="font-bold text-lg text-[#101828]">
+                          {customDayTitle === ""
+                            ? `Sign up for your volunteering time! We are open from${" "}
+                        ${formatTime(customDayHours.start)} -${" "}
+                        ${formatTime(customDayHours.end)}.`
+                            : customDayTitle}
+                        </div>
+                        {customDayDescription !== "" && (
+                          <div className="text-sm text-[#344054] pt-1">
+                            {customDayDescription}
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Icon
@@ -504,8 +519,17 @@ export default function EventsPage() {
                   height={175}
                 />
                 <div className="flex flex-col gap-5 mt-2 w-full">
-                  <div className="font-bold text-4xl font-['Kepler_Std']">
-                    Time Slot Registrations
+                  <div>
+                    <div className="font-bold text-4xl font-['Kepler_Std']">
+                      {customDayTitle === ""
+                        ? "Time Slot Registrations"
+                        : customDayTitle}
+                    </div>
+                    {customDayDescription !== "" && (
+                      <div className="text-sm text-[#344054] pt-1">
+                        {customDayDescription}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Icon
@@ -519,7 +543,7 @@ export default function EventsPage() {
                       {formatTime(customDayHours.end)}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 mb-[20px]">
                     <Icon
                       icon="mdi:people"
                       className="text-[#344054]"

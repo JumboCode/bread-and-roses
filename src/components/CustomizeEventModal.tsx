@@ -8,7 +8,7 @@ import { InputAdornment, TextField } from "@mui/material";
 import { Calendar } from "./Calendar";
 import { format } from "date-fns";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { addCustomDay } from "@api/customDay/route.client";
+import { addCustomDay, getCustomDay } from "@api/customDay/route.client";
 
 interface CustomizeEventProps {
   modalVisible: boolean;
@@ -74,7 +74,7 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
     setHasTimeSlotError(hasError);
   }, [timeSlots]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       // if user clicks outside the calendar, close it
       if (
@@ -93,6 +93,40 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showCalendar]);
+
+  useEffect(() => {
+    const fetchCustomDay = async () => {
+      if (!selectedDate) return;
+
+      try {
+        const result = await getCustomDay(selectedDate);
+        const customDay = result.data;
+
+        if (customDay) {
+          const start = new Date(customDay.startTime)
+            .toTimeString()
+            .slice(0, 5);
+          const end = new Date(customDay.endTime).toTimeString().slice(0, 5);
+          setTimeSlots([{ start, end, submitted: false }]);
+          setTitle(customDay.title ?? "");
+          setDescription(customDay.description ?? "");
+        } else {
+          setTimeSlots([{ start: "10:00", end: "18:00", submitted: false }]);
+          setTitle("");
+          setDescription("");
+        }
+      } catch (error) {
+        console.error("Error fetching CustomDay:", error);
+        setTimeSlots([{ start: "10:00", end: "18:00", submitted: false }]);
+        setTitle("");
+        setDescription("");
+      }
+    };
+
+    if (modalVisible) {
+      fetchCustomDay();
+    }
+  }, [modalVisible, selectedDate]);
 
   const handleAdd = async () => {
     if (!selectedDate || !timeSlots[0]?.start || !timeSlots[0]?.end) return;
