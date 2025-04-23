@@ -42,8 +42,8 @@ Date: ${date}
 Start Time: ${startTime}
 End Time: ${endTime}
 Group Name: ${groupName}
-Group Description: ${groupDescription || 'N/A'}
-Reason(s): ${groupReason || 'N/A'}
+Group Description: ${groupDescription || "N/A"}
+Reason(s): ${groupReason || "N/A"}
 Capacity: ${groupCapacity}
   `;
 
@@ -54,8 +54,8 @@ Capacity: ${groupCapacity}
     <p><strong>Start Time:</strong> ${startTime}</p>
     <p><strong>End Time:</strong> ${endTime}</p>
     <p><strong>Group Name:</strong> ${groupName}</p>
-    <p><strong>Group Description:</strong> ${groupDescription || 'N/A'}</p>
-    <p><strong>Reason(s):</strong> ${groupReason || 'N/A'}</p>
+    <p><strong>Group Description:</strong> ${groupDescription || "N/A"}</p>
+    <p><strong>Reason(s):</strong> ${groupReason || "N/A"}</p>
     <p><strong>Capacity:</strong> ${groupCapacity}</p>
   `;
 
