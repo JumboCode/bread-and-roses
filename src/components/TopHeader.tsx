@@ -2,7 +2,7 @@
 
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Role } from "@prisma/client";
-import React from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
 import { VolunteerDetails } from "../types/next-auth";
 import UserAvatar from "./UserAvatar";
@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { setLanguageCookie } from "../lib/languages";
 import { getLanguageFromCookie } from "../lib/languages";
+import CustomizeEventModal from "./CustomizeEventModal";
 import GroupSignUpModal from "@components/GroupSignUpModal";
 
 interface TopHeaderProps {
@@ -27,6 +28,7 @@ interface TopHeaderProps {
 const TopHeader = ({ user }: TopHeaderProps) => {
   const pathname = usePathname();
   const { t, i18n } = useTranslation("translation");
+  const [customizeModal, setCustomizeModal] = useState<boolean>(false);
 
   useEffect(() => {
     // Set the language from the cookie on page load
@@ -69,33 +71,58 @@ const TopHeader = ({ user }: TopHeaderProps) => {
 
   return (
     <div className="w-[calc(100vw-240px)] top-0 left-60 right-0 flex items-center justify-between border-gray-200 border-y py-5 px-6 sticky z-10 bg-white">
-      {pathname === "/private" || pathname === "/private/events" ? (
-        <>
-          <button
-            className="flex gap-x-2 font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
-            onClick={() => {
-              if (pathname === "/private/events" && user.role === Role.ADMIN) {
-                setShowModal(true);
-              }
-            }}
-          >
+      <div className="relative">
+        {pathname === "/private" ? (
+          <button className="flex gap-x-2 font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center">
             <Icon icon={icon} width="20" height="20" />
             <div className="mt-0.5">{buttonText}</div>
           </button>
+        ) : pathname === "/private/events" && user.role === Role.ADMIN ? (
+          <button
+            onClick={() => {
+              setCustomizeModal(true);
+            }}
+            className="flex items-center justify-center w-[186px] h-[44px] rounded-[8px] px-[18px] py-[10px] gap-[8px] font-semibold bg-teal-600 text-white"
+          >
+            <Icon icon={icon} width="20" height="20" />
+            <div className="mt-0.5">Customize Event</div>
+          </button>
+        ) : pathname === "/private/events" && user.role === Role.VOLUNTEER ? (
+          <>
+            <button
+              className="flex gap-x-2 font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
+              onClick={() => {
+                if (
+                  pathname === "/private/events" &&
+                  user.role === Role.VOLUNTEER
+                ) {
+                  setShowModal(true);
+                }
+              }}
+            >
+              <Icon icon={icon} width="20" height="20" />
+              <div className="mt-0.5">Request Group Sign Up</div>
+            </button>
 
-          {showModal && (
-            <div className="fixed inset-0 flex items-center justify-center pl-[160px] overflow-y-auto scrollbar-hide">
-              {/* backdrop for modal that allows for scrolling */}
-              <div className="rounded-xl w-full max-w-[600px] max-h-[100vh] overflow-y-auto relative scrollbar-hide mt-10">
-                {/* modal container */}
-                <GroupSignUpModal onClose={() => setShowModal(false)} />
+            {showModal && (
+              <div className="fixed inset-0 flex items-center justify-center pl-[160px] overflow-y-auto scrollbar-hide">
+                {/* backdrop for modal that allows for scrolling */}
+                <div className="rounded-xl w-full max-w-[600px] max-h-[100vh] overflow-y-auto relative scrollbar-hide mt-10">
+                  {/* modal container */}
+                  <GroupSignUpModal onClose={() => setShowModal(false)} />
+                </div>
               </div>
-            </div>
-          )}
-        </>
-      ) : (
-        <div className="text-gray-500 text-lg">{getTitle()}</div>
-      )}
+            )}
+          </>
+        ) : (
+          <div className="text-gray-500 text-lg">{getTitle()}</div>
+        )}
+        <CustomizeEventModal
+          modalVisible={customizeModal}
+          setModalVisible={setCustomizeModal}
+        ></CustomizeEventModal>
+      </div>
+
       <div className="flex flex-row justify-self-end place-items-center gap-x-2">
         <h1 className={`${!isEnglish ? "text-teal-600" : ""} font-medium`}>
           SP
