@@ -15,16 +15,6 @@ import {
 } from "@api/timeSlot/route.client";
 import VolunteerTable from "@components/VolunteerTable";
 import { getUsersByDate } from "@api/user/route.client";
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@mui/material";
-import DatePicker from "react-datepicker";
-import TimePicker from "react-time-picker";
-import "react-datepicker/dist/react-datepicker.css"; // import datepicker styles
-import "react-time-picker/dist/TimePicker.css"; // import time picker styles
 
 export default function EventsPage() {
   const { data: session } = useSession();
@@ -45,18 +35,6 @@ export default function EventsPage() {
       return [...updated, { start: "", end: "", submitted: false }];
     });
   };
-
-  const [groupFormVisible, setGroupFormVisible] = React.useState(false);
-  const [groupDetails, setGroupDetails] = React.useState({
-    eventTitle: "",
-    groupName: "",
-    groupDescription: "",
-    reason: "",
-    capacity: 1,
-    startTime: "",
-    endTime: "",
-    date: new Date() as Date | null,
-  });
 
   const formattedDate = selectedDate
     ? selectedDate.toLocaleDateString("en-US", {
@@ -221,194 +199,11 @@ export default function EventsPage() {
     fetchTimeSlots();
   }, [session?.user.id, selectedDate, session?.user.role]);
 
-  const handleGroupSignUp = async () => {
-    try {
-      const res = await fetch("/api/group-signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          eventTitle: groupDetails.eventTitle,
-          date: groupDetails.date?.toLocaleDateString("en-US") || "",
-          startTime: groupDetails.startTime,
-          endTime: groupDetails.endTime,
-          groupName: groupDetails.groupName,
-          groupDescription: groupDetails.groupDescription,
-          groupReason: groupDetails.reason,
-          groupCapacity: groupDetails.capacity,
-        }),
-      });
-
-      if (!res.ok) throw new Error("Failed to submit group sign-up");
-
-      // Optionally reset form or show confirmation
-      setGroupFormVisible(false);
-      alert("Group signup request submitted!");
-    } catch (error) {
-      console.error("Error with group sign-up:", error);
-      alert(
-        "There was an error submitting your group sign-up. Please try again."
-      );
-    }
-  };
-
   return (
     <div>
-      <Button
-        onClick={() => setGroupFormVisible(true)}
-        sx={{
-          backgroundColor: "#138D8A",
-          textTransform: "none",
-          fontFamily: "Kepler_Std",
-          color: "white",
-          fontWeight: 600,
-          fontSize: "14px",
-          paddingBlock: "10px",
-          paddingInline: "16px",
-          borderRadius: "8px",
-        }}
-      >
-        Request Group Sign-Up
-      </Button>
       <div className="text-4xl font-['Kepler_Std'] font-semibold flex flex-row items-center gap-x-[12px] mb-10">
         <Icon icon="uil:calender" width="44" height="44" />
       </div>
-
-      <Dialog
-        open={groupFormVisible}
-        onClose={() => setGroupFormVisible(false)}
-      >
-        <DialogTitle>Group Sign-Up</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Event Title"
-            variant="outlined"
-            fullWidth
-            value={groupDetails.eventTitle || ""}
-            onChange={(e) =>
-              setGroupDetails({ ...groupDetails, eventTitle: e.target.value })
-            }
-            sx={{ mb: 3 }}
-          />
-          <div className="mb-3">
-            <label htmlFor="groupDate">Select Date</label>
-            <DatePicker
-              id="groupDate"
-              selected={groupDetails.date}
-              onChange={(date: Date | null) =>
-                setGroupDetails({ ...groupDetails, date })
-              }
-              dateFormat="MM/dd/yyyy"
-              isClearable
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
-          </div>
-
-          {/* Start Time and End Time Pickers */}
-          <div className="mb-3 flex gap-4">
-            <div className="flex-1">
-              <label htmlFor="startTime">Start Time</label>
-              <TimePicker
-                id="startTime"
-                value={groupDetails.startTime}
-                onChange={(time) =>
-                  setGroupDetails({ ...groupDetails, startTime: time ?? "" })
-                } // Ensure time is never null
-                disableClock
-                clearIcon={null}
-                format="hh:mm a"
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
-
-              <TimePicker
-                id="endTime"
-                value={groupDetails.endTime}
-                onChange={(time) =>
-                  setGroupDetails({ ...groupDetails, endTime: time ?? "" })
-                } // Ensure time is never null
-                disableClock
-                clearIcon={null}
-                format="hh:mm a"
-                className="w-full p-2 border border-gray-300 rounded-md"
-              />
-            </div>
-          </div>
-
-          {/* Group Name Field */}
-          <TextField
-            label="Group Name"
-            variant="outlined"
-            fullWidth
-            value={groupDetails.groupName}
-            onChange={(e) =>
-              setGroupDetails({ ...groupDetails, groupName: e.target.value })
-            }
-            sx={{ mb: 3 }}
-          />
-
-          {/* Group Description Field */}
-          <TextField
-            label="Group Description"
-            variant="outlined"
-            fullWidth
-            multiline
-            rows={4}
-            value={groupDetails.groupDescription}
-            onChange={(e) =>
-              setGroupDetails({
-                ...groupDetails,
-                groupDescription: e.target.value,
-              })
-            }
-            sx={{ mb: 3 }}
-          />
-
-          {/* Reason for Sign-Up Field */}
-          <TextField
-            label="Reason for Sign-Up"
-            variant="outlined"
-            fullWidth
-            value={groupDetails.reason}
-            onChange={(e) =>
-              setGroupDetails({ ...groupDetails, reason: e.target.value })
-            }
-            sx={{ mb: 3 }}
-          />
-
-          {/* Group Capacity Field */}
-          <TextField
-            label="Group Capacity"
-            variant="outlined"
-            fullWidth
-            value={groupDetails.capacity}
-            onChange={(e) => {
-              const newValue = e.target.value;
-              if (/^\d*$/.test(newValue)) {
-                setGroupDetails({
-                  ...groupDetails,
-                  capacity: parseInt(newValue, 10),
-                });
-              }
-            }}
-            InputProps={{
-              inputMode: "numeric",
-            }}
-            sx={{ mb: 3 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleGroupSignUp}
-            sx={{ backgroundColor: "#138D8A", color: "white" }}
-          >
-            Submit Group Sign-Up
-          </Button>
-          <Button onClick={() => setGroupFormVisible(false)} color="primary">
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
 
       <div className="relative text-center w-full flex flex-row gap-x-[24px] pb-1">
         <div className="flex-2 flex flex-col">
@@ -628,7 +423,6 @@ export default function EventsPage() {
                       height="20"
                     />
                     <div className="text-[#344054]">
-                      x
                       {timeSlots
                         .filter((slot) => slot.submitted)
                         .map(
