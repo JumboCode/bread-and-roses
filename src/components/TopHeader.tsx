@@ -69,34 +69,6 @@ const TopHeader = ({ user }: TopHeaderProps) => {
   // display form when requesting group sign up
   const [showModal, setShowModal] = React.useState(false);
 
-  // {pathname === "/private" || pathname === "/private/events" ? (
-  //   <>
-  //     <button
-  //       className="flex gap-x-2 font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
-  //       onClick={() => {
-  //         if (pathname === "/private/events" && user.role === Role.ADMIN) {
-  //           setShowModal(true);
-  //         }
-  //       }}
-  //     >
-  //       <Icon icon={icon} width="20" height="20" />
-  //       <div className="mt-0.5">{buttonText}</div>
-  //     </button>
-
-  //     {showModal && (
-  //       <div className="fixed inset-0 flex items-center justify-center pl-[160px] overflow-y-auto scrollbar-hide">
-  //         {/* backdrop for modal that allows for scrolling */}
-  //         <div className="rounded-xl w-full max-w-[600px] max-h-[100vh] overflow-y-auto relative scrollbar-hide mt-10">
-  //           {/* modal container */}
-  //           <GroupSignUpModal onClose={() => setShowModal(false)} />
-  //         </div>
-  //       </div>
-  //     )}
-  //   </>
-  // ) : (
-  //   <div className="text-gray-500 text-lg">{getTitle()}</div>
-  // )}
-
   return (
     <div className="w-[calc(100vw-240px)] top-0 left-60 right-0 flex items-center justify-between border-gray-200 border-y py-5 px-6 sticky z-10 bg-white">
       <div className="relative">
@@ -115,6 +87,33 @@ const TopHeader = ({ user }: TopHeaderProps) => {
             <Icon icon={icon} width="20" height="20" />
             <div className="mt-0.5">Customize Event</div>
           </button>
+        ) : pathname === "/private/events" && user.role === Role.VOLUNTEER ? (
+          <>
+            <button
+              className="flex gap-x-2 font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
+              onClick={() => {
+                if (
+                  pathname === "/private/events" &&
+                  user.role === Role.VOLUNTEER
+                ) {
+                  setShowModal(true);
+                }
+              }}
+            >
+              <Icon icon={icon} width="20" height="20" />
+              <div className="mt-0.5">Request Group Sign Up</div>
+            </button>
+
+            {showModal && (
+              <div className="fixed inset-0 flex items-center justify-center pl-[160px] overflow-y-auto scrollbar-hide">
+                {/* backdrop for modal that allows for scrolling */}
+                <div className="rounded-xl w-full max-w-[600px] max-h-[100vh] overflow-y-auto relative scrollbar-hide mt-10">
+                  {/* modal container */}
+                  <GroupSignUpModal onClose={() => setShowModal(false)} />
+                </div>
+              </div>
+            )}
+          </>
         ) : (
           <div className="text-gray-500 text-lg">{getTitle()}</div>
         )}
