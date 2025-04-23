@@ -40,15 +40,21 @@ export const fetchApi = async (
 export const addTimeSlot = async (timeSlot: CreateTimeSlotInput) =>
   fetchApi("/api/timeSlot", "POST", { timeSlot });
 
-export const getTimeSlotsByDate = async (userId: string, date: Date) => {
-  const isoDate = date.toISOString().split("T")[0];
-  const url = userId
-    ? `/api/timeSlot?userId=${userId}&date=${isoDate}`
-    : `/api/timeSlot?date=${isoDate}`;
-
+export const getTimeSlots = async (userId: string) => {
+  const url = `/api/timeSlot?userId=${userId}`;
   return fetchApi(url, "GET");
 };
 
+export const getTimeSlotsByDate = async (userId: string, date: Date) => {
+  const isoDate = date.toISOString().split("T")[0];
+  const url = `/api/timeSlot?userId=${userId}&date=${isoDate}`;
+  return fetchApi(url, "GET");
+};
+
+export const getTimeSlotsByStatus = async (status: string) => {
+  const url = `/api/timeSlot?status=${status}`;
+  return fetchApi(url, "GET");
+};
 export const deleteTimeSlot = async (
   userId: string,
   startTime: Date,
