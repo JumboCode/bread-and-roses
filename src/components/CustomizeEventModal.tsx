@@ -4,10 +4,11 @@ import Image from "next/image";
 import TimelapseIcon from "@mui/icons-material/Timelapse";
 import TimeSlotFields from "./TimeSlotFields";
 import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { TextField } from "@mui/material";
+import { InputAdornment, TextField } from "@mui/material";
+import { Calendar } from "./Calendar";
+import { format } from "date-fns";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { addCustomDay, getCustomDay } from "@api/customDay/route.client";
 
 interface CustomizeEventProps {
   modalVisible: boolean;
@@ -18,10 +19,17 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
   const { modalVisible, setModalVisible } = props;
 
   const modalRef = useRef<HTMLDivElement>(null);
+  const buttonRef = React.useRef(null);
+  const calendarRef = React.useRef<HTMLDivElement>(null);
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [showCalendar, setShowCalendar] = useState(false);
   const [timeSlots, setTimeSlots] = React.useState([
-    { start: "", end: "", submitted: false },
+    { start: "10:00", end: "18:00", submitted: false },
   ]);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [hasTimeSlotError, setHasTimeSlotError] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -41,6 +49,114 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [modalVisible, setModalVisible]);
+
+  useEffect(() => {
+    const hasError = timeSlots.some((slot, index) => {
+      if (!slot.start || !slot.end) return true;
+      if (slot.start >= slot.end) return true;
+
+      const toMinutes = (time: string) => {
+        const [h, m] = time.split(":").map(Number);
+        return h * 60 + m;
+      };
+
+      const newStart = toMinutes(slot.start);
+      const newEnd = toMinutes(slot.end);
+
+      return timeSlots.some((s, i) => {
+        if (i === index || !s.submitted) return false;
+        const sStart = toMinutes(s.start);
+        const sEnd = toMinutes(s.end);
+        return newStart < sEnd && newEnd > sStart;
+      });
+    });
+
+    setHasTimeSlotError(hasError);
+  }, [timeSlots]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      // if user clicks outside the calendar, close it
+      if (
+        calendarRef.current &&
+        event.target instanceof Node &&
+        !calendarRef.current.contains(event.target)
+      ) {
+        setShowCalendar(false);
+      }
+    }
+
+    if (showCalendar) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCalendar]);
+
+  useEffect(() => {
+    const fetchCustomDay = async () => {
+      if (!selectedDate) return;
+
+      try {
+        const result = await getCustomDay(selectedDate);
+        const customDay = result.data;
+
+        if (customDay) {
+          const start = new Date(customDay.startTime)
+            .toTimeString()
+            .slice(0, 5);
+          const end = new Date(customDay.endTime).toTimeString().slice(0, 5);
+          setTimeSlots([{ start, end, submitted: false }]);
+          setTitle(customDay.title ?? "");
+          setDescription(customDay.description ?? "");
+        } else {
+          setTimeSlots([{ start: "10:00", end: "18:00", submitted: false }]);
+          setTitle("");
+          setDescription("");
+        }
+      } catch (error) {
+        console.error("Error fetching CustomDay:", error);
+        setTimeSlots([{ start: "10:00", end: "18:00", submitted: false }]);
+        setTitle("");
+        setDescription("");
+      }
+    };
+
+    if (modalVisible) {
+      fetchCustomDay();
+    }
+  }, [modalVisible, selectedDate]);
+
+  const handleAdd = async () => {
+    if (!selectedDate || !timeSlots[0]?.start || !timeSlots[0]?.end) return;
+
+    const customDay = {
+      date: selectedDate,
+      startTime: new Date(
+        `${format(selectedDate, "yyyy-MM-dd")}T${timeSlots[0].start}`
+      ),
+      endTime: new Date(
+        `${format(selectedDate, "yyyy-MM-dd")}T${timeSlots[0].end}`
+      ),
+      title,
+      description,
+    };
+
+    try {
+      const result = await addCustomDay(customDay);
+
+      if (result.code === "SUCCESS") {
+        setModalVisible(false);
+        alert("Event saved successfully!");
+      } else {
+        alert("Failed to save event.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred while saving.");
+    }
+  };
 
   if (!modalVisible) return null;
 
@@ -64,6 +180,8 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
           placeholder="Add event title"
           variant="standard"
           fullWidth
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           InputProps={{
             style: {
               color: "#000000",
@@ -89,39 +207,61 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
         </div>
         <div className="mb-4">
           <div className="flex gap-4">
-            <div className="flex items-center gap-4">
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  disablePast={true}
-                  disableHighlightToday={true}
-                  value={selectedDate}
-                  onChange={(newDate) => {
-                    setSelectedDate(newDate);
+            <div ref={calendarRef} className="flex items-center gap-4">
+              <TextField
+                className="border border-gray-300 rounded-md px-3 py-2 w-[215.5px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                placeholder="MM/DD/YYYY"
+                variant="outlined"
+                label="Start Date"
+                autoComplete="off"
+                size="small"
+                onFocus={() => setShowCalendar(!showCalendar)}
+                value={selectedDate ? format(selectedDate, "MM/dd/yyyy") : ""}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <button
+                          ref={buttonRef}
+                          onClick={() => setShowCalendar(!showCalendar)}
+                        >
+                          <Icon icon={"mdi:calendar"} width="25" />
+                        </button>
+                      </InputAdornment>
+                    ),
+                  },
+                  inputLabel: {
+                    shrink: true,
+                  },
+                }}
+              />
+              {showCalendar && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "205px",
+                    zIndex: 10,
+                    backgroundColor: "white",
+                    borderRadius: "20px",
+                    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
                   }}
-                  slotProps={{
-                    textField: {
-                      label: "Select Date",
-                      size: "small",
-                      InputLabelProps: {
-                        shrink: true,
-                        sx: {
-                          backgroundColor: "white",
-                          padding: "0 4px",
-                        },
-                      },
-                      fullWidth: true,
-                      placeholder: "MM/DD/YYYY",
-                    },
-                    field: {
-                      autoFocus: true,
-                    },
-                  }}
-                />
-              </LocalizationProvider>
+                >
+                  <Calendar
+                    selectedDate={selectedDate ?? undefined}
+                    setSelectedDate={(date) => {
+                      if (date) {
+                        setSelectedDate(date);
+                        setShowCalendar(false);
+                      }
+                    }}
+                    previousDisabled
+                  />
+                </div>
+              )}
               <TimeSlotFields
                 timeSlots={timeSlots}
                 setTimeSlots={setTimeSlots}
-              ></TimeSlotFields>
+              />
             </div>
           </div>
         </div>
@@ -142,10 +282,20 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
               resize: "none",
             }}
             placeholder="Enter description..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           />
         </div>
         <div className="mt-4 flex justify-end">
-          <button className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700">
+          <button
+            className={`px-4 py-2 rounded bg-teal-600 text-white ${
+              hasTimeSlotError
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-teal-700"
+            }`}
+            onClick={handleAdd}
+            disabled={hasTimeSlotError}
+          >
             Add
           </button>
         </div>
