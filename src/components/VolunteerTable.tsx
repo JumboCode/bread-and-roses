@@ -49,8 +49,15 @@ export default function VolunteerTable({
 
   const isRowSelected = (name: string) => selected?.includes(name);
 
+  const sortedUsers = React.useMemo(
+    () =>
+      [...(users ?? [])].sort((a, b) => a.lastName.localeCompare(b.lastName)),
+    [users]
+  );
+
   const paginatedRows =
-    users?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) || [];
+    sortedUsers?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) ||
+    [];
 
   useEffect(() => {
     setPage(0);
