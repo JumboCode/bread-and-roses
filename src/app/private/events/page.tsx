@@ -210,6 +210,7 @@ export default function EventsPage() {
           <Calendar
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
+            previousDisabled
           />
         </div>
         <div className="flex-1 flex flex-col text-start gap-y-[32px]">

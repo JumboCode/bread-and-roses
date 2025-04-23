@@ -46,3 +46,8 @@ export const addVolunteerSession = async (
 export const updateVolunteerSession = async (userId: string) => {
   return fetchApi("/api/volunteerSession", "PATCH", { userId });
 };
+
+export const getVolunteerSessions = async (userId: string) => {
+  const url = `/api/volunteerSession?userId=${userId}`;
+  return fetchApi(url, "GET");
+};
