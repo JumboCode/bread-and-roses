@@ -207,10 +207,10 @@ export default function HomePage() {
             />
           </div>
         </div>
-        <div className="flex flex-nowrap gap-x-7">
+        <div className="flex gap-x-7">
           {session.user.role === Role.VOLUNTEER ? (
-            <div className="flex gap-x-7">
-              {timeSlots.map((timeSlot, index) => (
+            <div className="flex flex-wrap gap-7">
+              {timeSlots.slice(0, 6).map((timeSlot, index) => (
                 <EventCard
                   key={timeSlot.id}
                   title={`Time Slot ${index + 1}`}
@@ -224,23 +224,25 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="flex gap-x-7">
-              {sortedStandardTimeSlots(Object.keys(daySlots)).map((date) => (
-                <EventCard
-                  key={date}
-                  title={date}
-                  subtexts={[
-                    {
-                      text: "Opening Time: 10AM - 6PM",
-                      icon: "tabler:calendar",
-                    },
-                    {
-                      text: `Total Volunteers: ${daySlots[date].size}`,
-                      icon: `ic:baseline-people`,
-                    },
-                  ]}
-                  actionButton={volunteerButton}
-                />
-              ))}
+              {sortedStandardTimeSlots(Object.keys(daySlots))
+                .slice(0, 3)
+                .map((date) => (
+                  <EventCard
+                    key={date}
+                    title={date}
+                    subtexts={[
+                      {
+                        text: "Opening Time: 10AM - 6PM",
+                        icon: "tabler:calendar",
+                      },
+                      {
+                        text: `Total Volunteers: ${daySlots[date].size}`,
+                        icon: `ic:baseline-people`,
+                      },
+                    ]}
+                    actionButton={volunteerButton}
+                  />
+                ))}
             </div>
           )}
         </div>
