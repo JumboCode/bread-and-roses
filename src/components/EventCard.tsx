@@ -49,8 +49,11 @@ const EventCard = ({
           </div>
           <div className="self-stretch justify-start items-end gap-4 inline-flex">
             <div className="grow shrink basis-0 flex-col justify-start items-start gap-3 inline-flex">
-              {subtexts?.map((subtext) => (
-                <div className="w-full self-stretch flex flex-row items-center text-[#344054] font-medium font-['Sofia Pro'] text-[16px] leading-[20px]">
+              {subtexts?.map((subtext, index) => (
+                <div
+                  className="w-full self-stretch flex flex-row items-center text-[#344054] font-medium font-['Sofia Pro'] text-[16px] leading-[20px]"
+                  key={index}
+                >
                   <Icon
                     icon={subtext.icon}
                     width="16"

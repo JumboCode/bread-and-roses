@@ -13,7 +13,7 @@ import { UserWithVolunteerDetail } from "../types";
 import { getAllEvents } from "../api/event/route.client";
 import { useTranslation } from "react-i18next";
 import { getTimeSlots, getTimeSlotsByStatus } from "@api/timeSlot/route.client";
-import { sortedStandardTimeSlots } from "../utils";
+import { getStandardDateString, sortedReadableTimeSlots } from "../utils";
 
 export default function HomePage() {
   const router = useRouter();
@@ -112,9 +112,12 @@ export default function HomePage() {
     ];
   };
 
-  const volunteerButton = (
-    <button className="flex justify-end flex-row gap-x-2 bg-teal-600 px-3.5 py-1 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]">
-      {t("Manage")}
+  const cardButton = (action: () => void) => (
+    <button
+      className="flex justify-end flex-row gap-x-2 bg-teal-600 px-3.5 py-1 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]"
+      onClick={action}
+    >
+      {session.user.role === Role.VOLUNTEER ? t("Manage") : t("See details")}
     </button>
   );
 
@@ -218,13 +221,19 @@ export default function HomePage() {
                     timeSlot.startTime,
                     timeSlot.endTime
                   )}
-                  actionButton={volunteerButton}
+                  actionButton={cardButton(() => {
+                    router.push(
+                      `/private/events?date=${getStandardDateString(
+                        timeSlot.startTime
+                      )}`
+                    );
+                  })}
                 />
               ))}
             </div>
           ) : (
             <div className="flex gap-x-7">
-              {sortedStandardTimeSlots(Object.keys(daySlots))
+              {sortedReadableTimeSlots(Object.keys(daySlots))
                 .slice(0, 3)
                 .map((date) => (
                   <EventCard
@@ -240,7 +249,13 @@ export default function HomePage() {
                         icon: `ic:baseline-people`,
                       },
                     ]}
-                    actionButton={volunteerButton}
+                    actionButton={cardButton(() => {
+                      router.push(
+                        `/private/events?date=${getStandardDateString(
+                          new Date(date)
+                        )}`
+                      );
+                    })}
                   />
                 ))}
             </div>

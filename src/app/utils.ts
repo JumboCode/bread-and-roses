@@ -1,7 +1,4 @@
-import { TimeSlot } from "@prisma/client";
-import { time } from "console";
-
-export const compareStandardTimeSlots = (a: string, b: string) => {
+export const compareReadableTimeSlots = (a: string, b: string) => {
   const dateA = new Date(a);
   const dateB = new Date(b);
 
@@ -14,7 +11,33 @@ export const compareStandardTimeSlots = (a: string, b: string) => {
   return 0;
 };
 
-// StandardTimeSlots are in format "Day, Month Date, Year"
-export const sortedStandardTimeSlots = (sTimeSlots: string[]) => {
-  return sTimeSlots.sort(compareStandardTimeSlots);
+// Readabletimeslots are in format "Day, Month Date, Year"
+export const sortedReadableTimeSlots = (sTimeSlots: string[]) => {
+  return sTimeSlots.sort(compareReadableTimeSlots);
+};
+
+// StandardTimeSlots are in format "YYYYMMDD"
+export const getStandardDateString = (timeSlot: Date) => {
+  const date = new Date(timeSlot);
+  const parts = date
+    .toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+    .split("/");
+
+  return parts[0] + parts[1] + parts[2];
+};
+
+export const getStandardDate = (dateString: string) => {
+  if (dateString.length !== 8) {
+    return new Date();
+  }
+
+  const month = parseInt(dateString.substring(0, 2), 10) - 1;
+  const day = parseInt(dateString.substring(2, 4), 10);
+  const year = parseInt(dateString.substring(4, 8), 10);
+
+  return new Date(year, month, day);
 };
