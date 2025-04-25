@@ -81,6 +81,25 @@ export default function EventsPage() {
     return h * 60 + m;
   };
 
+  const roundToNearest15 = (time: string) => {
+    const [hourStr, minuteStr] = time.split(":");
+    let hour = parseInt(hourStr, 10);
+    let minute = parseInt(minuteStr, 10);
+
+    const rounded = Math.round(minute / 15) * 15;
+    if (rounded === 60) {
+      hour = (hour + 1) % 24;
+      minute = 0;
+    } else {
+      minute = rounded;
+    }
+
+    const paddedHour = hour.toString().padStart(2, "0");
+    const paddedMinute = minute.toString().padStart(2, "0");
+
+    return `${paddedHour}:${paddedMinute}`;
+  };
+
   const lastSlot = timeSlots[timeSlots.length - 1];
 
   const isOutOfBounds = (time: string) => {
@@ -336,6 +355,13 @@ export default function EventsPage() {
                                         newSlots[index].start = e.target.value;
                                         setTimeSlots(newSlots);
                                       }}
+                                      onBlur={(e) => {
+                                        const newSlots = [...timeSlots];
+                                        newSlots[index].start = roundToNearest15(
+                                          e.target.value
+                                        );
+                                        setTimeSlots(newSlots);
+                                      }}
                                       error={Boolean(
                                         (slot.start &&
                                           slot.end &&
@@ -353,6 +379,7 @@ export default function EventsPage() {
                                         inputLabel: { shrink: true },
                                         htmlInput: {
                                           max: slot.end || "23:59",
+                                          step: 900,
                                         },
                                       }}
                                     />
@@ -365,6 +392,13 @@ export default function EventsPage() {
                                       onChange={(e) => {
                                         const newSlots = [...timeSlots];
                                         newSlots[index].end = e.target.value;
+                                        setTimeSlots(newSlots);
+                                      }}
+                                      onBlur={(e) => {
+                                        const newSlots = [...timeSlots];
+                                        newSlots[index].end = roundToNearest15(
+                                          e.target.value
+                                        );
                                         setTimeSlots(newSlots);
                                       }}
                                       error={Boolean(
@@ -384,6 +418,7 @@ export default function EventsPage() {
                                         inputLabel: { shrink: true },
                                         htmlInput: {
                                           min: slot.start || "00:00",
+                                          step: 900,
                                         },
                                       }}
                                     />
