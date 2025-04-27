@@ -20,6 +20,7 @@ import { getTimeSlots, getTimeSlotsByStatus } from "@api/timeSlot/route.client";
 import { getStandardDateString, sortedReadableTimeSlots } from "../utils";
 import Image from "next/image";
 import { getAllVolunteerSessions } from "@api/volunteerSession/route.client";
+import { getCustomDay } from "@api/customDay/route.client";
 
 export default function HomePage() {
   const router = useRouter();
@@ -35,6 +36,9 @@ export default function HomePage() {
   const [hours, setHours] = React.useState("...");
   const [days, setDays] = React.useState(0);
   const [pageLoading, setPageLoading] = React.useState(true);
+  const [customDayTimes, setCustomDayTimes] = React.useState<{
+    [key: string]: { start: string; end: string };
+  }>({});
 
   useEffect(() => {
     const fetchTimeSlots = async () => {
@@ -51,40 +55,52 @@ export default function HomePage() {
       } else if (session?.user.role === Role.ADMIN) {
         const res = await getTimeSlotsByStatus(TimeSlotStatus.AVAILABLE);
         const sessionsRes = await getAllVolunteerSessions();
-        console.log(sessionsRes.data);
 
         const now = new Date();
-        const today = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate()
-        );
+        now.setHours(0, 0, 0, 0);
+        const today = new Date(now);
 
         const daysAhead = 3;
         const dayUsersTemp: { [key: string]: Set<string> } = {};
+        const customTimesTemp: {
+          [key: string]: { start: string; end: string };
+        } = {};
 
-        for (let i = 0; i < daysAhead; i++) {
+        for (let i = 1; i <= daysAhead; i++) {
           const date = new Date(today);
           date.setDate(today.getDate() + i);
 
-          const dateString = date.toLocaleDateString("en-US", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          });
+          const dateString = date.toISOString().split("T")[0];
 
           dayUsersTemp[dateString] = new Set();
+
+          try {
+            const customDayRes = await getCustomDay(date);
+
+            if (customDayRes.data) {
+              const start = new Date(customDayRes.data.startTime)
+                .toTimeString()
+                .slice(0, 5);
+              const end = new Date(customDayRes.data.endTime)
+                .toTimeString()
+                .slice(0, 5);
+
+              customTimesTemp[dateString] = { start, end };
+            } else {
+              customTimesTemp[dateString] = { start: "10:00", end: "18:00" };
+            }
+          } catch (error) {
+            console.error(
+              `Failed to fetch custom day for ${dateString}`,
+              error
+            );
+            customTimesTemp[dateString] = { start: "10:00", end: "18:00" };
+          }
         }
 
         res.data.forEach((timeSlot: TimeSlot) => {
           const start = new Date(timeSlot.startTime);
-          const dateString = start.toLocaleDateString("en-US", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          });
+          const dateString = start.toISOString().split("T")[0];
 
           if (dayUsersTemp[dateString]) {
             dayUsersTemp[dateString].add(timeSlot.userId);
@@ -93,6 +109,7 @@ export default function HomePage() {
 
         setSessions(sessionsRes.data);
         setDayUsers(dayUsersTemp);
+        setCustomDayTimes(customTimesTemp);
       }
 
       setPageLoading(false);
@@ -284,29 +301,54 @@ export default function HomePage() {
             <div className="flex gap-x-7">
               {sortedReadableTimeSlots(Object.keys(dayUsers))
                 .slice(0, 3)
-                .map((date) => (
-                  <EventCard
-                    key={date}
-                    title={date}
-                    subtexts={[
-                      {
-                        text: "Opening Time: 10AM - 6PM",
-                        icon: "tabler:calendar",
-                      },
-                      {
-                        text: `Total Volunteers: ${dayUsers[date].size}`,
-                        icon: `ic:baseline-people`,
-                      },
-                    ]}
-                    actionButton={cardButton(() => {
-                      router.push(
-                        `/private/events?date=${getStandardDateString(
-                          new Date(date)
-                        )}`
-                      );
-                    })}
-                  />
-                ))}
+                .map((dateString) => {
+                  const displayDate = new Date(dateString).toLocaleDateString(
+                    "en-US",
+                    {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    }
+                  );
+
+                  const formatTime = (time: string) => {
+                    if (!time) return "";
+                    const [hourStr, minute] = time.split(":");
+                    let hour = parseInt(hourStr, 10);
+                    const ampm = hour >= 12 ? "PM" : "AM";
+                    hour = hour % 12 || 12;
+                    return `${hour}:${minute} ${ampm}`;
+                  };
+
+                  return (
+                    <EventCard
+                      key={dateString}
+                      title={displayDate}
+                      subtexts={[
+                        {
+                          text: `Opening Time: ${formatTime(
+                            customDayTimes[dateString]?.start || "10:00"
+                          )} - ${formatTime(
+                            customDayTimes[dateString]?.end || "18:00"
+                          )}`,
+                          icon: "tabler:calendar",
+                        },
+                        {
+                          text: `Total Volunteers: ${dayUsers[dateString].size}`,
+                          icon: `ic:baseline-people`,
+                        },
+                      ]}
+                      actionButton={cardButton(() => {
+                        router.push(
+                          `/private/events?date=${getStandardDateString(
+                            new Date(dateString)
+                          )}`
+                        );
+                      })}
+                    />
+                  );
+                })}
             </div>
           )}
         </div>
