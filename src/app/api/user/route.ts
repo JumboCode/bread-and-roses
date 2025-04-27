@@ -96,23 +96,69 @@ export const DELETE = async (request: NextRequest) => {
   }
 
   try {
-    await prisma.code.delete({
-      where: { userId: id },
-    });
+    await prisma.$transaction(async (tx) => {
+      // Delete TimeSlots where organizationId is null
+      await tx.timeSlot.deleteMany({
+        where: {
+          userId: id,
+          organizationId: null,
+        },
+      });
 
-    await prisma.volunteerDetails.delete({
-      where: { userId: id },
-    });
+      // Delete VolunteerSessions where organizationId is null
+      await tx.volunteerSession.deleteMany({
+        where: {
+          userId: id,
+          organizationId: null,
+        },
+      });
 
-    const deletedUser = await prisma.user.delete({
-      where: { id },
+      // For TimeSlots with organizationId, nullify userId
+      await tx.timeSlot.updateMany({
+        where: {
+          userId: id,
+          NOT: {
+            organizationId: null,
+          },
+        },
+        data: {
+          userId: undefined, // nullify userId
+        },
+      });
+
+      // For VolunteerSessions with organizationId, nullify userId
+      await tx.volunteerSession.updateMany({
+        where: {
+          userId: id,
+          NOT: {
+            organizationId: null,
+          },
+        },
+        data: {
+          userId: undefined, // nullify userId
+        },
+      });
+
+      // Delete related Code
+      await tx.code.deleteMany({
+        where: { userId: id },
+      });
+
+      // Delete related VolunteerDetails
+      await tx.volunteerDetails.deleteMany({
+        where: { userId: id },
+      });
+
+      // Delete the User
+      await tx.user.delete({
+        where: { id },
+      });
     });
 
     return NextResponse.json(
       {
         code: "SUCCESS",
         message: "User deleted successfully",
-        data: deletedUser,
       },
       { status: 200 }
     );

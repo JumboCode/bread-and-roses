@@ -35,8 +35,6 @@ model User {
   organizationId     String?            @db.ObjectId
   organization       Organization?      @relation(fields: [organizationId], references: [id])
   code               Code?
-  eventIds           String[]           @db.ObjectId
-  events             Event[]            @relation(fields: [eventIds], references: [id])
   timeSlots          TimeSlot[]
   volunteerSessions   VolunteerSession[]
 }
@@ -80,16 +78,6 @@ model Code {
   expire             DateTime           @default(now())
   user               User               @relation(fields: [userId], references: [id])
   userId             String             @unique @db.ObjectId
-}
-
-model Event {
-  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
-  userIds            String[]           @db.ObjectId
-  users              User[]             @relation(fields: [userIds], references: [id])
-  eventName          String             @default("")
-  dateTime           DateTime           @default(now())
-  description        String             @default("")
-  maxPeople          Int                @default(0)
 }
 
 model Organization {

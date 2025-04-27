@@ -25,7 +25,7 @@ export default function EventsPage() {
   const date = searchParams.get("date");
 
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
-    getStandardDate(date ?? "")
+    undefined
   );
   const [timeSlots, setTimeSlots] = React.useState([
     { start: "", end: "", submitted: false },
@@ -109,6 +109,15 @@ export default function EventsPage() {
 
   const hasSubmittedSlot = timeSlots.some((slot) => slot.submitted);
 
+  const isPastOrToday = (date?: Date) => {
+    if (!date) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const compareDate = new Date(date);
+    compareDate.setHours(0, 0, 0, 0);
+    return compareDate <= today;
+  };
+
   const isSameSlot = (
     a: { start: string; end: string },
     b: { start: string; end: string }
@@ -176,6 +185,16 @@ export default function EventsPage() {
       console.error("Failed to sync time slots:", error);
     }
   };
+
+  React.useEffect(() => {
+    if (date !== null) {
+      setSelectedDate(getStandardDate(date));
+    } else {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      setSelectedDate(today);
+    }
+  }, [date]);
 
   React.useEffect(() => {
     const fetchTimeSlots = async () => {
@@ -280,7 +299,8 @@ export default function EventsPage() {
           <Calendar
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
-            previousDisabled={session?.user.role !== Role.ADMIN}
+            previousDisabled={false}
+            onDateChange={() => setPage(0)}
           />
         </div>
         <div className="flex-1 flex flex-col text-start gap-y-[32px]">
@@ -299,9 +319,11 @@ export default function EventsPage() {
                       <div>
                         <div className="font-bold text-lg text-[#101828]">
                           {customDayTitle === ""
-                            ? `Sign up for your volunteering time! We are open from${" "}
+                            ? !isPastOrToday(selectedDate)
+                              ? `Sign up for your volunteering time! We are open from${" "}
                         ${formatTime(customDayHours.start)} -${" "}
                         ${formatTime(customDayHours.end)}.`
+                              : "Your Volunteer Hours"
                             : customDayTitle}
                         </div>
                         {customDayDescription !== "" && (
@@ -319,155 +341,153 @@ export default function EventsPage() {
                         />
                         <div className="text-sm text-[#344054]">
                           {formattedDate
-                            ? `Choose Your Time (${formattedDate})`
+                            ? !isPastOrToday(selectedDate)
+                              ? `Choose Your Time (${formattedDate})`
+                              : formattedDate
                             : "Choose Your Time"}
                         </div>
                       </div>
-                      <div className="mb-6">
+                      <div
+                        className={!isPastOrToday(selectedDate) ? "mb-6" : ""}
+                      >
                         <div className="flex flex-col gap-4 flex-grow">
-                          {timeSlots.map((slot, index) => (
-                            <div key={index}>
-                              {slot.submitted ? (
-                                <div className="border border-[#D0D5DD] rounded-lg flex p-2 justify-between">
-                                  <div className="flex gap-4">
-                                    <Icon
-                                      icon="material-symbols:calendar-today"
-                                      className="text-[#344054]"
-                                      width="20"
-                                      height="20"
-                                    />
-                                    <div>
-                                      {formatTime(slot.start)} -{" "}
-                                      {formatTime(slot.end)}
+                          {isPastOrToday(selectedDate) &&
+                          timeSlots.length === 1 ? (
+                            <div>No time slots!</div>
+                          ) : (
+                            timeSlots.map((slot, index) => (
+                              <div key={index}>
+                                {slot.submitted ? (
+                                  <div className="border border-[#D0D5DD] rounded-lg flex p-2 justify-between">
+                                    <div className="flex gap-4">
+                                      <Icon
+                                        icon="material-symbols:calendar-today"
+                                        className="text-[#344054]"
+                                        width="20"
+                                        height="20"
+                                      />
+                                      <div>
+                                        {formatTime(slot.start)} -{" "}
+                                        {formatTime(slot.end)}
+                                      </div>
                                     </div>
+                                    {!isPastOrToday(selectedDate) ? (
+                                      <Icon
+                                        icon="ic:baseline-clear"
+                                        className="text-[#344054] cursor-pointer"
+                                        width="20"
+                                        height="20"
+                                        onClick={() => {
+                                          const newSlots = [...timeSlots];
+                                          newSlots.splice(index, 1);
+                                          setTimeSlots(newSlots);
+                                        }}
+                                      />
+                                    ) : null}
                                   </div>
-                                  <Icon
-                                    icon="ic:baseline-clear"
-                                    className="text-[#344054] cursor-pointer"
-                                    width="20"
-                                    height="20"
-                                    onClick={() => {
-                                      const newSlots = [...timeSlots];
-                                      newSlots.splice(index, 1);
-                                      setTimeSlots(newSlots);
-                                    }}
-                                  />
-                                </div>
-                              ) : (
-                                <div className="flex flex-row justify-between">
-                                  <div className="flex items-center gap-4">
-                                    <TextField
-                                      type="time"
-                                      variant="outlined"
-                                      size="small"
-                                      label="Start Time"
-                                      value={slot.start}
-                                      onChange={(e) => {
-                                        const newSlots = [...timeSlots];
-                                        newSlots[index].start = e.target.value;
-                                        setTimeSlots(newSlots);
-                                      }}
-                                      error={Boolean(
-                                        (slot.start &&
-                                          slot.end &&
-                                          slot.start > slot.end) ||
+                                ) : !isPastOrToday(selectedDate) ? (
+                                  <div className="flex flex-row justify-between">
+                                    <div className="flex items-center gap-4">
+                                      <TextField
+                                        type="time"
+                                        variant="outlined"
+                                        size="small"
+                                        label="Start Time"
+                                        value={slot.start}
+                                        onChange={(e) => {
+                                          const newSlots = [...timeSlots];
+                                          newSlots[index].start =
+                                            e.target.value;
+                                          setTimeSlots(newSlots);
+                                        }}
+                                        error={Boolean(
                                           (slot.start &&
                                             slot.end &&
-                                            doesOverlap(
-                                              slot.start,
-                                              slot.end,
-                                              index
-                                            )) ||
-                                          isOutOfBounds(slot.start)
-                                      )}
-                                      slotProps={{
-                                        inputLabel: { shrink: true },
-                                        htmlInput: {
-                                          max: slot.end || "23:59",
-                                        },
-                                      }}
-                                    />
-                                    <TextField
-                                      type="time"
-                                      variant="outlined"
-                                      size="small"
-                                      label="End Time"
-                                      value={slot.end}
-                                      onChange={(e) => {
-                                        const newSlots = [...timeSlots];
-                                        newSlots[index].end = e.target.value;
-                                        setTimeSlots(newSlots);
-                                      }}
-                                      error={Boolean(
-                                        (slot.start &&
-                                          slot.end &&
-                                          slot.end < slot.start) ||
+                                            slot.start > slot.end) ||
+                                            (slot.start &&
+                                              slot.end &&
+                                              doesOverlap(
+                                                slot.start,
+                                                slot.end,
+                                                index
+                                              )) ||
+                                            isOutOfBounds(slot.start)
+                                        )}
+                                        slotProps={{
+                                          inputLabel: { shrink: true },
+                                          htmlInput: {
+                                            max: slot.end || "23:59",
+                                          },
+                                        }}
+                                      />
+                                      <TextField
+                                        type="time"
+                                        variant="outlined"
+                                        size="small"
+                                        label="End Time"
+                                        value={slot.end}
+                                        onChange={(e) => {
+                                          const newSlots = [...timeSlots];
+                                          newSlots[index].end = e.target.value;
+                                          setTimeSlots(newSlots);
+                                        }}
+                                        error={Boolean(
                                           (slot.start &&
                                             slot.end &&
-                                            doesOverlap(
-                                              slot.start,
-                                              slot.end,
-                                              index
-                                            )) ||
-                                          isOutOfBounds(slot.end)
-                                      )}
-                                      slotProps={{
-                                        inputLabel: { shrink: true },
-                                        htmlInput: {
-                                          min: slot.start || "00:00",
-                                        },
+                                            slot.end < slot.start) ||
+                                            (slot.start &&
+                                              slot.end &&
+                                              doesOverlap(
+                                                slot.start,
+                                                slot.end,
+                                                index
+                                              )) ||
+                                            isOutOfBounds(slot.end)
+                                        )}
+                                        slotProps={{
+                                          inputLabel: { shrink: true },
+                                          htmlInput: {
+                                            min: slot.start || "00:00",
+                                          },
+                                        }}
+                                      />
+                                    </div>
+                                    <Button
+                                      onClick={handleAddTimeSlot}
+                                      disabled={!isCurrentSlotValid}
+                                      className="self-end"
+                                      sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        border:
+                                          "1px solid var(--Grey-300, #D0D5DD)",
+                                        color: "#145A5A",
+                                        fontWeight: 600,
+                                        fontSize: "14px",
+                                        textTransform: "none",
+                                        fontFamily: "inherit",
+                                        gap: "8px",
+                                        borderRadius: "8px",
+                                        paddingInline: "14px",
+                                        paddingBlock: "8px",
                                       }}
-                                    />
+                                    >
+                                      <Icon
+                                        icon="material-symbols:add-circle-rounded"
+                                        width="20"
+                                        height="20"
+                                      />
+                                      <div>Add This Time Slot</div>
+                                    </Button>
                                   </div>
-                                  <Button
-                                    onClick={handleAddTimeSlot}
-                                    disabled={!isCurrentSlotValid}
-                                    className="self-end"
-                                    sx={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      border:
-                                        "1px solid var(--Grey-300, #D0D5DD)",
-                                      color: "#145A5A",
-                                      fontWeight: 600,
-                                      fontSize: "14px",
-                                      textTransform: "none",
-                                      fontFamily: "inherit",
-                                      gap: "8px",
-                                      borderRadius: "8px",
-                                      paddingInline: "14px",
-                                      paddingBlock: "8px",
-                                    }}
-                                  >
-                                    <Icon
-                                      icon="material-symbols:add-circle-rounded"
-                                      width="20"
-                                      height="20"
-                                    />
-                                    <div>Add This Time Slot</div>
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
-                          ))}
+                                ) : null}
+                              </div>
+                            ))
+                          )}
                         </div>
                       </div>
                     </div>
                   </div>
-                  <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
-                  <div className="flex items-center gap-1.5">
-                    <Icon
-                      icon="material-symbols:note-alt-rounded"
-                      className="text-[#344054]"
-                      width="20"
-                      height="20"
-                    />
-                    <div>Any comments?</div>
-                  </div>
-                  <textarea
-                    className="border border-[#D0D5DD] p-2 rounded-md w-full resize-none mt-3.5"
-                    rows={8}
-                  />
                 </>
               ) : (
                 <div className="flex flex-col items-center gap-6 mb-2">
@@ -495,14 +515,16 @@ export default function EventsPage() {
                     />
                     <div className="text-[#344054]">{formattedDate}</div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Icon
-                      icon="material-symbols:timelapse-outline"
-                      className="text-[#138D8A]"
-                      width="20"
-                      height="20"
-                    />
-                    <div className="text-[#344054]">
+                  <div className="flex gap-2">
+                    <div className="flex-shrink-0">
+                      <Icon
+                        icon="material-symbols:timelapse-outline"
+                        className="text-[#138D8A]"
+                        width="24"
+                        height="24"
+                      />
+                    </div>
+                    <div className="text-[#344054] text-center">
                       {timeSlots
                         .filter((slot) => slot.submitted)
                         .map(
@@ -516,29 +538,31 @@ export default function EventsPage() {
                   </div>
                 </div>
               )}
-              <Button
-                sx={{
-                  backgroundColor: "#138D8A",
-                  textTransform: "none",
-                  fontFamily: "inherit",
-                  color: "white",
-                  fontWeight: 600,
-                  fontSize: "14px",
-                  paddingBlock: "10px",
-                  width: "100%",
-                  textAlign: "center",
-                  borderRadius: "8px",
-                  marginTop: "16px",
-                  "&.Mui-disabled": {
+              {!isPastOrToday(selectedDate) ? (
+                <Button
+                  sx={{
+                    backgroundColor: "#138D8A",
+                    textTransform: "none",
+                    fontFamily: "inherit",
                     color: "white",
-                    opacity: 0.5,
-                  },
-                }}
-                onClick={page === 0 ? handleConfirm : () => setPage(0)}
-                disabled={page === 0 && !hasSubmittedSlot}
-              >
-                {page === 0 ? "Confirm" : "Close"}
-              </Button>
+                    fontWeight: 600,
+                    fontSize: "14px",
+                    paddingBlock: "10px",
+                    width: "100%",
+                    textAlign: "center",
+                    borderRadius: "8px",
+                    marginTop: "16px",
+                    "&.Mui-disabled": {
+                      color: "white",
+                      opacity: 0.5,
+                    },
+                  }}
+                  onClick={page === 0 ? handleConfirm : () => setPage(0)}
+                  disabled={page === 0 && !hasSubmittedSlot}
+                >
+                  {page === 0 ? "Confirm" : "Close"}
+                </Button>
+              ) : null}
             </div>
           ) : (
             <div className="px-5 py-5 bg-white rounded-lg shadow border border-[#e4e7ec]">

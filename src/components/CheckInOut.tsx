@@ -404,6 +404,13 @@ export default function CheckInOutForm() {
                 disableClearable
                 freeSolo
                 options={users.map((user) => user.email)}
+                filterOptions={(options, { inputValue }) => {
+                  return options
+                    .filter((option) =>
+                      option.toLowerCase().includes(inputValue.toLowerCase())
+                    )
+                    .slice(0, 5);
+                }}
                 inputValue={email}
                 onInputChange={(_, value) => {
                   setEmail(value);

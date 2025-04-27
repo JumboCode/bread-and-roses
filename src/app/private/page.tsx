@@ -114,7 +114,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [usersResponse] = await getUsersByRole(Role.VOLUNTEER);
+        const usersResponse = await getUsersByRole(Role.VOLUNTEER);
 
         setUsers(usersResponse.data);
       } catch (error) {
