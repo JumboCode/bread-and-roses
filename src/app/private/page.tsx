@@ -4,33 +4,119 @@ import { useSession } from "next-auth/react";
 import StatsCard from "@components/StatsCard";
 import EventCard from "@components/EventCard";
 import VolunteerTable from "@components/VolunteerTable";
-import { Role, Event } from "@prisma/client";
+import {
+  Role,
+  TimeSlot,
+  TimeSlotStatus,
+  VolunteerSession,
+} from "@prisma/client";
 import React, { useEffect } from "react";
-import { getUsersByRole } from "@api/user/route.client";
+import { getUser, getUsersByRole } from "@api/user/route.client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
 import { UserWithVolunteerDetail } from "../types";
-import { getAllEvents } from "../api/event/route.client";
 import { useTranslation } from "react-i18next";
+import { getTimeSlots, getTimeSlotsByStatus } from "@api/timeSlot/route.client";
+import { getStandardDateString, sortedReadableTimeSlots } from "../utils";
+import Image from "next/image";
+import { getAllVolunteerSessions } from "@api/volunteerSession/route.client";
 
 export default function HomePage() {
   const router = useRouter();
   const { t } = useTranslation(["translation", "home"]);
   const { data: session } = useSession();
   const [users, setUsers] = React.useState<UserWithVolunteerDetail[]>([]);
-  const [events, setEvents] = React.useState<Event[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
+  const [timeSlots, setTimeSlots] = React.useState<TimeSlot[]>([]);
+  const [daySlots, setDaySlots] = React.useState<{
+    [key: string]: Set<string>;
+  }>({});
+  const [sessions, setSessions] = React.useState<VolunteerSession[]>([]);
+  const [hours, setHours] = React.useState("...");
+  const [days, setDays] = React.useState(0);
+
+  useEffect(() => {
+    const fetchTimeSlots = async () => {
+      if (session?.user.role === Role.VOLUNTEER) {
+        const userRes = await getUser(session?.user.id as string);
+        const res = await getTimeSlots(session?.user.id as string);
+        const now = new Date();
+        const upcomingSlots = res.data.filter(
+          (slot: TimeSlot) => new Date(slot.startTime) > now
+        );
+
+        setSessions(userRes.data.volunteerSessions);
+        setTimeSlots(upcomingSlots);
+      } else if (session?.user.role === Role.ADMIN) {
+        const res = await getTimeSlotsByStatus(TimeSlotStatus.AVAILABLE);
+        const sessionsRes = await getAllVolunteerSessions();
+        console.log(sessionsRes.data);
+
+        const now = new Date();
+        const today = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate()
+        );
+
+        const daysAhead = 3;
+        const daySlotsTemp: { [key: string]: Set<string> } = {};
+
+        for (let i = 0; i < daysAhead; i++) {
+          const date = new Date(today);
+          date.setDate(today.getDate() + i);
+
+          const dateString = date.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+
+          daySlotsTemp[dateString] = new Set();
+        }
+
+        res.data.forEach((timeSlot: TimeSlot) => {
+          const start = new Date(timeSlot.startTime);
+          const dateString = start.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+
+          if (daySlotsTemp[dateString]) {
+            daySlotsTemp[dateString].add(timeSlot.id);
+          }
+        });
+
+        setSessions(sessionsRes.data);
+        setDaySlots(daySlotsTemp);
+      }
+    };
+
+    fetchTimeSlots();
+  }, [session?.user.id, session?.user.role]);
+
+  React.useEffect(() => {
+    const totalHours = sessions.reduce((acc, session) => {
+      return acc + (session.durationHours ?? 0);
+    }, 0);
+
+    const uniqueDays = new Set(
+      sessions.map((session) => new Date(session.dateWorked).toDateString())
+    );
+
+    setHours(totalHours.toFixed(1));
+    setDays(uniqueDays.size);
+  }, [sessions]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [usersResponse, eventsResponse] = await Promise.all([
-          getUsersByRole(Role.VOLUNTEER),
-          getAllEvents(),
-        ]);
+        const [usersResponse] = await getUsersByRole(Role.VOLUNTEER);
 
         setUsers(usersResponse.data);
-        setEvents(eventsResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -49,6 +135,40 @@ export default function HomePage() {
     );
   }
 
+  const formatVolunteerSubtexts = (startTime: Date, endTime: Date) => {
+    const dateText = new Date(startTime).toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    const timeText =
+      new Date(startTime).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      }) +
+      " - " +
+      new Date(endTime).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+
+    return [
+      { text: dateText, icon: "tabler:calendar" },
+      { text: timeText, icon: "majesticons:clock" },
+    ];
+  };
+
+  const cardButton = (action: () => void) => (
+    <button
+      className="flex justify-end flex-row gap-x-2 bg-teal-600 px-3.5 py-1 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]"
+      onClick={action}
+    >
+      {session.user.role === Role.VOLUNTEER ? t("Manage") : t("See details")}
+    </button>
+  );
+
   return (
     <div>
       <div>
@@ -56,7 +176,7 @@ export default function HomePage() {
           {t("welcome_title", { ns: "home" })}, {session.user.firstName} 👋
         </h1>
         <h1 className="text-lg mt-3 font-normal leading-7 font-serif text-slate-500">
-          ======= Stats updated by:{" "}
+          Stats updated by:{" "}
           {(() => {
             const date = new Date().toLocaleDateString("en-GB", {
               weekday: "long",
@@ -86,40 +206,24 @@ export default function HomePage() {
               ? "Total volunteer hours"
               : t("volunteer_hours", { ns: "home" })
           }
-          value={
-            !loading
-              ? session.user.role === Role.ADMIN && users
-                ? users.reduce(
-                    (sum, user) =>
-                      sum + (user.volunteerDetails?.hoursWorked || 0),
-                    0
-                  )
-                : session.user.volunteerDetails?.hoursWorked || 0
-              : "..."
-          }
+          value={hours}
           icon="tabler:clock-check"
         />
-        <StatsCard
-          heading={
-            session.user.role === Role.ADMIN
-              ? "Total events"
-              : t("events_attended", { ns: "home" })
-          }
-          value={
-            !loading
-              ? session.user.role === Role.ADMIN
-                ? events.length
-                : 9999 // @TODO: Replace with actual user's events in the future
-              : "..."
-          }
-          icon="mdi:calendar-outline"
-        />
+        {session.user.role === Role.VOLUNTEER && (
+          <StatsCard
+            heading="Days volunteered"
+            value={days}
+            icon="mdi:calendar-outline"
+          />
+        )}
       </div>
 
       <div>
-        <div className="flex items-center justify-between mt-8">
+        <div className="flex items-center justify-between mt-8 mb-4">
           <h1 className="text-2xl font-semibold leading-8 font-['Kepler_Std']">
-            {t("upcoming_events", { ns: "home" })}
+            {session.user.role === Role.ADMIN
+              ? "Upcoming Events"
+              : t("upcoming_times", { ns: "home" })}
           </h1>
           <div
             className="flex items-center gap-2 cursor-pointer"
@@ -136,71 +240,72 @@ export default function HomePage() {
             />
           </div>
         </div>
-        <div className="flex flex-wrap gap-x-7">
-          <div className="mt-3">
-            <EventCard
-              title="Dewick Community Meal"
-              start={new Date("December 10, 2024 11:20:00")}
-              end={new Date("December 17, 2024 13:20:00")}
-              address="25 Latin Way, Medford, MA 02155"
-              volunteers={10}
-              maxVolunteers={15}
-            />
-          </div>
-          <div className="mt-3">
-            <EventCard
-              title="Carmichael Grab & Go Meal"
-              start={new Date("December 10, 2024 12:30:00")}
-              end={new Date("December 17, 2024 14:00:00")}
-              address="200 Packard Ave, Medford, MA 02155"
-              volunteers={15}
-              maxVolunteers={15}
-            />
-          </div>
-          <div className="mt-3">
-            <EventCard
-              title="Hodgedon Food-on-the-run"
-              start={new Date("December 10, 2024 14:20:00")}
-              end={new Date("December 17, 2024 14:30:00")}
-              address="103 Talbot Ave. Somerville, MA 02144"
-              volunteers={10}
-              maxVolunteers={15}
-            />
-          </div>
+        <div className="w-full">
           {session.user.role === Role.VOLUNTEER ? (
-            <>
-              <div className="mt-3">
-                <EventCard
-                  title="Dewick Community Meal"
-                  start={new Date("December 10, 2024 11:20:00")}
-                  end={new Date("December 17, 2024 13:20:00")}
-                  address="25 Latin Way, Medford, MA 02155"
-                  volunteers={10}
-                  maxVolunteers={15}
-                />
+            timeSlots.length === 0 ? (
+              <div className="flex flex-col items-center">
+                <div className="relative w-full h-[30vh]">
+                  <Image
+                    src="/empty_list.png"
+                    alt="Empty List"
+                    layout="fill"
+                    objectFit="contain"
+                  />
+                </div>
+                <div className="text-[#344054] font-['Kepler_Std'] text-2xl font-semibold mt-8">
+                  It seems like you have not signed up for any time slots yet!
+                </div>
               </div>
-              <div className="mt-3">
-                <EventCard
-                  title="Carmichael Grab & Go Meal"
-                  start={new Date("December 10, 2024 12:30:00")}
-                  end={new Date("December 17, 2024 14:00:00")}
-                  address="200 Packard Ave, Medford, MA 02155"
-                  volunteers={15}
-                  maxVolunteers={15}
-                />
+            ) : (
+              <div className="flex flex-wrap gap-7">
+                {timeSlots.slice(0, 6).map((timeSlot, index) => (
+                  <EventCard
+                    key={timeSlot.id}
+                    title={`Time Slot ${index + 1}`}
+                    subtexts={formatVolunteerSubtexts(
+                      timeSlot.startTime,
+                      timeSlot.endTime
+                    )}
+                    actionButton={cardButton(() => {
+                      router.push(
+                        `/private/events?date=${getStandardDateString(
+                          timeSlot.startTime
+                        )}`
+                      );
+                    })}
+                  />
+                ))}
               </div>
-              <div className="mt-3">
-                <EventCard
-                  title="Hodgedon Food-on-the-run"
-                  start={new Date("December 10, 2024 14:20:00")}
-                  end={new Date("December 17, 2024 14:30:00")}
-                  address="103 Talbot Ave. Somerville, MA 02144"
-                  volunteers={10}
-                  maxVolunteers={15}
-                />
-              </div>
-            </>
-          ) : null}
+            )
+          ) : (
+            <div className="flex gap-x-7">
+              {sortedReadableTimeSlots(Object.keys(daySlots))
+                .slice(0, 3)
+                .map((date) => (
+                  <EventCard
+                    key={date}
+                    title={date}
+                    subtexts={[
+                      {
+                        text: "Opening Time: 10AM - 6PM",
+                        icon: "tabler:calendar",
+                      },
+                      {
+                        text: `Total Volunteers: ${daySlots[date].size}`,
+                        icon: `ic:baseline-people`,
+                      },
+                    ]}
+                    actionButton={cardButton(() => {
+                      router.push(
+                        `/private/events?date=${getStandardDateString(
+                          new Date(date)
+                        )}`
+                      );
+                    })}
+                  />
+                ))}
+            </div>
+          )}
         </div>
       </div>
       {session.user.role === Role.ADMIN ? (

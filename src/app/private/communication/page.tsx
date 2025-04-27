@@ -197,6 +197,7 @@ export default function CommunicationPage() {
                 placeholder="Type your email content"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
+                rows={10}
               />
             </div>
           </div>

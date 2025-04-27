@@ -15,13 +15,17 @@ import {
 } from "@api/timeSlot/route.client";
 import VolunteerTable from "@components/VolunteerTable";
 import { getUsersByDate } from "@api/user/route.client";
+import { useSearchParams } from "next/navigation";
+import { getStandardDate } from "../../utils";
 import { getCustomDay } from "@api/customDay/route.client";
 
 export default function EventsPage() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const date = searchParams.get("date");
 
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
-    new Date()
+    getStandardDate(date ?? "")
   );
   const [timeSlots, setTimeSlots] = React.useState([
     { start: "", end: "", submitted: false },

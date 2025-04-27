@@ -51,3 +51,8 @@ export const getVolunteerSessions = async (userId: string) => {
   const url = `/api/volunteerSession?userId=${userId}`;
   return fetchApi(url, "GET");
 };
+
+export const getAllVolunteerSessions = async () => {
+  const url = `/api/volunteerSession`;
+  return fetchApi(url, "GET");
+};

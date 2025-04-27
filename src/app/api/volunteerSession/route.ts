@@ -113,22 +113,36 @@ export const GET = async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const userId: string | undefined = searchParams.get("userId") || undefined;
 
-  if (!userId) {
-    return NextResponse.json(
-      {
-        code: "BAD_REQUEST",
-        message: "User ID is required.",
-      },
-      {
-        status: 400,
-      }
-    );
-  }
-
   try {
+    if (userId) {
+      const volunteerSessions = await prisma.volunteerSession.findMany({
+        where: {
+          userId: userId,
+          NOT: [{ checkOutTime: null }, { durationHours: null }],
+        },
+      });
+
+      if (!volunteerSessions) {
+        return NextResponse.json(
+          {
+            code: "NOT_FOUND",
+            message: "No volunteer sessions found",
+          },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json(
+        {
+          code: "SUCCESS",
+          data: volunteerSessions,
+        },
+        { status: 200 }
+      );
+    }
+
     const volunteerSessions = await prisma.volunteerSession.findMany({
       where: {
-        userId: userId,
         NOT: [{ checkOutTime: null }, { durationHours: null }],
       },
     });
