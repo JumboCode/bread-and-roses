@@ -53,15 +53,21 @@ export default function VolunteerTable({
 
   const isRowSelected = (name: string) => selected?.includes(name);
 
+  const sortedUsers = React.useMemo(
+    () =>
+      [...(users ?? [])].sort((a, b) => a.lastName.localeCompare(b.lastName)),
+    [users]
+  );
+
   const usersWithHours = React.useMemo(() => {
-    return users?.map((user) => ({
+    return sortedUsers.map((user) => ({
       ...user,
       totalHours: (user.volunteerSessions ?? []).reduce(
         (sum, session) => sum + (session.durationHours ?? 0),
         0
       ),
     }));
-  }, [users]);
+  }, [sortedUsers]);
 
   const paginatedRows =
     usersWithHours?.slice(
