@@ -17,6 +17,7 @@ import {
 import OrganizationTable from "@components/OrganizationTable";
 
 export default function VolunteersPage() {
+  const [pageLoading, setPageLoading] = React.useState(true);
   const [users, setUsers] = React.useState<User[]>();
   const [organizations, setOrganizations] = React.useState<Organization[]>();
   const [selected, setSelected] = React.useState<string[]>([]);
@@ -36,6 +37,8 @@ export default function VolunteersPage() {
         setOrganizations(orgResponse.data);
       } catch (error) {
         console.error("Error fetching volunteers or organizations:", error);
+      } finally {
+        setPageLoading(false);
       }
     };
 
@@ -115,6 +118,14 @@ export default function VolunteersPage() {
 
   const { fetching: disableOrgsFetching, fn: throttledDeleteOrganizations } =
     useApiThrottle({ fn: deleteOrganizations });
+
+  if (pageLoading) {
+    return (
+      <div className="h-screen flex justify-center items-center text-3xl">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-8">

@@ -28,12 +28,13 @@ export default function HomePage() {
   const [users, setUsers] = React.useState<UserWithVolunteerDetail[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [timeSlots, setTimeSlots] = React.useState<TimeSlot[]>([]);
-  const [daySlots, setDaySlots] = React.useState<{
+  const [dayUsers, setDayUsers] = React.useState<{
     [key: string]: Set<string>;
   }>({});
   const [sessions, setSessions] = React.useState<VolunteerSession[]>([]);
   const [hours, setHours] = React.useState("...");
   const [days, setDays] = React.useState(0);
+  const [pageLoading, setPageLoading] = React.useState(true);
 
   useEffect(() => {
     const fetchTimeSlots = async () => {
@@ -60,7 +61,7 @@ export default function HomePage() {
         );
 
         const daysAhead = 3;
-        const daySlotsTemp: { [key: string]: Set<string> } = {};
+        const dayUsersTemp: { [key: string]: Set<string> } = {};
 
         for (let i = 0; i < daysAhead; i++) {
           const date = new Date(today);
@@ -73,7 +74,7 @@ export default function HomePage() {
             day: "numeric",
           });
 
-          daySlotsTemp[dateString] = new Set();
+          dayUsersTemp[dateString] = new Set();
         }
 
         res.data.forEach((timeSlot: TimeSlot) => {
@@ -85,14 +86,16 @@ export default function HomePage() {
             day: "numeric",
           });
 
-          if (daySlotsTemp[dateString]) {
-            daySlotsTemp[dateString].add(timeSlot.id);
+          if (dayUsersTemp[dateString]) {
+            dayUsersTemp[dateString].add(timeSlot.userId);
           }
         });
 
         setSessions(sessionsRes.data);
-        setDaySlots(daySlotsTemp);
+        setDayUsers(dayUsersTemp);
       }
+
+      setPageLoading(false);
     };
 
     fetchTimeSlots();
@@ -127,7 +130,7 @@ export default function HomePage() {
     fetchData();
   }, []);
 
-  if (!session) {
+  if (!session || pageLoading) {
     return (
       <div className="h-screen flex justify-center items-center text-3xl">
         Loading...
@@ -279,7 +282,7 @@ export default function HomePage() {
             )
           ) : (
             <div className="flex gap-x-7">
-              {sortedReadableTimeSlots(Object.keys(daySlots))
+              {sortedReadableTimeSlots(Object.keys(dayUsers))
                 .slice(0, 3)
                 .map((date) => (
                   <EventCard
@@ -291,7 +294,7 @@ export default function HomePage() {
                         icon: "tabler:calendar",
                       },
                       {
-                        text: `Total Volunteers: ${daySlots[date].size}`,
+                        text: `Total Volunteers: ${dayUsers[date].size}`,
                         icon: `ic:baseline-people`,
                       },
                     ]}

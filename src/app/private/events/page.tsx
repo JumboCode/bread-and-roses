@@ -25,6 +25,7 @@ export default function EventsPage() {
   const searchParams = useSearchParams();
   const date = searchParams.get("date");
 
+  const [pageLoading, setPageLoading] = React.useState(true);
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
     undefined
   );
@@ -203,96 +204,105 @@ export default function EventsPage() {
   }, [date]);
 
   React.useEffect(() => {
-    const fetchTimeSlots = async () => {
+    const fetchAllData = async () => {
       if (!session?.user.id || !selectedDate) return;
 
       try {
-        if (session.user.role === Role.ADMIN) {
-          const result = await getUsersByDate(selectedDate);
-          const users = result.data;
+        await Promise.all([
+          (async () => {
+            if (session.user.role === Role.ADMIN) {
+              const result = await getUsersByDate(selectedDate);
+              const users = result.data;
 
-          const individuals = users
-            .map((user: User & { timeSlots: TimeSlot[] }) => ({
-              ...user,
-              timeSlots: user.timeSlots.filter((slot) => !slot.organizationId),
-            }))
-            .filter(
-              (user: User & { timeSlots: TimeSlot[] }) =>
-                user.timeSlots.length > 0
-            );
+              const individuals = users
+                .map((user: User & { timeSlots: TimeSlot[] }) => ({
+                  ...user,
+                  timeSlots: user.timeSlots.filter(
+                    (slot) => !slot.organizationId
+                  ),
+                }))
+                .filter(
+                  (user: User & { timeSlots: TimeSlot[] }) =>
+                    user.timeSlots.length > 0
+                );
 
-          const groups = users
-            .map((user: User & { timeSlots: TimeSlot[] }) => ({
-              ...user,
-              timeSlots: user.timeSlots.filter((slot) => slot.organizationId),
-            }))
-            .filter(
-              (user: User & { timeSlots: TimeSlot[] }) =>
-                user.timeSlots.length > 0
-            );
+              const groups = users
+                .map((user: User & { timeSlots: TimeSlot[] }) => ({
+                  ...user,
+                  timeSlots: user.timeSlots.filter(
+                    (slot) => slot.organizationId
+                  ),
+                }))
+                .filter(
+                  (user: User & { timeSlots: TimeSlot[] }) =>
+                    user.timeSlots.length > 0
+                );
 
-          setIndividuals(individuals);
-          setGroups(groups);
-        } else {
-          const result = await getTimeSlotsByDate(
-            session.user.id,
-            selectedDate
-          );
-          const slots = result.data;
+              setIndividuals(individuals);
+              setGroups(groups);
+            } else {
+              const result = await getTimeSlotsByDate(
+                session.user.id,
+                selectedDate
+              );
+              const slots = result.data;
 
-          const formatted: {
-            start: string;
-            end: string;
-            submitted: boolean;
-          }[] = slots.map((slot: TimeSlot) => ({
-            start: new Date(slot.startTime).toTimeString().slice(0, 5),
-            end: new Date(slot.endTime).toTimeString().slice(0, 5),
-            submitted: true,
-          }));
+              const formatted: {
+                start: string;
+                end: string;
+                submitted: boolean;
+              }[] = slots.map((slot: TimeSlot) => ({
+                start: new Date(slot.startTime).toTimeString().slice(0, 5),
+                end: new Date(slot.endTime).toTimeString().slice(0, 5),
+                submitted: true,
+              }));
 
-          formatted.sort((a, b) => a.start.localeCompare(b.start));
+              formatted.sort((a, b) => a.start.localeCompare(b.start));
 
-          setTimeSlots([
-            ...formatted,
-            { start: "", end: "", submitted: false },
-          ]);
-        }
+              setTimeSlots([
+                ...formatted,
+                { start: "", end: "", submitted: false },
+              ]);
+            }
+          })(),
+          (async () => {
+            const result = await getCustomDay(selectedDate);
+            const customDay = result.data;
+
+            if (customDay) {
+              const start = new Date(customDay.startTime)
+                .toTimeString()
+                .slice(0, 5);
+              const end = new Date(customDay.endTime)
+                .toTimeString()
+                .slice(0, 5);
+              setCustomDayHours({ start, end });
+              setCustomDayTitle(customDay.title ?? "");
+              setCustomDayDescription(customDay.description ?? "");
+            } else {
+              setCustomDayHours({ start: "10:00", end: "18:00" });
+              setCustomDayTitle("");
+              setCustomDayDescription("");
+            }
+          })(),
+        ]);
       } catch (error) {
-        console.error("Failed to lead slots", error);
+        console.error("Error fetching event page data:", error);
+      } finally {
+        setPageLoading(false);
       }
     };
 
-    const fetchCustomDay = async () => {
-      if (!selectedDate) return;
-
-      try {
-        const result = await getCustomDay(selectedDate);
-        const customDay = result.data;
-
-        if (customDay) {
-          const start = new Date(customDay.startTime)
-            .toTimeString()
-            .slice(0, 5);
-          const end = new Date(customDay.endTime).toTimeString().slice(0, 5);
-          setCustomDayHours({ start, end });
-          setCustomDayTitle(customDay.title ?? "");
-          setCustomDayDescription(customDay.description ?? "");
-        } else {
-          setCustomDayHours({ start: "10:00", end: "18:00" });
-          setCustomDayTitle("");
-          setCustomDayDescription("");
-        }
-      } catch (error) {
-        console.error("Failed to fetch custom day:", error);
-        setCustomDayHours({ start: "10:00", end: "18:00" });
-        setCustomDayTitle("");
-        setCustomDayDescription("");
-      }
-    };
-
-    fetchTimeSlots();
-    fetchCustomDay();
+    fetchAllData();
   }, [session?.user.id, selectedDate, session?.user.role]);
+
+  if (pageLoading || !session) {
+    return (
+      <div className="h-screen flex justify-center items-center text-3xl">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div>
