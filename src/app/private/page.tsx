@@ -4,9 +4,15 @@ import { useSession } from "next-auth/react";
 import StatsCard from "@components/StatsCard";
 import EventCard from "@components/EventCard";
 import VolunteerTable from "@components/VolunteerTable";
-import { Role, Event, TimeSlot, TimeSlotStatus } from "@prisma/client";
+import {
+  Role,
+  Event,
+  TimeSlot,
+  TimeSlotStatus,
+  VolunteerSession,
+} from "@prisma/client";
 import React, { useEffect } from "react";
-import { getUsersByRole } from "@api/user/route.client";
+import { getUser, getUsersByRole } from "@api/user/route.client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
 import { UserWithVolunteerDetail } from "../types";
@@ -14,6 +20,8 @@ import { getAllEvents } from "../api/event/route.client";
 import { useTranslation } from "react-i18next";
 import { getTimeSlots, getTimeSlotsByStatus } from "@api/timeSlot/route.client";
 import { getStandardDateString, sortedReadableTimeSlots } from "../utils";
+import Image from "next/image";
+import { getAllVolunteerSessions } from "@api/volunteerSession/route.client";
 
 export default function HomePage() {
   const router = useRouter();
@@ -26,38 +34,85 @@ export default function HomePage() {
   const [daySlots, setDaySlots] = React.useState<{
     [key: string]: Set<string>;
   }>({});
+  const [sessions, setSessions] = React.useState<VolunteerSession[]>([]);
+  const [hours, setHours] = React.useState("...");
+  const [days, setDays] = React.useState(0);
 
   useEffect(() => {
     const fetchTimeSlots = async () => {
       if (session?.user.role === Role.VOLUNTEER) {
+        const userRes = await getUser(session?.user.id as string);
         const res = await getTimeSlots(session?.user.id as string);
-        setTimeSlots(res.data);
+        const now = new Date();
+        const upcomingSlots = res.data.filter(
+          (slot: TimeSlot) => new Date(slot.startTime) > now
+        );
+
+        setSessions(userRes.data.volunteerSessions);
+        setTimeSlots(upcomingSlots);
       } else if (session?.user.role === Role.ADMIN) {
         const res = await getTimeSlotsByStatus(TimeSlotStatus.AVAILABLE);
-        res.data.forEach((timeSlot: TimeSlot) => {
-          const date = new Date(timeSlot.startTime).toLocaleDateString(
-            "en-US",
-            {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            }
-          );
+        const sessionsRes = await getAllVolunteerSessions();
+        console.log(sessionsRes.data);
 
-          setDaySlots((prev) => {
-            if (!prev[date]) {
-              prev[date] = new Set();
-            }
-            prev[date].add(timeSlot.id);
-            return { ...prev };
+        const now = new Date();
+        const today = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate()
+        );
+
+        const daysAhead = 3;
+        const daySlotsTemp: { [key: string]: Set<string> } = {};
+
+        for (let i = 0; i < daysAhead; i++) {
+          const date = new Date(today);
+          date.setDate(today.getDate() + i);
+
+          const dateString = date.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
           });
+
+          daySlotsTemp[dateString] = new Set();
+        }
+
+        res.data.forEach((timeSlot: TimeSlot) => {
+          const start = new Date(timeSlot.startTime);
+          const dateString = start.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+
+          if (daySlotsTemp[dateString]) {
+            daySlotsTemp[dateString].add(timeSlot.id);
+          }
         });
+
+        setSessions(sessionsRes.data);
+        setDaySlots(daySlotsTemp);
       }
     };
 
     fetchTimeSlots();
   }, [session?.user.id, session?.user.role]);
+
+  React.useEffect(() => {
+    const totalHours = sessions.reduce((acc, session) => {
+      return acc + (session.durationHours ?? 0);
+    }, 0);
+
+    const uniqueDays = new Set(
+      sessions.map((session) => new Date(session.dateWorked).toDateString())
+    );
+
+    setHours(totalHours.toFixed(1));
+    setDays(uniqueDays.size);
+  }, [sessions]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,7 +183,7 @@ export default function HomePage() {
           {t("welcome_title", { ns: "home" })}, {session.user.firstName} 👋
         </h1>
         <h1 className="text-lg mt-3 font-normal leading-7 font-serif text-slate-500">
-          ======= Stats updated by:{" "}
+          Stats updated by:{" "}
           {(() => {
             const date = new Date().toLocaleDateString("en-GB", {
               weekday: "long",
@@ -158,34 +213,16 @@ export default function HomePage() {
               ? "Total volunteer hours"
               : t("volunteer_hours", { ns: "home" })
           }
-          value={
-            !loading
-              ? session.user.role === Role.ADMIN && users
-                ? users.reduce(
-                    (sum, user) =>
-                      sum + (user.volunteerDetails?.hoursWorked || 0),
-                    0
-                  )
-                : session.user.volunteerDetails?.hoursWorked || 0
-              : "..."
-          }
+          value={hours}
           icon="tabler:clock-check"
         />
-        <StatsCard
-          heading={
-            session.user.role === Role.ADMIN
-              ? "Total events"
-              : t("events_attended", { ns: "home" })
-          }
-          value={
-            !loading
-              ? session.user.role === Role.ADMIN
-                ? events.length
-                : 9999 // @TODO: Replace with actual user's events in the future
-              : "..."
-          }
-          icon="mdi:calendar-outline"
-        />
+        {session.user.role === Role.VOLUNTEER && (
+          <StatsCard
+            heading="Days volunteered"
+            value={days}
+            icon="mdi:calendar-outline"
+          />
+        )}
       </div>
 
       <div>
@@ -210,27 +247,43 @@ export default function HomePage() {
             />
           </div>
         </div>
-        <div className="flex gap-x-7">
+        <div className="w-full">
           {session.user.role === Role.VOLUNTEER ? (
-            <div className="flex flex-wrap gap-7">
-              {timeSlots.slice(0, 6).map((timeSlot, index) => (
-                <EventCard
-                  key={timeSlot.id}
-                  title={`Time Slot ${index + 1}`}
-                  subtexts={formatVolunteerSubtexts(
-                    timeSlot.startTime,
-                    timeSlot.endTime
-                  )}
-                  actionButton={cardButton(() => {
-                    router.push(
-                      `/private/events?date=${getStandardDateString(
-                        timeSlot.startTime
-                      )}`
-                    );
-                  })}
-                />
-              ))}
-            </div>
+            timeSlots.length === 0 ? (
+              <div className="flex flex-col items-center">
+                <div className="relative w-full h-[30vh]">
+                  <Image
+                    src="/empty_list.png"
+                    alt="Empty List"
+                    layout="fill"
+                    objectFit="contain"
+                  />
+                </div>
+                <div className="text-[#344054] font-['Kepler_Std'] text-2xl font-semibold mt-8">
+                  It seems like you have not signed up for any time slots yet!
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-7">
+                {timeSlots.slice(0, 6).map((timeSlot, index) => (
+                  <EventCard
+                    key={timeSlot.id}
+                    title={`Time Slot ${index + 1}`}
+                    subtexts={formatVolunteerSubtexts(
+                      timeSlot.startTime,
+                      timeSlot.endTime
+                    )}
+                    actionButton={cardButton(() => {
+                      router.push(
+                        `/private/events?date=${getStandardDateString(
+                          timeSlot.startTime
+                        )}`
+                      );
+                    })}
+                  />
+                ))}
+              </div>
+            )
           ) : (
             <div className="flex gap-x-7">
               {sortedReadableTimeSlots(Object.keys(daySlots))
