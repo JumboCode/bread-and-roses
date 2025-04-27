@@ -171,18 +171,11 @@ export default function SignUp() {
     return true;
   };
 
-  const validateOver14 = () => {
-    if (!isOverAge14) {
-      return false;
-    }
-    return true;
-  };
-
   const validateForm = () => {
     const isEmailValid = validateEmail();
     const isPasswordValid = validatePassword();
     const isZipValid = validateZip();
-    const isOver14Valid = validateOver14();
+    const isOver14Valid = isOverAge14 === true;
 
     if (!isEmailValid || !isPasswordValid || !isZipValid || !isOver14Valid) {
       return false;
