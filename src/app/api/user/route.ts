@@ -95,48 +95,57 @@ export const DELETE = async (request: NextRequest) => {
     );
   }
 
+  // @TODO: If there is time figure out the logic for removing user while preserving previous time slots/sessions
   try {
     await prisma.$transaction(async (tx) => {
       // Delete TimeSlots where organizationId is null
-      await tx.timeSlot.deleteMany({
-        where: {
-          userId: id,
-          organizationId: null,
-        },
-      });
+      // await tx.timeSlot.deleteMany({
+      //   where: {
+      //     userId: id,
+      //     organizationId: null,
+      //   },
+      // });
 
       // Delete VolunteerSessions where organizationId is null
-      await tx.volunteerSession.deleteMany({
-        where: {
-          userId: id,
-          organizationId: null,
-        },
-      });
+      // await tx.volunteerSession.deleteMany({
+      //   where: {
+      //     userId: id,
+      //     organizationId: null,
+      //   },
+      // });
 
       // For TimeSlots with organizationId, nullify userId
-      await tx.timeSlot.updateMany({
-        where: {
-          userId: id,
-          NOT: {
-            organizationId: null,
-          },
-        },
-        data: {
-          userId: undefined, // nullify userId
-        },
-      });
+      // await tx.timeSlot.updateMany({
+      //   where: {
+      //     userId: id,
+      //     NOT: {
+      //       organizationId: null,
+      //     },
+      //   },
+      //   data: {
+      //     userId: undefined, // nullify userId
+      //   },
+      // });
 
       // For VolunteerSessions with organizationId, nullify userId
-      await tx.volunteerSession.updateMany({
-        where: {
-          userId: id,
-          NOT: {
-            organizationId: null,
-          },
-        },
-        data: {
-          userId: undefined, // nullify userId
-        },
+      // await tx.volunteerSession.updateMany({
+      //   where: {
+      //     userId: id,
+      //     NOT: {
+      //       organizationId: null,
+      //     },
+      //   },
+      //   data: {
+      //     userId: undefined, // nullify userId
+      //   },
+      // });
+
+      await tx.timeSlot.deleteMany({
+        where: { userId: id },
+      });
+
+      await tx.volunteerSession.deleteMany({
+        where: { userId: id },
       });
 
       // Delete related Code

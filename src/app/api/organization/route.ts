@@ -107,3 +107,53 @@ export const GET = async (request: NextRequest) => {
     );
   }
 };
+
+export const DELETE = async (request: NextRequest) => {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+
+  if (!id) {
+    return NextResponse.json(
+      { code: "BAD_REQUEST", message: "Organization ID is required." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Nullify organizationId for Users
+      await tx.user.updateMany({
+        where: { organizationId: id },
+        data: { organizationId: null },
+      });
+
+      // Nullify organizationId for TimeSlots
+      await tx.timeSlot.updateMany({
+        where: { organizationId: id },
+        data: { organizationId: null },
+      });
+
+      // Nullify organizationId for VolunteerSessions
+      await tx.volunteerSession.updateMany({
+        where: { organizationId: id },
+        data: { organizationId: null },
+      });
+
+      // Delete the Organization
+      await tx.organization.delete({
+        where: { id },
+      });
+    });
+
+    return NextResponse.json(
+      { code: "SUCCESS", message: "Organization deleted successfully." },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error deleting organization:", error);
+    return NextResponse.json(
+      { code: "ERROR", message: "Failed to delete organization." },
+      { status: 500 }
+    );
+  }
+};

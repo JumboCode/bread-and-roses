@@ -9,6 +9,7 @@ import { Calendar } from "./Calendar";
 import { format } from "date-fns";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { addCustomDay, getCustomDay } from "@api/customDay/route.client";
+import useApiThrottle from "../hooks/useApiThrottle";
 
 interface CustomizeEventProps {
   modalVisible: boolean;
@@ -158,13 +159,17 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
     }
   };
 
+  const { fetching: addLoading, fn: throttledHandleAdd } = useApiThrottle({
+    fn: handleAdd,
+  });
+
   if (!modalVisible) return null;
 
   return (
-    <div className="absolute left-full ml-4 w-[calc(100vw-240px)] gap-x-2 inset-0 z-50 flex  bg-opacity-40">
+    <div className="fixed inset-0 z-50 flex justify-center items-start pt-20">
       <div
         ref={modalRef}
-        className="bg-white rounded-[12px] border w-[596px] h-[503.03px] pt-8 pr-5 pb-8 pl-5 relative space-y-4"
+        className="bg-white rounded-[12px] border w-[596px] h-[503.03px] pt-8 pr-5 pb-8 pl-5 relative space-y-4 shadow-lg"
       >
         <div className="flex justify-end">
           <Image
@@ -289,12 +294,12 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
         <div className="mt-4 flex justify-end">
           <button
             className={`px-4 py-2 rounded bg-teal-600 text-white ${
-              hasTimeSlotError
+              addLoading || hasTimeSlotError
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:bg-teal-700"
             }`}
-            onClick={handleAdd}
-            disabled={hasTimeSlotError}
+            onClick={throttledHandleAdd}
+            disabled={addLoading || hasTimeSlotError}
           >
             Add
           </button>

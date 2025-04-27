@@ -231,7 +231,11 @@ export default function SignUp() {
           comments: comments,
         }
       );
-      await addOrganization(response.data.id, organization.trim());
+
+      if (organization !== "") {
+        await addOrganization(response.data.id, organization.trim());
+      }
+
       setSuccess(true);
     } catch (error) {
       console.error(error);

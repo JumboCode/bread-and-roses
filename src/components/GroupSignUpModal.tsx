@@ -11,6 +11,7 @@ import TimeSlotFields from "./TimeSlotFields";
 import { useSession } from "next-auth/react";
 import { addTimeSlot } from "@api/timeSlot/route.client";
 import { TimeSlotStatus } from "@prisma/client";
+import useApiThrottle from "../hooks/useApiThrottle";
 
 const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
   const { data: session } = useSession();
@@ -132,6 +133,12 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
     }
   };
 
+  const { fetching: submitLoading, fn: throttledHandleSubmit } = useApiThrottle(
+    {
+      fn: handleSubmit,
+    }
+  );
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       // if user clicks outside the calendar, close it
@@ -185,7 +192,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
   };
 
   return (
-    <div className="bg-white border border-gray-300 w-[596px] h-[867px] shadow-md rounded-xl p-6 relative gap-[14px] flex flex-col text-gray-700">
+    <div className="bg-white border border-gray-300 w-[596px] h-[867px] shadow-lg rounded-xl p-6 relative gap-[14px] flex flex-col text-gray-700">
       {/* Header */}
       <div className="flex items-center justify-end">
         {/* Close Button (optional) */}
@@ -346,12 +353,12 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
       <div className="flex flex-row justify-end mt-4">
         <button
           className={`bg-teal-600 text-[14px] w-[67px] h-[40px] py-[10px] px-[16px] rounded-lg font-semibold flex justify-center items-center ${
-            isDisabled()
+            submitLoading || isDisabled()
               ? "opacity-50 cursor-not-allowed text-white"
               : "text-white"
           }`}
-          onClick={handleSubmit}
-          disabled={isDisabled()}
+          onClick={throttledHandleSubmit}
+          disabled={submitLoading || isDisabled()}
         >
           Send
         </button>

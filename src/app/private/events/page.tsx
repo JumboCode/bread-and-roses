@@ -18,6 +18,7 @@ import { getUsersByDate } from "@api/user/route.client";
 import { useSearchParams } from "next/navigation";
 import { getStandardDate } from "../../utils";
 import { getCustomDay } from "@api/customDay/route.client";
+import useApiThrottle from "../../../hooks/useApiThrottle";
 
 export default function EventsPage() {
   const { data: session } = useSession();
@@ -185,6 +186,11 @@ export default function EventsPage() {
       console.error("Failed to sync time slots:", error);
     }
   };
+
+  const { fetching: confirmLoading, fn: throttledHandleConfirm } =
+    useApiThrottle({
+      fn: handleConfirm,
+    });
 
   React.useEffect(() => {
     if (date !== null) {
@@ -557,8 +563,10 @@ export default function EventsPage() {
                       opacity: 0.5,
                     },
                   }}
-                  onClick={page === 0 ? handleConfirm : () => setPage(0)}
-                  disabled={page === 0 && !hasSubmittedSlot}
+                  onClick={
+                    page === 0 ? throttledHandleConfirm : () => setPage(0)
+                  }
+                  disabled={confirmLoading || (page === 0 && !hasSubmittedSlot)}
                 >
                   {page === 0 ? "Confirm" : "Close"}
                 </Button>
