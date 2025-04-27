@@ -59,6 +59,7 @@ export const getAuthOptions = (dynamicMaxAge?: number): NextAuthOptions => {
             email: user.email,
             volunteerDetails,
             rememberMe: rememberMe,
+            organizationId: user.organizationId,
           };
         },
       }),
@@ -74,6 +75,7 @@ export const getAuthOptions = (dynamicMaxAge?: number): NextAuthOptions => {
           token.firstName = user.firstName;
           token.lastName = user.lastName;
           token.rememberMe = user.rememberMe;
+          token.organizationId = user.organizationId;
 
           if (user.role !== "ADMIN") {
             token.volunteerDetails = user.volunteerDetails || null;
@@ -114,6 +116,7 @@ export const getAuthOptions = (dynamicMaxAge?: number): NextAuthOptions => {
         session.user.firstName = token.firstName;
         session.user.lastName = token.lastName;
         session.user.volunteerDetails = token.volunteerDetails || null;
+        session.user.organizationId = token.organizationId;
         session.expires = new Date(token.exp * 1000).toISOString();
         return session;
       },

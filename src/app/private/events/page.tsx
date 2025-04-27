@@ -26,7 +26,8 @@ export default function EventsPage() {
   const [timeSlots, setTimeSlots] = React.useState([
     { start: "", end: "", submitted: false },
   ]);
-  const [users, setUsers] = React.useState<User[]>([]);
+  const [individuals, setIndividuals] = React.useState<User[]>([]);
+  const [groups, setGroups] = React.useState<User[]>([]);
   const [page, setPage] = React.useState(0);
 
   const [customDayHours, setCustomDayHours] = React.useState<{
@@ -35,6 +36,9 @@ export default function EventsPage() {
   }>({ start: "10:00", end: "18:00" });
   const [customDayTitle, setCustomDayTitle] = React.useState("");
   const [customDayDescription, setCustomDayDescription] = React.useState("");
+  const [activeTab, setActiveTab] = React.useState<"Individuals" | "Groups">(
+    "Individuals"
+  );
 
   const handleAddTimeSlot = () => {
     setTimeSlots((prev) => {
@@ -139,6 +143,7 @@ export default function EventsPage() {
 
         await addTimeSlot({
           userId: session.user.id,
+          organizationId: null,
           startTime: start,
           endTime: end,
           durationHours,
@@ -176,7 +181,28 @@ export default function EventsPage() {
           const result = await getUsersByDate(selectedDate);
           const users = result.data;
 
-          setUsers(users);
+          const individuals = users
+            .map((user: User & { timeSlots: TimeSlot[] }) => ({
+              ...user,
+              timeSlots: user.timeSlots.filter((slot) => !slot.organizationId),
+            }))
+            .filter(
+              (user: User & { timeSlots: TimeSlot[] }) =>
+                user.timeSlots.length > 0
+            );
+
+          const groups = users
+            .map((user: User & { timeSlots: TimeSlot[] }) => ({
+              ...user,
+              timeSlots: user.timeSlots.filter((slot) => slot.organizationId),
+            }))
+            .filter(
+              (user: User & { timeSlots: TimeSlot[] }) =>
+                user.timeSlots.length > 0
+            );
+
+          setIndividuals(individuals);
+          setGroups(groups);
         } else {
           const result = await getTimeSlotsByDate(
             session.user.id,
@@ -551,24 +577,62 @@ export default function EventsPage() {
                       height="20"
                     />
                     <div className="text-sm text-[#344054]">
-                      Total Signups: {users.length}{" "}
-                      {users.length === 1 ? "volunteer" : "volunteers"}
+                      Total Individual Signups: {individuals.length}{" "}
+                      {individuals.length === 1 ? "volunteer" : "volunteers"}
                     </div>
                   </div>
                 </div>
               </div>
               <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
               <div>
-                <div className="flex items-center gap-1.5 mb-4">
-                  <Icon
-                    icon="mdi:people"
-                    className="text-[#344054]"
-                    width="20"
-                    height="20"
-                  />
-                  <div className="text-sm text-[#344054]">Attendees</div>
+                <div className="flex gap-2 pb-4">
+                  {["Individuals", "Groups"].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() =>
+                        setActiveTab(tab as "Individuals" | "Groups")
+                      }
+                      className={`px-3 py-1 text-sm font-medium flex items-center gap-1 border-b-2 transition-colors duration-200 ${
+                        activeTab === tab
+                          ? "text-teal-600 border-teal-600"
+                          : "text-gray-700 border-transparent hover:text-teal-600 hover:border-teal-300"
+                      }`}
+                    >
+                      <Icon
+                        icon={
+                          tab === "Individuals" ? "mdi:person" : "mdi:people"
+                        }
+                        width="20"
+                        height="20"
+                      />
+                      <div>{tab}</div>
+                    </button>
+                  ))}
                 </div>
-                {users.length === 0 ? (
+                {activeTab === "Individuals" ? (
+                  individuals.length === 0 ? (
+                    <div className="text-center">
+                      <div className="relative w-full h-[30vh]">
+                        <Image
+                          src="/empty_list.png"
+                          alt="Empty List"
+                          layout="fill"
+                          objectFit="contain"
+                        />
+                      </div>
+                      <div className="text-[#344054] font-['Kepler_Std'] text-2xl font-semibold mt-8">
+                        It seems like no individuals have signed up!
+                      </div>
+                    </div>
+                  ) : (
+                    <VolunteerTable
+                      showPagination
+                      fromVolunteerPage={false}
+                      fromAttendeePage
+                      users={individuals}
+                    />
+                  )
+                ) : groups.length === 0 ? (
                   <div className="text-center">
                     <div className="relative w-full h-[30vh]">
                       <Image
@@ -579,7 +643,7 @@ export default function EventsPage() {
                       />
                     </div>
                     <div className="text-[#344054] font-['Kepler_Std'] text-2xl font-semibold mt-8">
-                      It seems like no one has signed up!
+                      It seems like no groups have signed up!
                     </div>
                   </div>
                 ) : (
@@ -587,7 +651,8 @@ export default function EventsPage() {
                     showPagination
                     fromVolunteerPage={false}
                     fromAttendeePage
-                    users={users}
+                    users={groups}
+                    showOrganizationName
                   />
                 )}
               </div>

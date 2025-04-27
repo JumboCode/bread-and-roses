@@ -46,9 +46,47 @@ export const POST = async (request: NextRequest) => {
   }
 };
 
-export const GET = async () => {
+export const GET = async (request: NextRequest) => {
+  const { searchParams } = new URL(request.url);
+
+  const id: string | undefined = searchParams.get("id") || undefined;
+
   try {
-    const fetchedOrganizations = await prisma.organization.findMany();
+    if (id) {
+      const fetchedOrganization = await prisma.organization.findUnique({
+        where: { id },
+        include: { volunteerSessions: true, users: true },
+      });
+
+      if (!fetchedOrganization) {
+        return NextResponse.json(
+          {
+            code: "NOT_FOUND",
+            message: "Organization not found",
+          },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json(
+        {
+          code: "SUCCESS",
+          data: fetchedOrganization,
+        },
+        { status: 200 }
+      );
+    }
+
+    const fetchedOrganizations = await prisma.organization.findMany({
+      include: {
+        users: true,
+        volunteerSessions: {
+          select: {
+            durationHours: true,
+          },
+        },
+      },
+    });
 
     return NextResponse.json(
       {

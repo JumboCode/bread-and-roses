@@ -137,6 +137,7 @@ export default function CheckInOutForm() {
 
     const volunteerSession = {
       userId: user.id,
+      organizationId: null,
       durationHours: null,
       checkInTime: now,
       checkOutTime: null,

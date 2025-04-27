@@ -6,28 +6,37 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button } from "@mui/material";
 import React from "react";
-import { Role, User } from "@prisma/client";
+import { Organization, Role, User } from "@prisma/client";
 import { deleteUser, getUsersByRole } from "@api/user/route.client";
 import Image from "next/image";
 import useApiThrottle from "../../../hooks/useApiThrottle";
+import { getOrganizations } from "@api/organization/route.client";
+import OrganizationTable from "@components/OrganizationTable";
 
 export default function VolunteersPage() {
   const [users, setUsers] = React.useState<User[]>();
+  const [organizations, setOrganizations] = React.useState<Organization[]>();
   const [selected, setSelected] = React.useState<string[]>([]);
   const [searchText, setSearchText] = React.useState("");
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState<
+    "Individuals" | "Organizations"
+  >("Individuals");
 
   React.useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchData = async () => {
       try {
-        const response = await getUsersByRole(Role.VOLUNTEER);
-        setUsers(response.data);
+        const usersResponse = await getUsersByRole(Role.VOLUNTEER);
+        const orgResponse = await getOrganizations();
+
+        setUsers(usersResponse.data);
+        setOrganizations(orgResponse.data);
       } catch (error) {
-        console.error("Error fetching volunteers:", error);
+        console.error("Error fetching volunteers or organizations:", error);
       }
     };
 
-    fetchUsers();
+    fetchData();
   }, []);
 
   const normalizedSearchText = searchText.trim().split(/\s+/).join(" ");
@@ -43,6 +52,10 @@ export default function VolunteersPage() {
         " " +
         user.lastName.toLowerCase()
       ).includes(normalizedSearchText.toLowerCase())
+  );
+
+  const filteredOrganizations = organizations?.filter((organization) =>
+    organization.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const deleteUsers = async () => {
@@ -68,8 +81,38 @@ export default function VolunteersPage() {
       console.error("Error deleting users:", error);
     }
   };
-  const { fetching: disableFetching, fn: throttledDeleteUsers } =
+
+  // @TODO Delete organizations functionality
+  const deleteOrganizations = async () => {
+    // try {
+    //   const deletePromises = selected.map((id) => deleteOrganization(id));
+    //   const responses = await Promise.all(deletePromises);
+    //   const allDeleted = responses.every(
+    //     (response) => response.code === "SUCCESS"
+    //   );
+    //   if (allDeleted) {
+    //     setOrganizations((prevOrganizations) =>
+    //       prevOrganizations
+    //         ? prevOrganizations.filter(
+    //             (organization) => !selected.includes(organization.id)
+    //           )
+    //         : []
+    //     );
+    //     setSelected([]);
+    //   } else {
+    //     console.error("Not all deletions succeeded");
+    //   }
+    //   setIsModalOpen(false);
+    // } catch (error) {
+    //   console.error("Error deleting organizations:", error);
+    // }
+  };
+
+  const { fetching: disableUsersFetching, fn: throttledDeleteUsers } =
     useApiThrottle({ fn: deleteUsers });
+
+  const { fetching: disableOrgsFetching, fn: throttledDeleteOrganizations } =
+    useApiThrottle({ fn: deleteOrganizations });
 
   return (
     <div className="flex flex-col gap-8">
@@ -77,7 +120,13 @@ export default function VolunteersPage() {
         <div className="flex items-center gap-3">
           <Icon icon="mdi:people" width="44" height="44" />
           <div className="text-4xl font-['Kepler_Std'] font-semibold">
-            Volunteer List ({users ? users.length : 0})
+            {activeTab === "Individuals" ? "Volunteer" : "Organizations"} List (
+            {activeTab === "Individuals" && users
+              ? users.length
+              : organizations
+              ? organizations.length
+              : 0}
+            )
           </div>
         </div>
         {selected.length > 0 ? (
@@ -114,12 +163,46 @@ export default function VolunteersPage() {
           setSelected([]);
         }}
       />
-      {filteredUsers && filteredUsers.length > 0 ? (
+      <div className="flex gap-2 mb-[-10px]">
+        {["Individuals", "Organizations"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => {
+              setSelected([]);
+              setActiveTab(tab as "Individuals" | "Organizations");
+            }}
+            className={`px-3 py-1 font-medium flex items-center gap-1 border-b-2 transition-colors duration-200 ${
+              activeTab === tab
+                ? "text-teal-600 border-teal-600"
+                : "text-gray-700 border-transparent hover:text-teal-600 hover:border-teal-300"
+            }`}
+          >
+            <Icon
+              icon={tab === "Individuals" ? "mdi:person" : "mdi:people"}
+              width="24"
+              height="24"
+            />
+            <div>{tab}</div>
+          </button>
+        ))}
+      </div>
+      {activeTab === "Individuals" &&
+      filteredUsers &&
+      filteredUsers.length > 0 ? (
         <VolunteerTable
           showPagination={true}
           fromVolunteerPage
           fromAttendeePage={false}
           users={filteredUsers}
+          selected={selected}
+          setSelected={setSelected}
+        />
+      ) : activeTab === "Organizations" &&
+        filteredOrganizations &&
+        filteredOrganizations.length > 0 ? (
+        <OrganizationTable
+          showPagination={true}
+          organizations={filteredOrganizations}
           selected={selected}
           setSelected={setSelected}
         />
@@ -134,7 +217,8 @@ export default function VolunteersPage() {
             />
           </div>
           <div className="text-[#344054] font-['Kepler_Std'] text-3xl font-semibold mt-8">
-            No volunteers found!
+            No {activeTab === "Individuals" ? "individuals" : "organizations"}{" "}
+            found!
           </div>
         </div>
       )}
@@ -144,7 +228,14 @@ export default function VolunteersPage() {
           <div className="bg-white p-6 rounded-2xl shadow-lg z-10 max-w-[512px]">
             <div className="text-[#101828] text-center font-['Kepler_Std'] text-4xl font-semibold">
               Are you sure you want to delete {selected.length}{" "}
-              {selected.length === 1 ? "user" : "users"}?
+              {activeTab === "Individuals"
+                ? selected.length === 1
+                  ? "user"
+                  : "users"
+                : selected.length === 1
+                ? "organization"
+                : "organizations"}{" "}
+              ?
             </div>
             <div className="text-[#667085] text-center text-lg mt-2">
               You will not be able to recover {selected.length === 1 ? "a" : ""}{" "}
@@ -168,7 +259,7 @@ export default function VolunteersPage() {
               </Button>
               <Button
                 variant="outlined"
-                disabled={disableFetching}
+                disabled={disableUsersFetching || disableOrgsFetching}
                 sx={{
                   borderRadius: "8px",
                   padding: "10px 18px",
@@ -180,7 +271,11 @@ export default function VolunteersPage() {
                   "&:hover": { backgroundColor: "var(--Teal-700, #1D7A7A)" },
                 }}
                 onClick={async () => {
-                  await throttledDeleteUsers();
+                  if (activeTab === "Individuals") {
+                    await throttledDeleteUsers();
+                  } else {
+                    await throttledDeleteOrganizations();
+                  }
                 }}
               >
                 Delete

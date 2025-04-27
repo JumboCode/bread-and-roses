@@ -154,7 +154,10 @@ export const GET = async (request: NextRequest) => {
     try {
       const users = await prisma.user.findMany({
         where: { role: role === "ADMIN" ? "ADMIN" : "VOLUNTEER" },
-        include: { volunteerDetails: role === "VOLUNTEER" },
+        include: {
+          volunteerDetails: role === "VOLUNTEER",
+          volunteerSessions: role === "VOLUNTEER",
+        },
       });
 
       if (!users || users.length === 0) {
@@ -215,6 +218,7 @@ export const GET = async (request: NextRequest) => {
             },
           },
           volunteerDetails: true,
+          organization: true,
         },
       });
 
@@ -240,7 +244,7 @@ export const GET = async (request: NextRequest) => {
   try {
     const fetchedUser = await prisma.user.findUnique({
       where: id ? { id } : { email },
-      include: { volunteerDetails: true },
+      include: { volunteerDetails: true, volunteerSessions: true },
     });
 
     if (!fetchedUser) {
@@ -253,13 +257,10 @@ export const GET = async (request: NextRequest) => {
       );
     }
 
-    // Do not include volunteerDetails in user we return
-    const { volunteerDetails, ...user } = fetchedUser;
-
     return NextResponse.json(
       {
         code: "SUCCESS",
-        data: { user, volunteerDetails },
+        data: fetchedUser,
       },
       { status: 200 }
     );
@@ -283,40 +284,46 @@ export const GET = async (request: NextRequest) => {
 
 export const PATCH = async (request: NextRequest) => {
   try {
-    /* @TODO: Add auth */
     const { user, volunteerDetails } = await request.json();
 
+    const {
+      id,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      volunteerDetails: _,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      volunteerSessions: __,
+      ...userWithoutIdAndRelations
+    } = user;
+
     const updatedUser = await prisma.user.update({
-      where: {
-        id: user.id,
-      },
+      where: { id },
       data: {
-        ...user,
-        id: undefined,
+        ...userWithoutIdAndRelations,
+        volunteerDetails: volunteerDetails
+          ? {
+              update: {
+                ageOver14: volunteerDetails.ageOver14,
+                firstTime: volunteerDetails.firstTime,
+                country: volunteerDetails.country,
+                address: volunteerDetails.address,
+                city: volunteerDetails.city,
+                state: volunteerDetails.state,
+                zipCode: volunteerDetails.zipCode,
+                hasLicense: volunteerDetails.hasLicense,
+                speaksEsp: volunteerDetails.speaksEsp,
+                whyJoin: volunteerDetails.whyJoin,
+                comments: volunteerDetails.comments,
+              },
+            }
+          : undefined,
       },
     });
-
-    let updatedVD = undefined;
-
-    if (volunteerDetails) {
-      updatedVD = await prisma.volunteerDetails.update({
-        where: {
-          id: volunteerDetails.id,
-        },
-        data: {
-          ...volunteerDetails,
-          id: undefined,
-        },
-      });
-    }
 
     return NextResponse.json(
       {
         code: "SUCCESS",
-        message: `User update with email: ${updatedUser.email}`,
-        data: updatedVD
-          ? { user: updatedUser, volunteerDetails: updatedVD }
-          : { user: updatedUser },
+        message: `User updated with email: ${updatedUser.email}`,
+        data: updatedUser,
       },
       { status: 200 }
     );
@@ -325,7 +332,7 @@ export const PATCH = async (request: NextRequest) => {
     return NextResponse.json(
       {
         code: "ERROR",
-        message: error,
+        message: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );
