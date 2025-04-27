@@ -57,7 +57,7 @@ export default function HomePage() {
     };
 
     fetchTimeSlots();
-  }, []);
+  }, [session?.user.id, session?.user.role]);
 
   useEffect(() => {
     const fetchData = async () => {

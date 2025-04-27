@@ -1,7 +1,6 @@
 import React from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Image from "next/image";
-import { useTranslation } from "react-i18next";
 
 interface Subtexts {
   text: string;
