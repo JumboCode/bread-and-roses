@@ -21,7 +21,7 @@ interface TopHeaderProps {
     firstName: string;
     lastName: string;
     email: string;
-    organizationId?: string;
+    organizationId?: string | null;
     volunteerDetails?: VolunteerDetails | null;
   };
 }
