@@ -47,15 +47,21 @@ export default function OrganizationTable({
 
   const isRowSelected = (name: string) => selected?.includes(name);
 
+  const sortedOrgs = React.useMemo(
+    () =>
+      [...(organizations ?? [])].sort((a, b) => a.name.localeCompare(b.name)),
+    [organizations]
+  );
+
   const organizationsWithHours = React.useMemo(() => {
-    return organizations.map((org) => ({
+    return sortedOrgs.map((org) => ({
       ...org,
       totalHours: (org.volunteerSessions ?? []).reduce(
         (sum, session) => sum + (session.durationHours ?? 0),
         0
       ),
     }));
-  }, [organizations]);
+  }, [sortedOrgs]);
 
   const paginatedRows =
     organizationsWithHours.slice(
