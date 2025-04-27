@@ -6,7 +6,6 @@ import EventCard from "@components/EventCard";
 import VolunteerTable from "@components/VolunteerTable";
 import {
   Role,
-  Event,
   TimeSlot,
   TimeSlotStatus,
   VolunteerSession,
@@ -16,7 +15,6 @@ import { getUser, getUsersByRole } from "@api/user/route.client";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
 import { UserWithVolunteerDetail } from "../types";
-import { getAllEvents } from "../api/event/route.client";
 import { useTranslation } from "react-i18next";
 import { getTimeSlots, getTimeSlotsByStatus } from "@api/timeSlot/route.client";
 import { getStandardDateString, sortedReadableTimeSlots } from "../utils";
@@ -28,7 +26,6 @@ export default function HomePage() {
   const { t } = useTranslation(["translation", "home"]);
   const { data: session } = useSession();
   const [users, setUsers] = React.useState<UserWithVolunteerDetail[]>([]);
-  const [events, setEvents] = React.useState<Event[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [timeSlots, setTimeSlots] = React.useState<TimeSlot[]>([]);
   const [daySlots, setDaySlots] = React.useState<{
@@ -117,13 +114,9 @@ export default function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [usersResponse, eventsResponse] = await Promise.all([
-          getUsersByRole(Role.VOLUNTEER),
-          getAllEvents(),
-        ]);
+        const [usersResponse] = await getUsersByRole(Role.VOLUNTEER);
 
         setUsers(usersResponse.data);
-        setEvents(eventsResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {

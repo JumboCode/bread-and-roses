@@ -36,17 +36,11 @@ const TopHeader = ({ user }: TopHeaderProps) => {
     i18n.changeLanguage(savedLanguage);
   }, [i18n]);
 
-  // different button text and icon depending on if the user is a volunteer or admin
-  // also check pathname to display different button
-  let buttonText = "";
   let icon = "";
 
   if (pathname === "/private/events") {
-    buttonText =
-      user.role === Role.ADMIN ? "Customize Event" : "Request Group Sign Up";
     icon = "ic:baseline-plus";
   } else {
-    buttonText = user.role === Role.ADMIN ? "Add Event" : t("check_in");
     icon =
       user.role === Role.ADMIN ? "ic:baseline-plus" : "mdi:checkbox-outline";
   }
