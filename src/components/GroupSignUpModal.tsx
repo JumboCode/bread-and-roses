@@ -7,22 +7,28 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { InputAdornment } from "@mui/material";
 import { Calendar } from "@components/Calendar";
 import "react-day-picker/style.css";
+import TimeSlotFields from "./TimeSlotFields";
+import { useSession } from "next-auth/react";
+import { addTimeSlot } from "@api/timeSlot/route.client";
+import { TimeSlotStatus } from "@prisma/client";
 
 const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
+  const { data: session } = useSession();
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const buttonRef = useRef(null);
   const calendarRef = useRef<HTMLDivElement>(null);
 
-  // separate useStates for each field (for backend)
   const [title, setTitle] = useState("");
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [reasons, setReasons] = useState("");
   const [capacity, setCapacity] = useState("");
-  const [date, setDate] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [timeSlots, setTimeSlots] = React.useState([
+    { start: "", end: "", submitted: false },
+  ]);
+  const [submitted, setSubmitted] = useState(false);
 
   const [errors, setErrors] = useState({
     title: false,
@@ -31,28 +37,99 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
     reasons: false,
     capacity: false,
     date: false,
-    startTime: false,
-    endTime: false,
+    timeSlot: false,
   });
 
-  // form submission logic
-  const handleSubmit = () => {
-    // error when some fields aren't filled out
+  const hasErrors = () => {
+    const toMinutes = (time: string) => {
+      const [h, m] = time.split(":").map(Number);
+      return h * 60 + m;
+    };
+
+    const timeSlotHasError = timeSlots.some((slot, index) => {
+      if (!slot.start || !slot.end) return true;
+      if (slot.start >= slot.end) return true;
+
+      const newStart = toMinutes(slot.start);
+      const newEnd = toMinutes(slot.end);
+
+      return timeSlots.some((s, i) => {
+        if (i === index || !s.submitted) return false;
+        const sStart = toMinutes(s.start);
+        const sEnd = toMinutes(s.end);
+        return newStart < sEnd && newEnd > sStart;
+      });
+    });
+
     const newErrors = {
       title: title.trim() === "",
       groupName: groupName.trim() === "",
       description: description.trim() === "",
       reasons: reasons.trim() === "",
       capacity: capacity.trim() === "" || isNaN(Number(capacity)),
-      date: date.trim() === "",
-      startTime: startTime.trim() === "",
-      endTime: endTime.trim() === "",
+      date: !selectedDate,
+      timeSlot: timeSlotHasError,
     };
 
     setErrors(newErrors);
-    const hasError = Object.values(newErrors).some(Boolean);
-    if (hasError) return;
-    onClose();
+    return Object.values(newErrors).some(Boolean);
+  };
+
+  const handleSubmit = async () => {
+    setSubmitted(true);
+    if (hasErrors()) return;
+
+    if (!session?.user || !session.user.organizationId) {
+      alert("You must belong to an organization to create time slots.");
+      return;
+    }
+
+    try {
+      const slotsToSubmit = timeSlots.filter((slot) => slot.start && slot.end);
+
+      for (const slot of slotsToSubmit) {
+        const start = new Date(
+          `${format(selectedDate!, "yyyy-MM-dd")}T${slot.start}`
+        );
+        const end = new Date(
+          `${format(selectedDate!, "yyyy-MM-dd")}T${slot.end}`
+        );
+        const durationHours =
+          (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+
+        await addTimeSlot(
+          {
+            userId: session.user.id,
+            organizationId: session.user.organizationId,
+            startTime: start,
+            endTime: end,
+            durationHours,
+            date: selectedDate!,
+            approved: false,
+            status: TimeSlotStatus.AVAILABLE,
+            numVolunteers: Number(capacity),
+          },
+          {
+            eventTitle: title,
+            date: format(selectedDate!, "yyyy-MM-dd"),
+            startTime: slot.start,
+            endTime: slot.end,
+            groupName,
+            groupDescription: description,
+            groupReason: reasons,
+            groupCapacity: Number(capacity),
+          }
+        );
+      }
+
+      alert(
+        "Successfully created group request! Please wait for the admins to approve your request."
+      );
+      onClose();
+    } catch (err) {
+      console.error("Error creating time slots:", err);
+      alert("Failed to create time slots. Please try again.");
+    }
   };
 
   useEffect(() => {
@@ -74,6 +151,39 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
     };
   }, [showCalendar]);
 
+  const isDisabled = () => {
+    const toMinutes = (time: string) => {
+      const [h, m] = time.split(":").map(Number);
+      return h * 60 + m;
+    };
+
+    const timeSlotHasError = timeSlots.some((slot, index) => {
+      if (!slot.start || !slot.end) return true;
+      if (slot.start >= slot.end) return true;
+
+      const newStart = toMinutes(slot.start);
+      const newEnd = toMinutes(slot.end);
+
+      return timeSlots.some((s, i) => {
+        if (i === index || !s.submitted) return false;
+        const sStart = toMinutes(s.start);
+        const sEnd = toMinutes(s.end);
+        return newStart < sEnd && newEnd > sStart;
+      });
+    });
+
+    return (
+      title.trim() === "" ||
+      groupName.trim() === "" ||
+      description.trim() === "" ||
+      reasons.trim() === "" ||
+      capacity.trim() === "" ||
+      isNaN(Number(capacity)) ||
+      !selectedDate ||
+      timeSlotHasError
+    );
+  };
+
   return (
     <div className="bg-white border border-gray-300 w-[596px] h-[867px] shadow-md rounded-xl p-6 relative gap-[14px] flex flex-col text-gray-700">
       {/* Header */}
@@ -93,7 +203,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
         autoComplete="off"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        error={errors.title}
+        error={submitted && errors.title}
         slotProps={{
           input: {
             sx: {
@@ -127,8 +237,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
           size="small"
           onFocus={() => setShowCalendar(!showCalendar)}
           value={selectedDate ? format(selectedDate, "MM/dd/yyyy") : ""}
-          onChange={(e) => setDate(e.target.value)}
-          error={errors.date}
+          error={submitted && errors.date}
           slotProps={{
             input: {
               endAdornment: (
@@ -171,34 +280,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
             />
           </div>
         )}
-        <TextField
-          label="Start time"
-          variant="outlined"
-          autoComplete="off"
-          size="small"
-          value={startTime}
-          onChange={(e) => setStartTime(e.target.value)}
-          error={errors.startTime}
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
-          }}
-        />
-        <TextField
-          label="End time"
-          variant="outlined"
-          autoComplete="off"
-          size="small"
-          value={endTime}
-          onChange={(e) => setEndTime(e.target.value)}
-          error={errors.endTime}
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
-          }}
-        />
+        <TimeSlotFields timeSlots={timeSlots} setTimeSlots={setTimeSlots} />
       </div>
 
       <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
@@ -212,7 +294,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
         fullWidth
         value={groupName}
         onChange={(e) => setGroupName(e.target.value)}
-        error={errors.groupName}
+        error={submitted && errors.groupName}
       />
 
       <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
@@ -228,7 +310,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
         rows={6}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        error={errors.description}
+        error={submitted && errors.description}
       />
 
       <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
@@ -244,7 +326,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
         rows={6}
         value={reasons}
         onChange={(e) => setReasons(e.target.value)}
-        error={errors.reasons}
+        error={submitted && errors.reasons}
       />
 
       <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
@@ -258,13 +340,18 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
         autoComplete="off"
         value={capacity}
         onChange={(e) => setCapacity(e.target.value)}
-        error={errors.capacity}
+        error={submitted && errors.capacity}
       />
 
       <div className="flex flex-row justify-end mt-4">
         <button
-          className="bg-teal-600 text-[14px] w-[67px] h-[40px] py-[10px] px-[16px] text-white rounded-lg font-semibold flex justify-center items-center"
+          className={`bg-teal-600 text-[14px] w-[67px] h-[40px] py-[10px] px-[16px] rounded-lg font-semibold flex justify-center items-center ${
+            isDisabled()
+              ? "opacity-50 cursor-not-allowed text-white"
+              : "text-white"
+          }`}
           onClick={handleSubmit}
+          disabled={isDisabled()}
         >
           Send
         </button>

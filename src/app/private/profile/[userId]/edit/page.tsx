@@ -2,130 +2,15 @@
 
 import React, { useState, useEffect, FormEvent } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { getUser, updateUser } from "@api/user/route.client";
 import { Role, User, VolunteerDetails } from "@prisma/client";
 import RadioButton from "@components/RadioButton";
-import useApiThrottle from "../../../../hooks/useApiThrottle";
-
-// @TOOD: Add Upload Image
-// interface UploadAreaProps {
-//   onFileChange?: (file: File) => void;
-// }
-
-// const UploadArea: React.FC<UploadAreaProps> = ({ onFileChange }) => {
-//   const [file, setFile] = useState<File | null>(null);
-//   const [errorMsg, setErrorMsg] = useState("");
-//   const fileInputRef = useRef<HTMLInputElement>(null);
-
-//   // Allowed MIME types and max file size (3MB)
-//   const allowedTypes = [
-//     "image/svg+xml",
-//     "image/png",
-//     "image/jpeg",
-//     "image/gif",
-//   ];
-//   const maxSize = 3 * 1024 * 1024;
-
-//   const handleFile = (file: File) => {
-//     if (!allowedTypes.includes(file.type)) {
-//       setErrorMsg("Unsupported file.");
-//       setFile(null);
-//       return;
-//     }
-//     if (file.size > maxSize) {
-//       setErrorMsg("File exceeds maximum size of 3MB.");
-//       setFile(null);
-//       return;
-//     }
-//     setErrorMsg("");
-//     setFile(file);
-//     if (onFileChange) {
-//       onFileChange(file);
-//     }
-//   };
-
-//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const selectedFile = e.target.files && e.target.files[0];
-//     if (selectedFile) {
-//       handleFile(selectedFile);
-//     }
-//   };
-
-//   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-//     e.preventDefault();
-//   };
-
-//   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-//     e.preventDefault();
-//     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-//       handleFile(e.dataTransfer.files[0]);
-//       e.dataTransfer.clearData();
-//     }
-//   };
-
-//   const borderColorClass = errorMsg
-//     ? "border-[#E61932]"
-//     : "border-[rgba(0,0,0,0.23)]";
-//   const iconFill = errorMsg ? "#E61932" : "#138D8A";
-//   const clickToUpload = errorMsg ? "#E61932" : "#138D8A";
-//   const bottomText = errorMsg ? errorMsg : "SVG, PNG, JPG or GIF (max. 3MB)";
-//   const bottomTextColor = errorMsg ? "#E61932" : "#667085";
-
-//   return (
-//     <div
-//       onClick={() => fileInputRef.current && fileInputRef.current.click()}
-//       onDragOver={handleDragOver}
-//       onDrop={handleDrop}
-//       className={`w-[762px] h-[112px] px-6 py-4 bg-white rounded-lg flex flex-col justify-start items-center gap-1 inline-flex border ${borderColorClass}`}
-//     >
-//       <input
-//         ref={fileInputRef}
-//         type="file"
-//         accept=".svg,.png,.jpg,.jpeg,.gif"
-//         className="hidden"
-//         onChange={handleInputChange}
-//       />
-//       <div className="self-stretch h-[80px] flex flex-col justify-start items-center gap-3">
-//         {/* Icon */}
-//         <div data-svg-wrapper className="relative">
-//           <svg
-//             width="24"
-//             height="24"
-//             viewBox="0 0 24 24"
-//             fill="none"
-//             xmlns="http://www.w3.org/2000/svg"
-//           >
-//             <path
-//               d="M10 16H14C14.55 16 15 15.55 15 15V9.99997H16.59C17.48 9.99997 17.93 8.91997 17.3 8.28997L12.71 3.69997C12.32 3.30997 11.69 3.30997 11.3 3.69997L6.71 8.28997C6.08 8.91997 6.52 9.99997 7.41 9.99997H9V15C9 15.55 9.45 16 10 16ZM6 18H18C18.55 18 19 18.45 19 19C19 19.55 18.55 20 18 20H6C5.45 20 5 19.55 5 19C5 18.45 5.45 18 6 18Z"
-//               fill={iconFill}
-//             />
-//           </svg>
-//         </div>
-//         {/* Combined clickable upload text */}
-//         <div className="self-stretch h-[44px] flex flex-col justify-center items-center gap-1 cursor-pointer">
-//           <div className="text-center text-[14px] leading-[20px] break-words">
-//             <span className="font-bold" style={{ color: clickToUpload }}>
-//               Click to upload
-//             </span>{" "}
-//             <span className="font-normal" style={{ color: "#667085" }}>
-//               or drag and drop
-//             </span>
-//           </div>
-//           <div
-//             className="self-stretch text-center text-[14px] leading-[20px] break-words"
-//             style={{ color: bottomTextColor }}
-//           >
-//             {bottomText}
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
+import useApiThrottle from "../../../../../hooks/useApiThrottle";
 
 export default function EditProfilePage() {
   const router = useRouter();
+  const { userId } = useParams();
   const { data: session, status, update } = useSession();
 
   const [user, setUser] = useState<User | null>(null);
@@ -134,6 +19,18 @@ export default function EditProfilePage() {
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (status === "loading") return;
+
+    if (!session?.user.id) {
+      setLoadError("Not authenticated.");
+      return;
+    }
+
+    if (session.user.id !== userId) {
+      router.replace(`/private/profile/${userId}`);
+      return;
+    }
+
     const fetchData = async () => {
       if (!session?.user.id) {
         setLoadError("No user ID found.");
@@ -146,7 +43,7 @@ export default function EditProfilePage() {
           return;
         }
 
-        setUser(response.data.user);
+        setUser(response.data);
         setVolunteerDetails(response.data.volunteerDetails);
       } catch (err) {
         console.error("Error fetching user:", err);
@@ -154,7 +51,7 @@ export default function EditProfilePage() {
       }
     };
     fetchData();
-  }, [session?.user.id]);
+  }, [router, session?.user.id, status, userId]);
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
@@ -175,7 +72,7 @@ export default function EditProfilePage() {
           volunteerDetails ? trimStrings(volunteerDetails) : undefined
         );
         await update();
-        router.push(`/private/profile`);
+        router.push(`/private/profile/${userId}`);
       }
     } catch (err) {
       console.error("Error updating user:", err);
@@ -188,7 +85,7 @@ export default function EditProfilePage() {
   });
 
   const handleCancel = () => {
-    router.push(`/private/profile`);
+    router.push(`/private/profile/${userId}`);
   };
 
   const isFormValid = () => {
@@ -263,7 +160,7 @@ export default function EditProfilePage() {
       <div className="h-screen flex flex-col justify-center items-center gap-4">
         <p className="text-xl text-red-600">{loadError}</p>
         <button
-          onClick={() => router.push("/private/profile")}
+          onClick={() => router.push(`/private/profile/${userId}`)}
           className="px-4 py-2 bg-gray-200 rounded"
         >
           Go back
@@ -330,21 +227,6 @@ export default function EditProfilePage() {
           </div>
         </div>
       </div>
-
-      {/* @TODO: Upload Photo */}
-      {/* <div className="flex items-center justify-between">
-        <div className="w-1/3">
-          <div className="text-lg font-bold text-[#344054]">
-            Your Photo
-          </div>
-          <div className="text-xs font-normal text-[#667085]">
-            This will be displayed on your profile.
-          </div>
-        </div>
-        <div className="flex-grow">
-          <UploadArea hasError="true" />
-        </div>
-      </div> */}
 
       {/* Are You Over 14 Field */}
       {session.user.role === Role.VOLUNTEER ? (

@@ -4,9 +4,16 @@ import Avatar from "@mui/material/Avatar";
 interface ProfileAvatarProps {
   firstName: string;
   lastName: string;
+  bgColor?: string;
+  textColor?: string;
 }
 
-const ProfileAvatar = ({ firstName, lastName }: ProfileAvatarProps) => {
+const ProfileAvatar = ({
+  firstName,
+  lastName,
+  bgColor,
+  textColor,
+}: ProfileAvatarProps) => {
   const getInitials = (firstName: string, lastName: string) => {
     const firstInitial = firstName?.charAt(0).toUpperCase() || "";
     const lastInitial = lastName?.charAt(0).toUpperCase() || "";
@@ -16,7 +23,8 @@ const ProfileAvatar = ({ firstName, lastName }: ProfileAvatarProps) => {
   return (
     <Avatar
       sx={{
-        bgcolor: "#00796B",
+        bgcolor: bgColor ?? "#00796B",
+        color: textColor ?? "white",
         fontWeight: "bold",
         fontSize: "64px",
         height: 144,

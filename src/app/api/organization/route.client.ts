@@ -30,6 +30,11 @@ export const addOrganization = async (
   return fetchApi("/api/organization", "POST", { userId, organizationName });
 };
 
+export const getOrganization = async (organizationId: string) => {
+  const url = `/api/organization?id=${organizationId}`;
+  return fetchApi(url, "GET");
+};
+
 export const getOrganizations = async () => {
   const url = `/api/organization`;
   return fetchApi(url, "GET");

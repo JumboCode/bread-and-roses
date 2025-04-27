@@ -35,16 +35,16 @@ export const sendGroupSignupMail = async (fields: {
 
   const subject = `New Group Sign-Up: ${groupName}`;
   const textBody = `
-Group Sign-Up Request
+    Group Sign-Up Request
 
-Event Title: ${eventTitle}
-Date: ${date}
-Start Time: ${startTime}
-End Time: ${endTime}
-Group Name: ${groupName}
-Group Description: ${groupDescription || "N/A"}
-Reason(s): ${groupReason || "N/A"}
-Capacity: ${groupCapacity}
+    Event Title: ${eventTitle}
+    Date: ${date}
+    Start Time: ${startTime}
+    End Time: ${endTime}
+    Group Name: ${groupName}
+    Group Description: ${groupDescription || "N/A"}
+    Reason(s): ${groupReason || "N/A"}
+    Capacity: ${groupCapacity}
   `;
 
   const htmlBody = `

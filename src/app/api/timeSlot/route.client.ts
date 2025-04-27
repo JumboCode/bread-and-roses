@@ -37,8 +37,19 @@ export const fetchApi = async (
   return responseData;
 };
 
-export const addTimeSlot = async (timeSlot: CreateTimeSlotInput) =>
-  fetchApi("/api/timeSlot", "POST", { timeSlot });
+export const addTimeSlot = async (
+  timeSlot: CreateTimeSlotInput,
+  groupSignupInfo?: {
+    eventTitle: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    groupName: string;
+    groupDescription?: string;
+    groupReason?: string;
+    groupCapacity: number;
+  }
+) => fetchApi("/api/timeSlot", "POST", { timeSlot, groupSignupInfo });
 
 export const getTimeSlotsByDate = async (userId: string, date: Date) => {
   const isoDate = date.toISOString().split("T")[0];
