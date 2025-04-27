@@ -104,11 +104,15 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
         <ul className="w-full">
           {tabs.map((tab) => {
             const isLogout = tab.name === t("logout");
+            const isProfileTab = tab.href === "/private/profile";
             const isActive =
               !isLogout &&
-              (tab.href === "/private"
+              ((tab.href === "/private"
                 ? pathname === "/private"
-                : pathname === tab.href || pathname.startsWith(`${tab.href}/`));
+                : pathname === tab.href ||
+                  pathname.startsWith(`${tab.href}/`)) ||
+                (isProfileTab && pathname.startsWith("/private/organization")));
+
             return (
               <li key={tab.name}>
                 <button

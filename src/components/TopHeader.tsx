@@ -109,7 +109,9 @@ const TopHeader = ({ user }: TopHeaderProps) => {
             )}
           </>
         ) : (
-          <div className="text-gray-500 text-lg">{getTitle()}</div>
+          <div className="text-gray-500 text-lg">
+            {getTitle() === "Organization" ? "Profile" : getTitle()}
+          </div>
         )}
         <CustomizeEventModal
           modalVisible={customizeModal}
