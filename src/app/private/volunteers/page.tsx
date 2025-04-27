@@ -10,10 +10,14 @@ import { Organization, Role, User } from "@prisma/client";
 import { deleteUser, getUsersByRole } from "@api/user/route.client";
 import Image from "next/image";
 import useApiThrottle from "../../../hooks/useApiThrottle";
-import { getOrganizations } from "@api/organization/route.client";
+import {
+  deleteOrganization,
+  getOrganizations,
+} from "@api/organization/route.client";
 import OrganizationTable from "@components/OrganizationTable";
 
 export default function VolunteersPage() {
+  const [pageLoading, setPageLoading] = React.useState(true);
   const [users, setUsers] = React.useState<User[]>();
   const [organizations, setOrganizations] = React.useState<Organization[]>();
   const [selected, setSelected] = React.useState<string[]>([]);
@@ -33,6 +37,8 @@ export default function VolunteersPage() {
         setOrganizations(orgResponse.data);
       } catch (error) {
         console.error("Error fetching volunteers or organizations:", error);
+      } finally {
+        setPageLoading(false);
       }
     };
 
@@ -82,30 +88,29 @@ export default function VolunteersPage() {
     }
   };
 
-  // @TODO Delete organizations functionality
   const deleteOrganizations = async () => {
-    // try {
-    //   const deletePromises = selected.map((id) => deleteOrganization(id));
-    //   const responses = await Promise.all(deletePromises);
-    //   const allDeleted = responses.every(
-    //     (response) => response.code === "SUCCESS"
-    //   );
-    //   if (allDeleted) {
-    //     setOrganizations((prevOrganizations) =>
-    //       prevOrganizations
-    //         ? prevOrganizations.filter(
-    //             (organization) => !selected.includes(organization.id)
-    //           )
-    //         : []
-    //     );
-    //     setSelected([]);
-    //   } else {
-    //     console.error("Not all deletions succeeded");
-    //   }
-    //   setIsModalOpen(false);
-    // } catch (error) {
-    //   console.error("Error deleting organizations:", error);
-    // }
+    try {
+      const deletePromises = selected.map((id) => deleteOrganization(id));
+      const responses = await Promise.all(deletePromises);
+      const allDeleted = responses.every(
+        (response) => response.code === "SUCCESS"
+      );
+      if (allDeleted) {
+        setOrganizations((prevOrganizations) =>
+          prevOrganizations
+            ? prevOrganizations.filter(
+                (organization) => !selected.includes(organization.id)
+              )
+            : []
+        );
+        setSelected([]);
+      } else {
+        console.error("Not all deletions succeeded");
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error deleting organizations:", error);
+    }
   };
 
   const { fetching: disableUsersFetching, fn: throttledDeleteUsers } =
@@ -113,6 +118,14 @@ export default function VolunteersPage() {
 
   const { fetching: disableOrgsFetching, fn: throttledDeleteOrganizations } =
     useApiThrottle({ fn: deleteOrganizations });
+
+  if (pageLoading) {
+    return (
+      <div className="h-screen flex justify-center items-center text-3xl">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -234,7 +247,7 @@ export default function VolunteersPage() {
                   : "users"
                 : selected.length === 1
                 ? "organization"
-                : "organizations"}{" "}
+                : "organizations"}
               ?
             </div>
             <div className="text-[#667085] text-center text-lg mt-2">

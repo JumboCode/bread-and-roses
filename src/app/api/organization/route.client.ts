@@ -39,3 +39,8 @@ export const getOrganizations = async () => {
   const url = `/api/organization`;
   return fetchApi(url, "GET");
 };
+
+export const deleteOrganization = async (organizationId: string) => {
+  const url = `/api/organization?id=${organizationId}`;
+  return fetchApi(url, "DELETE");
+};

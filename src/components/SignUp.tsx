@@ -231,7 +231,11 @@ export default function SignUp() {
           comments: comments,
         }
       );
-      await addOrganization(response.data.id, organization.trim());
+
+      if (organization !== "") {
+        await addOrganization(response.data.id, organization.trim());
+      }
+
       setSuccess(true);
     } catch (error) {
       console.error(error);
@@ -434,6 +438,9 @@ export default function SignUp() {
                     <div className="flex flex-row font-semibold">
                       Organization
                     </div>
+                    <div className="text-[14px] text-[#667085]">
+                      Choose an existing organization or enter a new one.
+                    </div>
                     <Autocomplete
                       includeInputInList
                       disableClearable
@@ -442,11 +449,13 @@ export default function SignUp() {
                         (organization) => organization.name
                       )}
                       filterOptions={(options, { inputValue }) => {
-                        return options.filter((option) =>
-                          option
-                            .toLowerCase()
-                            .includes(inputValue.toLowerCase())
-                        );
+                        return options
+                          .filter((option) =>
+                            option
+                              .toLowerCase()
+                              .includes(inputValue.toLowerCase())
+                          )
+                          .slice(0, 5);
                       }}
                       inputValue={organization}
                       onInputChange={(_, value) => {

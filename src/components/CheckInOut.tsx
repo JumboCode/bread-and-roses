@@ -16,6 +16,7 @@ import {
   updateVolunteerSession,
 } from "@api/volunteerSession/route.client";
 import { useRouter } from "next/navigation";
+import useApiThrottle from "../hooks/useApiThrottle";
 
 export default function CheckInOutForm() {
   const router = useRouter();
@@ -117,6 +118,11 @@ export default function CheckInOutForm() {
     }
   };
 
+  const { fetching: continueLoading, fn: throttledHandleContinue } =
+    useApiThrottle({
+      fn: handleContinue,
+    });
+
   const handleConfirm = async () => {
     const now = new Date();
     const dateWorked = new Date(now);
@@ -165,6 +171,11 @@ export default function CheckInOutForm() {
       }
     }
   };
+
+  const { fetching: confirmLoading, fn: throttledHandleConfirm } =
+    useApiThrottle({
+      fn: handleConfirm,
+    });
 
   if (stage === "shifts") {
     return (
@@ -274,13 +285,13 @@ export default function CheckInOutForm() {
 
               <button
                 className={`${
-                  selectedTimeSlot !== null
+                  !confirmLoading && selectedTimeSlot !== null
                     ? "bg-[#138D8A] cursor-pointer"
                     : "bg-[#96E3DA] cursor-default"
                 } mt-[32px] text-white text-[16px] py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
                 type="submit"
-                onClick={handleConfirm}
-                disabled={selectedTimeSlot === null}
+                onClick={throttledHandleConfirm}
+                disabled={confirmLoading || selectedTimeSlot === null}
               >
                 Confirm Your Check-In
               </button>
@@ -404,6 +415,13 @@ export default function CheckInOutForm() {
                 disableClearable
                 freeSolo
                 options={users.map((user) => user.email)}
+                filterOptions={(options, { inputValue }) => {
+                  return options
+                    .filter((option) =>
+                      option.toLowerCase().includes(inputValue.toLowerCase())
+                    )
+                    .slice(0, 5);
+                }}
                 inputValue={email}
                 onInputChange={(_, value) => {
                   setEmail(value);
@@ -429,6 +447,7 @@ export default function CheckInOutForm() {
 
             <button
               className={`${
+                !continueLoading &&
                 email !== "" &&
                 activeButton !== null &&
                 users.find((user) => user.email === email)
@@ -436,8 +455,9 @@ export default function CheckInOutForm() {
                   : "bg-[#96E3DA] cursor-default"
               } text-white text-[16px] py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
               type="submit"
+              disabled={continueLoading}
               onClick={(e) => {
-                handleContinue(e);
+                throttledHandleContinue(e);
               }}
             >
               Continue

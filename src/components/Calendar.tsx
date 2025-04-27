@@ -8,12 +8,14 @@ interface CalendarProps {
   selectedDate: Date | undefined;
   setSelectedDate: (date: Date | undefined) => void;
   previousDisabled: boolean;
+  onDateChange?: () => void;
 }
 
 export function Calendar({
   selectedDate,
   setSelectedDate,
   previousDisabled,
+  onDateChange,
 }: CalendarProps) {
   const customDays = ["s", "m", "t", "w", "t", "f", "s"];
 
@@ -26,6 +28,7 @@ export function Calendar({
           if (!date) return;
           if (selectedDate?.toDateString() !== date.toDateString()) {
             setSelectedDate(date);
+            if (onDateChange) onDateChange();
           }
         }}
         showOutsideDays

@@ -16,6 +16,7 @@ import logo1 from "../../public/logo1.png";
 import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import useApiThrottle from "../hooks/useApiThrottle";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -56,6 +57,12 @@ export default function LoginForm() {
       window.location.href = "/";
     }
   };
+
+  const { fetching: submitLoading, fn: throttledHandleSubmit } = useApiThrottle(
+    {
+      fn: handleSubmit,
+    }
+  );
 
   const CustomInputProps = {
     endAdornment: (
@@ -110,8 +117,13 @@ export default function LoginForm() {
                 setEmail(e.target.value);
               }}
               onKeyUp={(e) => {
-                if (e.key === "Enter" && email !== "" && password !== "") {
-                  handleSubmit(e);
+                if (
+                  e.key === "Enter" &&
+                  email !== "" &&
+                  password !== "" &&
+                  !submitLoading
+                ) {
+                  throttledHandleSubmit(e);
                 }
               }}
               error={emailDisplayError}
@@ -133,8 +145,13 @@ export default function LoginForm() {
                 }
               }}
               onKeyUp={(e) => {
-                if (e.key === "Enter" && email !== "" && password !== "") {
-                  handleSubmit(e);
+                if (
+                  e.key === "Enter" &&
+                  email !== "" &&
+                  password !== "" &&
+                  !submitLoading
+                ) {
+                  throttledHandleSubmit(e);
                 }
               }}
               error={passwordDisplayError}
@@ -163,14 +180,14 @@ export default function LoginForm() {
 
             <button
               className={`${
-                email !== "" && password !== ""
+                !submitLoading && email !== "" && password !== ""
                   ? "bg-[#138D8A]"
                   : "bg-[#96E3DA]"
               } text-white py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
               type="submit"
               onClick={(e) => {
-                if (email !== "" && password !== "") {
-                  handleSubmit(e);
+                if (email !== "" && password !== "" && !submitLoading) {
+                  throttledHandleSubmit(e);
                 }
               }}
             >

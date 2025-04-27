@@ -21,6 +21,7 @@ interface TopHeaderProps {
     firstName: string;
     lastName: string;
     email: string;
+    organizationId?: string | null;
     volunteerDetails?: VolunteerDetails | null;
   };
 }
@@ -78,7 +79,9 @@ const TopHeader = ({ user }: TopHeaderProps) => {
             <Icon icon={icon} width="20" height="20" />
             <div className="mt-0.5">Customize Event</div>
           </button>
-        ) : pathname === "/private/events" && user.role === Role.VOLUNTEER ? (
+        ) : pathname === "/private/events" &&
+          user.role === Role.VOLUNTEER &&
+          user.organizationId ? (
           <>
             <button
               className="flex gap-x-2 font-semibold bg-teal-600 p-2.5 px-3 text-white rounded-md items-center"
@@ -96,9 +99,9 @@ const TopHeader = ({ user }: TopHeaderProps) => {
             </button>
 
             {showModal && (
-              <div className="fixed inset-0 flex items-center justify-center pl-[160px] overflow-y-auto scrollbar-hide">
+              <div className="fixed inset-0 flex items-center justify-center overflow-y-auto scrollbar-hide">
                 {/* backdrop for modal that allows for scrolling */}
-                <div className="rounded-xl w-full max-w-[600px] max-h-[100vh] overflow-y-auto relative scrollbar-hide mt-10">
+                <div className="rounded-xl w-full max-w-[600px] max-h-[100vh] overflow-y-auto relative scrollbar-hide">
                   {/* modal container */}
                   <GroupSignUpModal onClose={() => setShowModal(false)} />
                 </div>
