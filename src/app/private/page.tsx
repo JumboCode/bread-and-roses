@@ -37,7 +37,7 @@ export default function HomePage() {
   const [days, setDays] = React.useState(0);
   const [pageLoading, setPageLoading] = React.useState(true);
   const [customDayTimes, setCustomDayTimes] = React.useState<{
-    [key: string]: { start: string; end: string };
+    [key: string]: { start: string; end: string; title?: string };
   }>({});
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export default function HomePage() {
         const daysAhead = 3;
         const dayUsersTemp: { [key: string]: Set<string> } = {};
         const customTimesTemp: {
-          [key: string]: { start: string; end: string };
+          [key: string]: { start: string; end: string; title?: string };
         } = {};
 
         for (let i = 1; i <= daysAhead; i++) {
@@ -75,7 +75,10 @@ export default function HomePage() {
           dayUsersTemp[dateString] = new Set();
 
           try {
-            const customDayRes = await getCustomDay(date);
+            const customDayDate = new Date(today);
+            customDayDate.setDate(today.getDate() + i - 1);
+
+            const customDayRes = await getCustomDay(customDayDate);
 
             if (customDayRes.data) {
               const start = new Date(customDayRes.data.startTime)
@@ -84,8 +87,9 @@ export default function HomePage() {
               const end = new Date(customDayRes.data.endTime)
                 .toTimeString()
                 .slice(0, 5);
+              const title = customDayRes.data.title ?? "";
 
-              customTimesTemp[dateString] = { start, end };
+              customTimesTemp[dateString] = { start, end, title };
             } else {
               customTimesTemp[dateString] = { start: "10:00", end: "18:00" };
             }
@@ -324,7 +328,11 @@ export default function HomePage() {
                   return (
                     <EventCard
                       key={dateString}
-                      title={displayDate}
+                      title={
+                        customDayTimes[dateString]?.title?.trim()
+                          ? customDayTimes[dateString].title!
+                          : displayDate
+                      }
                       subtexts={[
                         {
                           text: `Opening Time: ${formatTime(
