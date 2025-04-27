@@ -32,7 +32,6 @@ export default function OrganizationTable({
   const router = useRouter();
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
   const tableContainerRef = useRef<HTMLDivElement | null>(null);
 
   const handleCheckboxChange = (name: string) => {
@@ -64,29 +63,11 @@ export default function OrganizationTable({
   }, [sortedOrgs]);
 
   const paginatedRows =
-    organizationsWithHours.slice(
-      page * rowsPerPage,
-      page * rowsPerPage + rowsPerPage
-    ) || [];
+    organizationsWithHours.slice(page * 6, page * 6 + 6) || [];
 
   useEffect(() => {
     setPage(0);
   }, [organizations?.length]);
-
-  useEffect(() => {
-    const updateRowsPerPage = () => {
-      if (tableContainerRef.current) {
-        const containerHeight = tableContainerRef.current.clientHeight;
-        const rowHeight = 74.5;
-        const calculatedRows = Math.floor(containerHeight / rowHeight);
-        setRowsPerPage(calculatedRows > 0 ? calculatedRows : 1);
-      } else {
-        setRowsPerPage(3);
-      }
-    };
-
-    updateRowsPerPage();
-  }, []);
 
   return (
     <TableContainer
@@ -359,8 +340,7 @@ export default function OrganizationTable({
           <Typography
             sx={{ fontSize: "14px", color: "#344054", fontWeight: 500 }}
           >
-            Page {page + 1} of{" "}
-            {Math.ceil((organizations.length || 0) / rowsPerPage)}
+            Page {page + 1} of {Math.ceil((organizations.length || 0) / 6)}
           </Typography>
 
           <Box>
@@ -384,20 +364,17 @@ export default function OrganizationTable({
                 setPage((prev) =>
                   Math.min(
                     prev + 1,
-                    Math.ceil((organizations.length || 0) / rowsPerPage) - 1
+                    Math.ceil((organizations.length || 0) / 6) - 1
                   )
                 )
               }
-              disabled={
-                page >= Math.ceil((organizations.length || 0) / rowsPerPage) - 1
-              }
+              disabled={page >= Math.ceil((organizations.length || 0) / 6) - 1}
               sx={{
                 textTransform: "none",
                 fontSize: "14px",
                 fontWeight: 600,
                 color:
-                  page >=
-                  Math.ceil((organizations.length || 0) / rowsPerPage) - 1
+                  page >= Math.ceil((organizations.length || 0) / 6) - 1
                     ? "#D0D5DD"
                     : "#145A5A",
                 borderRadius: 2,
