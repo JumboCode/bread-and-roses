@@ -150,6 +150,7 @@ export default function EventsPage() {
           date: selectedDate,
           approved: true,
           status: TimeSlotStatus.AVAILABLE,
+          numVolunteers: 1,
         });
       }
 

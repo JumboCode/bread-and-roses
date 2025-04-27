@@ -114,7 +114,7 @@ model TimeSlot {
   approved           Boolean            @default(true)
   status             TimeSlotStatus     @default(AVAILABLE)
   volunteerSession   VolunteerSession?
-  capacity           Int                @default(1)
+  numVolunteers      Int                @default(1)
 }
 
 model CustomDay {

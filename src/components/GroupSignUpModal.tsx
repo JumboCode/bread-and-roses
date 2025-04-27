@@ -107,6 +107,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
             date: selectedDate!,
             approved: false,
             status: TimeSlotStatus.AVAILABLE,
+            numVolunteers: Number(capacity),
           },
           {
             eventTitle: title,
