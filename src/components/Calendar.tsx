@@ -7,9 +7,14 @@ import "react-day-picker/style.css";
 interface CalendarProps {
   selectedDate: Date | undefined;
   setSelectedDate: (date: Date | undefined) => void;
+  previousDisabled: boolean;
 }
 
-export function Calendar({ selectedDate, setSelectedDate }: CalendarProps) {
+export function Calendar({
+  selectedDate,
+  setSelectedDate,
+  previousDisabled,
+}: CalendarProps) {
   const customDays = ["s", "m", "t", "w", "t", "f", "s"];
 
   return (
@@ -25,12 +30,16 @@ export function Calendar({ selectedDate, setSelectedDate }: CalendarProps) {
         }}
         showOutsideDays
         disabled={(date) => {
-          const tomorrow = new Date();
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          tomorrow.setHours(0, 0, 0, 0);
+          if (previousDisabled) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
 
-          const cutoff = new Date(tomorrow.getTime() - 24 * 60 * 60 * 1000);
-          return date < cutoff;
+            const cutoff = new Date(tomorrow.getTime() - 24 * 60 * 60 * 1000);
+            return date < cutoff;
+          } else {
+            return false;
+          }
         }}
         formatters={{
           formatWeekdayName: (weekday) => customDays[weekday.getDay()],

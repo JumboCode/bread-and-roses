@@ -17,6 +17,7 @@ import VolunteerTable from "@components/VolunteerTable";
 import { getUsersByDate } from "@api/user/route.client";
 import { useSearchParams } from "next/navigation";
 import { getStandardDate } from "../../utils";
+import { getCustomDay } from "@api/customDay/route.client";
 
 export default function EventsPage() {
   const { data: session } = useSession();
@@ -29,8 +30,19 @@ export default function EventsPage() {
   const [timeSlots, setTimeSlots] = React.useState([
     { start: "", end: "", submitted: false },
   ]);
-  const [users, setUsers] = React.useState<User[]>([]);
+  const [individuals, setIndividuals] = React.useState<User[]>([]);
+  const [groups, setGroups] = React.useState<User[]>([]);
   const [page, setPage] = React.useState(0);
+
+  const [customDayHours, setCustomDayHours] = React.useState<{
+    start: string;
+    end: string;
+  }>({ start: "10:00", end: "18:00" });
+  const [customDayTitle, setCustomDayTitle] = React.useState("");
+  const [customDayDescription, setCustomDayDescription] = React.useState("");
+  const [activeTab, setActiveTab] = React.useState<"Individuals" | "Groups">(
+    "Individuals"
+  );
 
   const handleAddTimeSlot = () => {
     setTimeSlots((prev) => {
@@ -82,7 +94,9 @@ export default function EventsPage() {
   const isOutOfBounds = (time: string) => {
     if (!time) return false;
     const minutes = toMinutes(time);
-    return minutes < 600 || minutes > 1080;
+    const lowerBound = toMinutes(customDayHours.start);
+    const upperBound = toMinutes(customDayHours.end);
+    return minutes < lowerBound || minutes > upperBound;
   };
 
   const isCurrentSlotValid =
@@ -133,12 +147,14 @@ export default function EventsPage() {
 
         await addTimeSlot({
           userId: session.user.id,
+          organizationId: null,
           startTime: start,
           endTime: end,
           durationHours,
           date: selectedDate,
           approved: true,
           status: TimeSlotStatus.AVAILABLE,
+          numVolunteers: 1,
         });
       }
 
@@ -170,7 +186,28 @@ export default function EventsPage() {
           const result = await getUsersByDate(selectedDate);
           const users = result.data;
 
-          setUsers(users);
+          const individuals = users
+            .map((user: User & { timeSlots: TimeSlot[] }) => ({
+              ...user,
+              timeSlots: user.timeSlots.filter((slot) => !slot.organizationId),
+            }))
+            .filter(
+              (user: User & { timeSlots: TimeSlot[] }) =>
+                user.timeSlots.length > 0
+            );
+
+          const groups = users
+            .map((user: User & { timeSlots: TimeSlot[] }) => ({
+              ...user,
+              timeSlots: user.timeSlots.filter((slot) => slot.organizationId),
+            }))
+            .filter(
+              (user: User & { timeSlots: TimeSlot[] }) =>
+                user.timeSlots.length > 0
+            );
+
+          setIndividuals(individuals);
+          setGroups(groups);
         } else {
           const result = await getTimeSlotsByDate(
             session.user.id,
@@ -200,7 +237,36 @@ export default function EventsPage() {
       }
     };
 
+    const fetchCustomDay = async () => {
+      if (!selectedDate) return;
+
+      try {
+        const result = await getCustomDay(selectedDate);
+        const customDay = result.data;
+
+        if (customDay) {
+          const start = new Date(customDay.startTime)
+            .toTimeString()
+            .slice(0, 5);
+          const end = new Date(customDay.endTime).toTimeString().slice(0, 5);
+          setCustomDayHours({ start, end });
+          setCustomDayTitle(customDay.title ?? "");
+          setCustomDayDescription(customDay.description ?? "");
+        } else {
+          setCustomDayHours({ start: "10:00", end: "18:00" });
+          setCustomDayTitle("");
+          setCustomDayDescription("");
+        }
+      } catch (error) {
+        console.error("Failed to fetch custom day:", error);
+        setCustomDayHours({ start: "10:00", end: "18:00" });
+        setCustomDayTitle("");
+        setCustomDayDescription("");
+      }
+    };
+
     fetchTimeSlots();
+    fetchCustomDay();
   }, [session?.user.id, selectedDate, session?.user.role]);
 
   return (
@@ -214,6 +280,7 @@ export default function EventsPage() {
           <Calendar
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
+            previousDisabled={session?.user.role !== Role.ADMIN}
           />
         </div>
         <div className="flex-1 flex flex-col text-start gap-y-[32px]">
@@ -229,9 +296,19 @@ export default function EventsPage() {
                       height={175}
                     />
                     <div className="flex flex-col gap-5 mt-2 w-full">
-                      <div className="font-bold text-lg text-[#101828]">
-                        Sign up for your volunteering time! We are open from 10
-                        AM - 6 PM.
+                      <div>
+                        <div className="font-bold text-lg text-[#101828]">
+                          {customDayTitle === ""
+                            ? `Sign up for your volunteering time! We are open from${" "}
+                        ${formatTime(customDayHours.start)} -${" "}
+                        ${formatTime(customDayHours.end)}.`
+                            : customDayTitle}
+                        </div>
+                        {customDayDescription !== "" && (
+                          <div className="text-sm text-[#344054] pt-1">
+                            {customDayDescription}
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Icon
@@ -473,8 +550,17 @@ export default function EventsPage() {
                   height={175}
                 />
                 <div className="flex flex-col gap-5 mt-2 w-full">
-                  <div className="font-bold text-4xl font-['Kepler_Std']">
-                    Time Slot Registrations
+                  <div>
+                    <div className="font-bold text-4xl font-['Kepler_Std']">
+                      {customDayTitle === ""
+                        ? "Time Slot Registrations"
+                        : customDayTitle}
+                    </div>
+                    {customDayDescription !== "" && (
+                      <div className="text-sm text-[#344054] pt-1">
+                        {customDayDescription}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Icon
@@ -484,10 +570,11 @@ export default function EventsPage() {
                       height="20"
                     />
                     <div className="text-sm text-[#344054]">
-                      Opening Time: 10 AM - 6 PM
+                      Opening Time: {formatTime(customDayHours.start)} -{" "}
+                      {formatTime(customDayHours.end)}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 mb-[20px]">
                     <Icon
                       icon="mdi:people"
                       className="text-[#344054]"
@@ -495,24 +582,62 @@ export default function EventsPage() {
                       height="20"
                     />
                     <div className="text-sm text-[#344054]">
-                      Total Signups: {users.length}{" "}
-                      {users.length === 1 ? "volunteer" : "volunteers"}
+                      Total Individual Signups: {individuals.length}{" "}
+                      {individuals.length === 1 ? "volunteer" : "volunteers"}
                     </div>
                   </div>
                 </div>
               </div>
               <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
               <div>
-                <div className="flex items-center gap-1.5 mb-4">
-                  <Icon
-                    icon="mdi:people"
-                    className="text-[#344054]"
-                    width="20"
-                    height="20"
-                  />
-                  <div className="text-sm text-[#344054]">Attendees</div>
+                <div className="flex gap-2 pb-4">
+                  {["Individuals", "Groups"].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() =>
+                        setActiveTab(tab as "Individuals" | "Groups")
+                      }
+                      className={`px-3 py-1 text-sm font-medium flex items-center gap-1 border-b-2 transition-colors duration-200 ${
+                        activeTab === tab
+                          ? "text-teal-600 border-teal-600"
+                          : "text-gray-700 border-transparent hover:text-teal-600 hover:border-teal-300"
+                      }`}
+                    >
+                      <Icon
+                        icon={
+                          tab === "Individuals" ? "mdi:person" : "mdi:people"
+                        }
+                        width="20"
+                        height="20"
+                      />
+                      <div>{tab}</div>
+                    </button>
+                  ))}
                 </div>
-                {users.length === 0 ? (
+                {activeTab === "Individuals" ? (
+                  individuals.length === 0 ? (
+                    <div className="text-center">
+                      <div className="relative w-full h-[30vh]">
+                        <Image
+                          src="/empty_list.png"
+                          alt="Empty List"
+                          layout="fill"
+                          objectFit="contain"
+                        />
+                      </div>
+                      <div className="text-[#344054] font-['Kepler_Std'] text-2xl font-semibold mt-8">
+                        It seems like no individuals have signed up!
+                      </div>
+                    </div>
+                  ) : (
+                    <VolunteerTable
+                      showPagination
+                      fromVolunteerPage={false}
+                      fromAttendeePage
+                      users={individuals}
+                    />
+                  )
+                ) : groups.length === 0 ? (
                   <div className="text-center">
                     <div className="relative w-full h-[30vh]">
                       <Image
@@ -523,7 +648,7 @@ export default function EventsPage() {
                       />
                     </div>
                     <div className="text-[#344054] font-['Kepler_Std'] text-2xl font-semibold mt-8">
-                      It seems like no one has signed up!
+                      It seems like no groups have signed up!
                     </div>
                   </div>
                 ) : (
@@ -531,7 +656,8 @@ export default function EventsPage() {
                     showPagination
                     fromVolunteerPage={false}
                     fromAttendeePage
-                    users={users}
+                    users={groups}
+                    showOrganizationName
                   />
                 )}
               </div>

@@ -6,7 +6,6 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import IconButton from "@mui/material/IconButton";
 import Checkbox from "@mui/material/Checkbox";
@@ -15,12 +14,14 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Box, Button, Typography } from "@mui/material";
 import UserAvatar from "@components/UserAvatar";
 import { UserWithVolunteerDetail } from "../app/types";
+import { useRouter } from "next/navigation";
 
 interface VolunteerTableProps {
   showPagination: boolean;
   fromVolunteerPage: boolean;
   fromAttendeePage: boolean;
-  users: UserWithVolunteerDetail[] | undefined;
+  showOrganizationName?: boolean;
+  users?: UserWithVolunteerDetail[] | undefined;
   selected?: string[];
   setSelected?: React.Dispatch<React.SetStateAction<string[]>>;
 }
@@ -29,10 +30,13 @@ export default function VolunteerTable({
   showPagination,
   fromVolunteerPage,
   fromAttendeePage,
+  showOrganizationName = false,
   users,
   selected,
   setSelected,
 }: VolunteerTableProps) {
+  const router = useRouter();
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const tableContainerRef = useRef<HTMLDivElement | null>(null);
@@ -49,8 +53,31 @@ export default function VolunteerTable({
 
   const isRowSelected = (name: string) => selected?.includes(name);
 
+  const sortedUsers = React.useMemo(
+    () =>
+      [...(users ?? [])].sort((a, b) => a.lastName.localeCompare(b.lastName)),
+    [users]
+  );
+
+  const usersWithHours = React.useMemo(() => {
+    return sortedUsers.map((user) => ({
+      ...user,
+      totalHours: (user.volunteerSessions ?? []).reduce(
+        (sum, session) => sum + (session.durationHours ?? 0),
+        0
+      ),
+    }));
+  }, [sortedUsers]);
+
   const paginatedRows =
-    users?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) || [];
+    usersWithHours?.slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage
+    ) || [];
+
+  useEffect(() => {
+    setPage(0);
+  }, [users?.length]);
 
   useEffect(() => {
     const updateRowsPerPage = () => {
@@ -174,7 +201,7 @@ export default function VolunteerTable({
                 width: "255px",
               }}
             >
-              Email address
+              Email Address
             </TableCell>
             <TableCell
               align="left"
@@ -185,7 +212,7 @@ export default function VolunteerTable({
                 width: "255px",
               }}
             >
-              {fromAttendeePage ? "Time(s)" : "Location"}
+              {fromAttendeePage ? "Time(s)" : "Hours Volunteered"}
             </TableCell>
             <TableCell
               sx={{ width: "116px", height: "44px  " }}
@@ -258,13 +285,25 @@ export default function VolunteerTable({
                 component="th"
                 scope="row"
               >
-                <div className="flex items-center gap-4">
-                  <UserAvatar
-                    firstName={row.firstName}
-                    lastName={row.lastName}
-                  />
-                  {row.firstName + " " + row.lastName}
-                </div>
+                {showOrganizationName && row.organization ? (
+                  <div className="flex items-center gap-4">
+                    <UserAvatar
+                      firstName={row.organization.name}
+                      lastName=""
+                      bgColor="#FFF0F1"
+                      textColor="#9A0F28"
+                    />
+                    {row.organization.name}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-4">
+                    <UserAvatar
+                      firstName={row.firstName}
+                      lastName={row.lastName}
+                    />
+                    {row.firstName + " " + row.lastName}
+                  </div>
+                )}
               </TableCell>
 
               <TableCell
@@ -317,9 +356,9 @@ export default function VolunteerTable({
                           );
                         })
                     : "No Time Slots"
-                  : row?.volunteerDetails?.address
-                  ? `${row.volunteerDetails.address}, ${row.volunteerDetails.city}, ${row.volunteerDetails.state} ${row.volunteerDetails.zipCode}`
-                  : "N/A"}
+                  : `${row.totalHours.toFixed(1)} ${
+                      row.totalHours === 1 ? "hour" : "hours"
+                    }`}
               </TableCell>
               <TableCell
                 sx={{
@@ -332,16 +371,20 @@ export default function VolunteerTable({
                 }}
                 align="right"
               >
-                {fromVolunteerPage || fromAttendeePage ? (
-                  "View"
-                ) : (
-                  <IconButton aria-label="delete volunteer">
-                    <DeleteOutlineIcon sx={{ color: "#344054" }} />
+                <div className="flex items-center justify-end">
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => router.push(`/private/profile/${row.id}`)}
+                  >
+                    View
+                  </div>
+                  <IconButton
+                    aria-label="more information on volunteer"
+                    onClick={() => router.push(`/private/profile/${row.id}`)}
+                  >
+                    <ArrowRightAltIcon sx={{ color: "#344054" }} />
                   </IconButton>
-                )}
-                <IconButton aria-label="more information on volunteer">
-                  <ArrowRightAltIcon sx={{ color: "#344054" }} />
-                </IconButton>
+                </div>
               </TableCell>
             </TableRow>
           ))}

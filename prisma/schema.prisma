@@ -61,15 +61,17 @@ model VolunteerDetails {
 }
 
 model VolunteerSession {
-  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
-  user               User       @relation(fields: [userId], references: [id])
-  userId             String     @db.ObjectId
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  user               User               @relation(fields: [userId], references: [id])
+  userId             String             @db.ObjectId
+  organizationId     String?            @db.ObjectId
+  organization       Organization?      @relation(fields: [organizationId], references: [id])
   checkInTime        DateTime
   checkOutTime       DateTime?
   durationHours      Float?
   dateWorked         DateTime
-  timeSlot           TimeSlot?  @relation(fields: [timeSlotId], references: [id])
-  timeSlotId         String?    @db.ObjectId @unique
+  timeSlot           TimeSlot?          @relation(fields: [timeSlotId], references: [id])
+  timeSlotId         String?            @db.ObjectId @unique
 }
 
 model Code {
@@ -95,17 +97,31 @@ model Organization {
   name               String             @unique
   normalizedName     String             @unique
   users              User[]
+  timeSlots          TimeSlot[]
+  volunteerSessions   VolunteerSession[]
 }
 
 model TimeSlot {
-  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
-  userId             String            @db.ObjectId
-  user               User              @relation(fields: [userId], references: [id])
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String             @db.ObjectId
+  user               User               @relation(fields: [userId], references: [id])
+  organizationId     String?            @db.ObjectId
+  organization       Organization?      @relation(fields: [organizationId], references: [id])
   startTime          DateTime
   endTime            DateTime
   durationHours      Float
   date               DateTime
-  approved           Boolean           @default(true)
-  status             TimeSlotStatus    @default(AVAILABLE)
+  approved           Boolean            @default(true)
+  status             TimeSlotStatus     @default(AVAILABLE)
   volunteerSession   VolunteerSession?
+  numVolunteers      Int                @default(1)
+}
+
+model CustomDay {
+  id                 String             @id @default(auto()) @map("_id") @db.ObjectId
+  date               DateTime
+  startTime          DateTime
+  endTime            DateTime
+  title              String?
+  description        String?
 }

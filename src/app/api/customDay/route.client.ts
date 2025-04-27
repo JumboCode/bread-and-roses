@@ -1,13 +1,6 @@
-import { Role, User, VolunteerDetails } from "@prisma/client";
+import { CustomDay } from "@prisma/client";
 
-type CreateUserInput = Omit<
-  User,
-  "id" | "events" | "eventIds" | "organizationId"
->;
-type CreateVolunteerDetailsInput = Omit<
-  VolunteerDetails,
-  "id" | "user" | "userId"
->;
+type CreateCustomDayInput = Omit<CustomDay, "id">;
 
 /**
  * Sends an HTTP request to the specified endpoint with the provided method and body.
@@ -44,40 +37,19 @@ export const fetchApi = async (
   return responseData;
 };
 
-export const addUser = async (
-  user: CreateUserInput,
-  volunteerDetails: CreateVolunteerDetailsInput
-) => fetchApi("/api/user", "POST", { user, volunteerDetails });
-
-export const getUser = async (userID: string) => {
-  const url = `/api/user?id=${userID}`;
-  return fetchApi(url, "GET");
+export const addCustomDay = async (customDay: CreateCustomDayInput) => {
+  const { date, startTime, endTime, title, description } = customDay;
+  return fetchApi("/api/customDay", "POST", {
+    date: date.toISOString().split("T")[0],
+    startTime,
+    endTime,
+    title,
+    description,
+  });
 };
 
-export const getUserByEmail = async (email: string) => {
-  const url = `/api/user?email=${email}`;
-  return fetchApi(url, "GET");
-};
-
-export const getUsersByRole = async (role: Role) => {
-  const url = `/api/user?role=${role}`;
-  return fetchApi(url, "GET");
-};
-
-export const getUsersByDate = async (date: Date) => {
+export const getCustomDay = async (date: Date) => {
   const isoDate = date.toISOString().split("T")[0];
-  const url = `/api/user?date=${isoDate}`;
+  const url = `/api/customDay?date=${isoDate}`;
   return fetchApi(url, "GET");
-};
-
-export const deleteUser = async (userID: string) => {
-  const url = `/api/user?id=${userID}`;
-  return fetchApi(url, "DELETE");
-};
-
-export const updateUser = async (
-  user: User,
-  volunteerDetails?: VolunteerDetails
-) => {
-  return fetchApi("/api/user", "PATCH", { user, volunteerDetails });
 };

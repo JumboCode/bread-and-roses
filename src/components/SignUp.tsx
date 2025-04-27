@@ -175,8 +175,9 @@ export default function SignUp() {
     const isEmailValid = validateEmail();
     const isPasswordValid = validatePassword();
     const isZipValid = validateZip();
+    const isOver14Valid = isOverAge14 === true;
 
-    if (!isEmailValid || !isPasswordValid || !isZipValid) {
+    if (!isEmailValid || !isPasswordValid || !isZipValid || !isOver14Valid) {
       return false;
     }
 
@@ -467,7 +468,13 @@ export default function SignUp() {
                         Are you 14 or over?
                         <div className="text-[red]">*</div>
                       </div>
-                      <div className="text-[#667085] text-[14px]">
+                      <div
+                        className={`text-[14px] ${
+                          isOverAge14 === false
+                            ? "text-red-500"
+                            : "text-[#667085]"
+                        }`}
+                      >
                         Note: we require volunteers to be at least 14 to work
                         with us.
                       </div>
@@ -660,13 +667,12 @@ export default function SignUp() {
                     rows={4}
                     multiline
                   />
-                  <div>
+                  <div className="font-semibold">
+                    Do you have any other questions/comments?
                     <FormLabel
                       id="Any Questions"
                       sx={{ color: "black", fontWeight: 600 }}
-                    >
-                      Do you have any other questions/comments?
-                    </FormLabel>
+                    ></FormLabel>
                     <TextField
                       sx={{ margin: "5px 0 20px 0", width: "100%" }}
                       onChange={(e) => setComments(e.target.value)}
@@ -689,7 +695,7 @@ export default function SignUp() {
             ) : (
               <button
                 className={`${
-                  !isFormComplete || submitLoading
+                  !isFormComplete || submitLoading || !isOverAge14
                     ? "bg-[#96E3DA]"
                     : "bg-[#138D8A]"
                 } text-white py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
@@ -697,7 +703,7 @@ export default function SignUp() {
                 onClick={async () => {
                   await throttledSubmit();
                 }}
-                disabled={!isFormComplete || submitLoading}
+                disabled={!isFormComplete || submitLoading || !isOverAge14}
               >
                 Sign Up
               </button>

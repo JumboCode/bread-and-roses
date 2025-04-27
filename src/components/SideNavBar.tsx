@@ -102,23 +102,31 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
 
       <nav className="flex items-center gap-1 flex-1 px-6 text-lg">
         <ul className="w-full">
-          {tabs.map((tab) => (
-            <li key={tab.name}>
-              <button
-                type="button"
-                className={`nav-button flex gap-3 items-center h-11 w-full text-[18px] font-medium focus:text-darkrose focus:bg-rose rounded-md pt-px pb-px px-3 ${
-                  pathname === tab.href ? "text-darkrose bg-rose" : ""
-                }`}
-                onClick={() =>
-                  tab.name === t("logout")
-                    ? signOut({ callbackUrl: "/public/signIn" })
-                    : router.push(tab.href)
-                }
-              >
-                <Icon icon={tab.icon} width="24" height="24" /> {tab.name}
-              </button>
-            </li>
-          ))}
+          {tabs.map((tab) => {
+            const isLogout = tab.name === t("logout");
+            const isActive =
+              !isLogout &&
+              (tab.href === "/private"
+                ? pathname === "/private"
+                : pathname === tab.href || pathname.startsWith(`${tab.href}/`));
+            return (
+              <li key={tab.name}>
+                <button
+                  type="button"
+                  className={`nav-button flex gap-3 items-center h-11 w-full text-[18px] font-medium focus:text-darkrose focus:bg-rose rounded-md pt-px pb-px px-3 ${
+                    isActive ? "text-darkrose bg-rose" : ""
+                  }`}
+                  onClick={() =>
+                    tab.name === t("logout")
+                      ? signOut({ callbackUrl: "/public/signIn" })
+                      : router.push(tab.href)
+                  }
+                >
+                  <Icon icon={tab.icon} width="24" height="24" /> {tab.name}
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 

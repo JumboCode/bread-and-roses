@@ -1,15 +1,17 @@
 import { PrismaClient, TimeSlotStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { sendGroupSignupMail } from "../../../lib/groupSignupMail";
 
 const prisma = new PrismaClient();
 
 export const POST = async (request: NextRequest) => {
   try {
-    const { timeSlot } = await request.json();
+    const { timeSlot, groupSignupInfo } = await request.json();
 
     const newTimeSlot = await prisma.timeSlot.create({
       data: {
         userId: timeSlot.userId,
+        organizationId: timeSlot.organizationId ?? null,
         startTime: new Date(timeSlot.startTime),
         endTime: new Date(timeSlot.endTime),
         durationHours: timeSlot.durationHours,
@@ -17,6 +19,10 @@ export const POST = async (request: NextRequest) => {
         approved: timeSlot.approved,
       },
     });
+
+    if (timeSlot.organizationId && groupSignupInfo) {
+      await sendGroupSignupMail(groupSignupInfo);
+    }
 
     return NextResponse.json(
       {
