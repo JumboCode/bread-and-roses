@@ -17,6 +17,7 @@ export const POST = async (request: NextRequest) => {
         durationHours: timeSlot.durationHours,
         date: new Date(timeSlot.date),
         approved: timeSlot.approved,
+        numVolunteers: timeSlot.numVolunteers,
       },
     });
 

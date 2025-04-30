@@ -3,63 +3,80 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-/**
- * Creates a new user with associated volunteerDetails.
- * @param {NextRequest} request - The incoming request.
- * @returns {NextResponse} - JSON response with user data or error.
- */
 export const POST = async (request: NextRequest) => {
   try {
-    /* @TODO: Add auth */
-
     const { volunteerSession } = await request.json();
-    const { userId, dateWorked, timeSlotId } = volunteerSession;
+    const { userId, organizationId, dateWorked, timeSlotId } = volunteerSession;
 
-    const parsedDateWorked = new Date(dateWorked);
-    const startOfDay = new Date(parsedDateWorked);
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date(parsedDateWorked);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    const openSession = await prisma.volunteerSession.findFirst({
-      where: {
-        userId,
-        checkOutTime: null,
-        durationHours: null,
-        dateWorked: {
-          gte: startOfDay,
-          lte: endOfDay,
-        },
-      },
-    });
-
-    if (openSession) {
+    if (!userId && !organizationId) {
       return NextResponse.json(
         {
-          code: "ALREADY_CHECKED_IN",
-          message: "User is already checked in and has not checked out.",
+          code: "MISSING_IDS",
+          message: "Either userId or organizationId must be provided.",
         },
         { status: 400 }
       );
     }
 
-    // Check if user has a time slot for the current day before allowing check-in
+    const parsedDateWorked = new Date(dateWorked);
+    const startOfDay = new Date(parsedDateWorked);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(parsedDateWorked);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Check for duplicate active session (only for individuals)
+    if (userId) {
+      const openSession = await prisma.volunteerSession.findFirst({
+        where: {
+          userId,
+          checkOutTime: null,
+          durationHours: null,
+          dateWorked: {
+            gte: startOfDay,
+            lte: endOfDay,
+          },
+        },
+      });
+
+      if (openSession) {
+        return NextResponse.json(
+          {
+            code: "ALREADY_CHECKED_IN",
+            message: "User is already checked in and has not checked out.",
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     const timeSlot = await prisma.timeSlot.findFirst({
       where: { id: timeSlotId },
     });
 
+    if (!timeSlot) {
+      return NextResponse.json(
+        {
+          code: "INVALID_TIME_SLOT",
+          message: "Time slot does not exist.",
+        },
+        { status: 400 }
+      );
+    }
+
+    const timeSlotDateStr = timeSlot.date.toISOString().slice(0, 10);
+    const sessionDateStr = parsedDateWorked.toISOString().slice(0, 10);
+
+    // Validate slot ownership
     if (
-      !timeSlot ||
-      timeSlot.userId !== userId ||
-      timeSlot.date.toISOString().slice(0, 10) !==
-        parsedDateWorked.toISOString().slice(0, 10)
+      (userId && timeSlot.userId !== userId) ||
+      (organizationId && timeSlot.organizationId !== organizationId) ||
+      timeSlotDateStr !== sessionDateStr
     ) {
       return NextResponse.json(
         {
           code: "INVALID_TIME_SLOT",
           message:
-            "Time slot is invalid, not associated with user, or does not match today's date.",
+            "Time slot is not associated with the user/org or is for the wrong day.",
         },
         { status: 400 }
       );
@@ -69,7 +86,7 @@ export const POST = async (request: NextRequest) => {
       return NextResponse.json(
         {
           code: "TIME_SLOT_USED",
-          message: "Time slot has already been used or checked in.",
+          message: "Time slot has already been used.",
         },
         { status: 400 }
       );
@@ -77,7 +94,12 @@ export const POST = async (request: NextRequest) => {
 
     const newSession = await prisma.volunteerSession.create({
       data: {
-        ...volunteerSession,
+        userId,
+        organizationId,
+        dateWorked: parsedDateWorked,
+        checkInTime: new Date(),
+        checkOutTime: null,
+        durationHours: null,
         timeSlotId,
       },
     });
@@ -92,7 +114,9 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json(
       {
         code: "SUCCESS",
-        message: `Volunteer session created for user ${userId} successfully.`,
+        message: userId
+          ? `Volunteer session created for user ${userId}.`
+          : `Volunteer session created for organization ${organizationId}.`,
         data: newSession,
       },
       { status: 201 }
@@ -178,7 +202,17 @@ export const GET = async (request: NextRequest) => {
 
 export const PATCH = async (request: NextRequest) => {
   try {
-    const { userId } = await request.json();
+    const { userId, organizationId } = await request.json();
+
+    if (!userId && !organizationId) {
+      return NextResponse.json(
+        {
+          code: "INVALID_REQUEST",
+          message: "Either userId or organizationId must be provided.",
+        },
+        { status: 400 }
+      );
+    }
 
     const today = new Date();
     const startOfToday = new Date(today);
@@ -187,15 +221,16 @@ export const PATCH = async (request: NextRequest) => {
     const endOfToday = new Date(today);
     endOfToday.setHours(23, 59, 59, 999);
 
+    // Find active session based on userId or organizationId
     const activeSession = await prisma.volunteerSession.findFirst({
       where: {
-        userId,
         checkOutTime: null,
         durationHours: null,
         dateWorked: {
           gte: startOfToday,
           lte: endOfToday,
         },
+        ...(userId ? { userId } : { organizationId }),
       },
     });
 
@@ -203,7 +238,7 @@ export const PATCH = async (request: NextRequest) => {
       return NextResponse.json(
         {
           code: "ALREADY_CHECKED_OUT",
-          message: "User has already checked out or has no active session.",
+          message: "No active session found for user or organization.",
         },
         { status: 400 }
       );
@@ -234,7 +269,7 @@ export const PATCH = async (request: NextRequest) => {
     return NextResponse.json(
       {
         code: "SUCCESS",
-        message: `User ${userId} checked out successfully.`,
+        message: `Checked out successfully.`,
         data: updatedSession,
       },
       { status: 200 }
@@ -244,7 +279,7 @@ export const PATCH = async (request: NextRequest) => {
     return NextResponse.json(
       {
         code: "ERROR",
-        message: error,
+        message: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );

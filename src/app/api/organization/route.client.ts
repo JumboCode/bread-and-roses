@@ -40,6 +40,12 @@ export const getOrganizations = async () => {
   return fetchApi(url, "GET");
 };
 
+export const getOrganizationsByDate = async (date: Date) => {
+  const isoDate = date.toISOString().split("T")[0];
+  const url = `/api/organization?date=${isoDate}`;
+  return fetchApi(url, "GET");
+};
+
 export const deleteOrganization = async (organizationId: string) => {
   const url = `/api/organization?id=${organizationId}`;
   return fetchApi(url, "DELETE");

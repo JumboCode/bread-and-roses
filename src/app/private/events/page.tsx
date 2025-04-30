@@ -29,9 +29,9 @@ export default function EventsPage() {
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
     undefined
   );
-  const [timeSlots, setTimeSlots] = React.useState([
-    { start: "", end: "", submitted: false },
-  ]);
+  const [timeSlots, setTimeSlots] = React.useState<
+    { start: string; end: string; submitted: boolean; isGroup?: boolean }[]
+  >([{ start: "", end: "", submitted: false }]);
   const [individuals, setIndividuals] = React.useState<User[]>([]);
   const [groups, setGroups] = React.useState<User[]>([]);
   const [page, setPage] = React.useState(0);
@@ -251,10 +251,12 @@ export default function EventsPage() {
                 start: string;
                 end: string;
                 submitted: boolean;
+                isGroup: boolean;
               }[] = slots.map((slot: TimeSlot) => ({
                 start: new Date(slot.startTime).toTimeString().slice(0, 5),
                 end: new Date(slot.endTime).toTimeString().slice(0, 5),
                 submitted: true,
+                isGroup: !!slot.organizationId,
               }));
 
               formatted.sort((a, b) => a.start.localeCompare(b.start));
@@ -336,9 +338,7 @@ export default function EventsPage() {
                         <div className="font-bold text-lg text-[#101828]">
                           {customDayTitle === ""
                             ? !isPastOrToday(selectedDate)
-                              ? `Sign up for your volunteering time! We are open from${" "}
-                        ${formatTime(customDayHours.start)} -${" "}
-                        ${formatTime(customDayHours.end)}.`
+                              ? `Sign up for your volunteering time!`
                               : "Your Volunteer Hours"
                             : customDayTitle}
                         </div>
@@ -358,8 +358,13 @@ export default function EventsPage() {
                         <div className="text-sm text-[#344054]">
                           {formattedDate
                             ? !isPastOrToday(selectedDate)
-                              ? `Choose Your Time (${formattedDate})`
-                              : formattedDate
+                              ? `Choose Your Time (${formattedDate}). We are open from${" "}
+                        ${formatTime(customDayHours.start)} -${" "}
+                        ${formatTime(customDayHours.end)}.`
+                              : `${formattedDate} (${formatTime(
+                                  customDayHours.start
+                                )} -${" "}
+                        ${formatTime(customDayHours.end)}.)`
                             : "Choose Your Time"}
                         </div>
                       </div>
@@ -385,6 +390,7 @@ export default function EventsPage() {
                                       <div>
                                         {formatTime(slot.start)} -{" "}
                                         {formatTime(slot.end)}
+                                        {slot.isGroup && " (Group)"}
                                       </div>
                                     </div>
                                     {!isPastOrToday(selectedDate) ? (

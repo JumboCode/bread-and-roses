@@ -8,7 +8,7 @@ import logo1 from "../../public/logo1.png";
 import CheckConfirmation from "./CheckConfirmation";
 import Autocomplete from "@mui/material/Autocomplete";
 import confirmation from "../../public/confirmation.png";
-import { TimeSlot, User } from "@prisma/client";
+import { TimeSlot } from "@prisma/client";
 import { getUsersByDate } from "@api/user/route.client";
 import { getTimeSlotsByDate } from "@api/timeSlot/route.client";
 import {
@@ -17,6 +17,8 @@ import {
 } from "@api/volunteerSession/route.client";
 import { useRouter } from "next/navigation";
 import useApiThrottle from "../hooks/useApiThrottle";
+import { OrganizationWithUsers, UserWithVolunteerDetail } from "../app/types";
+import { getOrganizationsByDate } from "@api/organization/route.client";
 
 export default function CheckInOutForm() {
   const router = useRouter();
@@ -25,7 +27,11 @@ export default function CheckInOutForm() {
   const [activeButton, setActiveButton] = useState<
     "checkin" | "checkout" | null
   >(null);
-  const [users, setUsers] = useState<User[]>([]);
+  const [activeTab, setActiveTab] = useState<"individual" | "group">(
+    "individual"
+  );
+
+  const [users, setUsers] = useState<UserWithVolunteerDetail[]>([]);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(
     null
@@ -34,24 +40,40 @@ export default function CheckInOutForm() {
   const [stage, setStage] = useState<"initial" | "shifts" | "confirmation">(
     "initial"
   );
+  const [organizations, setOrganizations] = useState<OrganizationWithUsers[]>(
+    []
+  );
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchData = async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
       try {
-        const today = new Date();
-        const res = await getUsersByDate(today);
-        if (res && res.data) {
-          const sortedUsers = [...res.data].sort((a, b) =>
+        const [userRes, orgRes] = await Promise.all([
+          getUsersByDate(today),
+          getOrganizationsByDate(today),
+        ]);
+
+        if (userRes?.data) {
+          const sortedUsers = [...userRes.data].sort((a, b) =>
             a.email.localeCompare(b.email)
           );
           setUsers(sortedUsers);
         }
+
+        if (orgRes?.data) {
+          const sortedOrgs = [...orgRes.data].sort((a, b) =>
+            a.normalizedName.localeCompare(b.normalizedName)
+          );
+          setOrganizations(sortedOrgs);
+        }
       } catch (err) {
-        console.error("Failed to fetch users by date:", err);
+        console.error("Failed to fetch users or organizations:", err);
       }
     };
 
-    fetchUsers();
+    fetchData();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,59 +81,90 @@ export default function CheckInOutForm() {
   };
 
   const handleContinue = async (e: React.FormEvent) => {
-    if (
-      email !== "" &&
-      activeButton !== null &&
-      users.find((user) => user.email === email)
-    ) {
-      e.preventDefault();
+    e.preventDefault();
+
+    if (!email || activeButton === null) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (activeTab === "individual") {
       const user = users.find((user) => user.email === email);
+      if (!user) return;
 
       if (activeButton === "checkin") {
         try {
-          const today = new Date();
-
-          if (user) {
-            const res = await getTimeSlotsByDate(user.id, today);
-
-            if (res && res.data) {
-              const sortedSlots = [...res.data].sort(
-                (a, b) =>
+          const res = await getTimeSlotsByDate(user.id, today);
+          if (res?.data) {
+            const filteredSlots = res.data
+              .filter((slot: TimeSlot) => slot.organizationId === null) // ✅ Exclude group slots
+              .sort(
+                (a: TimeSlot, b: TimeSlot) =>
                   new Date(a.startTime).getTime() -
                   new Date(b.startTime).getTime()
               );
-              setTimeSlots(sortedSlots);
-            }
+            setTimeSlots(filteredSlots);
           }
-
           setStage("shifts");
         } catch (err) {
           console.error("Failed to fetch time slots by date:", err);
         }
       } else {
         try {
-          if (user) {
-            const res = await updateVolunteerSession(user.id);
-            if (res && res.code && res.code !== "ALREADY_CHECKED_OUT") {
-              const now = new Date();
-              setCheckInOutTime(now);
-              setStage("confirmation");
-            }
+          const res = await updateVolunteerSession({ userId: user.id });
+          if (res && res.code !== "ALREADY_CHECKED_OUT") {
+            const now = new Date();
+            setCheckInOutTime(now);
+            setStage("confirmation");
           }
         } catch (err) {
-          if (err instanceof Error) {
-            const errorData = JSON.parse(err.message);
-
-            if (errorData.code === "ALREADY_CHECKED_OUT") {
-              alert(
-                "You have already checked out and must check in before checking out again."
-              );
-            } else {
-              console.error("Check-out failed:", errorData.message);
-              alert("There was an error during check-out. Please try again.");
-            }
+          const errorData = JSON.parse((err as Error).message);
+          if (errorData.code === "ALREADY_CHECKED_OUT") {
+            alert("You must check in before checking out again.");
           } else {
-            console.error("Unexpected error:", err);
+            console.error("Check-out failed:", errorData.message);
+            alert("There was an error during check-out.");
+          }
+        }
+      }
+    } else {
+      const org = organizations.find((org) => org.name === email);
+      if (!org) {
+        console.error("Organization not found.");
+        return;
+      }
+
+      const allSlots = org.timeSlots ?? [];
+
+      const todaySlots = allSlots
+        .filter((slot) => {
+          const slotDate = new Date(slot.date);
+          slotDate.setHours(0, 0, 0, 0);
+          return slotDate.getTime() === today.getTime();
+        })
+        .sort(
+          (a, b) =>
+            new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+        );
+
+      if (activeButton === "checkin") {
+        setTimeSlots(todaySlots);
+        setStage("shifts");
+      } else {
+        try {
+          const res = await updateVolunteerSession({ organizationId: org.id });
+          if (res && res.code !== "ALREADY_CHECKED_OUT") {
+            const now = new Date();
+            setCheckInOutTime(now);
+            setStage("confirmation");
+          }
+        } catch (err) {
+          const errorData = JSON.parse((err as Error).message);
+          if (errorData.code === "ALREADY_CHECKED_OUT") {
+            alert("This group has already checked out.");
+          } else {
+            console.error("Group check-out failed:", errorData.message);
+            alert("There was an error during check-out.");
           }
         }
       }
@@ -135,21 +188,42 @@ export default function CheckInOutForm() {
       return;
     }
 
-    const user = users.find((user) => user.email === email);
-    if (!user) {
-      console.error("User not found.");
-      return;
-    }
+    let volunteerSession;
 
-    const volunteerSession = {
-      userId: user.id,
-      organizationId: null,
-      durationHours: null,
-      checkInTime: now,
-      checkOutTime: null,
-      dateWorked: dateWorked,
-      timeSlotId: selectedTimeSlot.id,
-    };
+    if (activeTab === "individual") {
+      const user = users.find((user) => user.email === email);
+      if (!user) {
+        console.error("User not found.");
+        return;
+      }
+
+      volunteerSession = {
+        userId: user.id,
+        organizationId: null,
+        durationHours: null,
+        checkInTime: now,
+        checkOutTime: null,
+        dateWorked,
+        timeSlotId: selectedTimeSlot.id,
+      };
+    } else {
+      if (!selectedTimeSlot.organizationId || !selectedTimeSlot.userId) {
+        console.error(
+          "Missing organizationId or userId in selected time slot."
+        );
+        return;
+      }
+
+      volunteerSession = {
+        userId: selectedTimeSlot.userId,
+        organizationId: selectedTimeSlot.organizationId,
+        durationHours: null,
+        checkInTime: now,
+        checkOutTime: null,
+        dateWorked,
+        timeSlotId: selectedTimeSlot.id,
+      };
+    }
 
     try {
       await addVolunteerSession(volunteerSession);
@@ -177,6 +251,15 @@ export default function CheckInOutForm() {
       fn: handleConfirm,
     });
 
+  const canContinue =
+    !continueLoading &&
+    email !== "" &&
+    activeButton !== null &&
+    ((activeTab === "individual" &&
+      users.some((user) => user.email === email)) ||
+      (activeTab === "group" &&
+        organizations.some((org) => org.name === email)));
+
   if (stage === "shifts") {
     return (
       <div className="flex flex-col items-center w-full">
@@ -187,6 +270,7 @@ export default function CheckInOutForm() {
               type="button"
               onClick={() => {
                 setSelectedTimeSlot(null);
+                setTimeSlots([]);
                 setStage("initial");
               }}
             >
@@ -408,54 +492,116 @@ export default function CheckInOutForm() {
               </div>
             </div>
 
-            <div className="flex flex-col w-full text-lg font-bold text-[#344054] gap-[8px]">
-              Your email
-              <Autocomplete
-                includeInputInList
-                disableClearable
-                freeSolo
-                options={users.map((user) => user.email)}
-                filterOptions={(options, { inputValue }) => {
-                  return options
-                    .filter((option) =>
-                      option.toLowerCase().includes(inputValue.toLowerCase())
-                    )
-                    .slice(0, 5);
-                }}
-                inputValue={email}
-                onInputChange={(_, value) => {
-                  setEmail(value);
-                }}
-                sx={{ width: "100%" }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    sx={{ marginBottom: "30px", width: "100%" }}
-                    id="outlined-basic"
-                    label=""
-                    variant="outlined"
-                    value={email}
-                    onKeyUp={(e) => {
-                      if (e.key === "Enter" && email !== "") {
-                        handleSubmit(e);
-                      }
+            <div className="flex flex-col w-full text-lg font-bold text-[#344054] gap-[16px]">
+              Select type
+              <div className="flex flex-row gap-4 w-full">
+                <button
+                  onClick={() => setActiveTab("individual")}
+                  className={`flex mb-4 text-base justify-center items-center w-[100px] h-[40px] rounded-lg text-teal-900
+      ${
+        activeTab === "individual"
+          ? "bg-teal-50 border-teal-600 border-[2px]"
+          : "bg-white-50 border-gray-300 border-[1px]"
+      }`}
+                >
+                  Individual
+                </button>
+                <button
+                  onClick={() => setActiveTab("group")}
+                  className={`flex mb-4 text-base justify-center items-center w-[100px] h-[40px] rounded-lg text-teal-900
+      ${
+        activeTab === "group"
+          ? "bg-teal-50 border-teal-600 border-[2px]"
+          : "bg-white-50 border-gray-300 border-[1px]"
+      }`}
+                >
+                  Group
+                </button>
+              </div>
+              {activeTab === "individual" ? (
+                <>
+                  <div>Your Email</div>
+                  <Autocomplete
+                    includeInputInList
+                    disableClearable
+                    freeSolo
+                    options={users.map((user) => user.email)}
+                    filterOptions={(options, { inputValue }) =>
+                      options
+                        .filter((option) =>
+                          option
+                            .toLowerCase()
+                            .includes(inputValue.toLowerCase())
+                        )
+                        .slice(0, 5)
+                    }
+                    inputValue={email}
+                    onInputChange={(_, value) => {
+                      setEmail(value);
                     }}
+                    sx={{ width: "100%" }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        sx={{ marginBottom: "30px", width: "100%" }}
+                        id="individual-email"
+                        variant="outlined"
+                        onKeyUp={(e) => {
+                          if (e.key === "Enter" && email !== "") {
+                            handleSubmit(e);
+                          }
+                        }}
+                      />
+                    )}
                   />
-                )}
-              />
+                </>
+              ) : (
+                <>
+                  <div>Organization Name</div>
+                  <Autocomplete
+                    includeInputInList
+                    disableClearable
+                    freeSolo
+                    options={organizations.map((org) => org.name)}
+                    filterOptions={(options, { inputValue }) =>
+                      options
+                        .filter((option) =>
+                          option
+                            .toLowerCase()
+                            .includes(inputValue.toLowerCase())
+                        )
+                        .slice(0, 5)
+                    }
+                    inputValue={email}
+                    onInputChange={(_, value) => {
+                      setEmail(value);
+                    }}
+                    sx={{ width: "100%" }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        sx={{ marginBottom: "30px", width: "100%" }}
+                        id="group-org"
+                        variant="outlined"
+                        onKeyUp={(e) => {
+                          if (e.key === "Enter" && email !== "") {
+                            handleSubmit(e);
+                          }
+                        }}
+                      />
+                    )}
+                  />
+                </>
+              )}
             </div>
-
             <button
               className={`${
-                !continueLoading &&
-                email !== "" &&
-                activeButton !== null &&
-                users.find((user) => user.email === email)
+                canContinue
                   ? "bg-[#138D8A] cursor-pointer"
                   : "bg-[#96E3DA] cursor-default"
               } text-white text-[16px] py-[10px] px-[18px] rounded-[8px] w-full text-center font-semibold`}
               type="submit"
-              disabled={continueLoading}
+              disabled={!canContinue}
               onClick={(e) => {
                 throttledHandleContinue(e);
               }}

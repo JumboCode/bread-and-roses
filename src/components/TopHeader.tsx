@@ -95,7 +95,7 @@ const TopHeader = ({ user }: TopHeaderProps) => {
               }}
             >
               <Icon icon={icon} width="20" height="20" />
-              <div className="mt-0.5">Request Group Sign Up</div>
+              <div className="mt-0.5">Sign Up As a Group</div>
             </button>
 
             {showModal && (
