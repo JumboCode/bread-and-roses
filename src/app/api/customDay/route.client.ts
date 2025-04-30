@@ -38,13 +38,14 @@ export const fetchApi = async (
 };
 
 export const addCustomDay = async (customDay: CreateCustomDayInput) => {
-  const { date, startTime, endTime, title, description } = customDay;
+  const { date, startTime, endTime, title, description, capacity } = customDay;
   return fetchApi("/api/customDay", "POST", {
     date: date.toISOString().split("T")[0],
     startTime,
     endTime,
     title,
     description,
+    capacity,
   });
 };
 

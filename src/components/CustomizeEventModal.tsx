@@ -31,6 +31,7 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [hasTimeSlotError, setHasTimeSlotError] = useState(false);
+  const [capacity, setCapacity] = useState("10");
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -142,6 +143,7 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
       ),
       title,
       description,
+      capacity: Number(capacity),
     };
 
     try {
@@ -169,7 +171,7 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
     <div className="fixed inset-0 z-50 flex justify-center items-start pt-20">
       <div
         ref={modalRef}
-        className="bg-white rounded-[12px] border w-[596px] h-[503.03px] pt-8 pr-5 pb-8 pl-5 relative space-y-4 shadow-lg"
+        className="bg-white rounded-[12px] border w-[596px] pt-8 pr-5 pb-8 pl-5 relative space-y-4 shadow-lg"
       >
         <div className="flex justify-end">
           <Image
@@ -289,6 +291,20 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
             placeholder="Enter description..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+        <div>
+          <div className="flex items-center space-x-2 mb-2">
+            <Icon icon="material-symbols:groups" width="20" />
+            <span className="font-sm">Capacity</span>
+          </div>
+          <TextField
+            className="w-[100px]"
+            type="number"
+            size="small"
+            value={capacity}
+            onChange={(e) => setCapacity(e.target.value)}
+            inputProps={{ min: 1 }}
           />
         </div>
         <div className="mt-4 flex justify-end">

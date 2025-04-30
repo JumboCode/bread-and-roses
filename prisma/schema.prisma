@@ -112,4 +112,5 @@ model CustomDay {
   endTime            DateTime
   title              String?
   description        String?
+  capacity           Int                @default(10)
 }

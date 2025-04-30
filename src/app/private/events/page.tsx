@@ -42,11 +42,15 @@ export default function EventsPage() {
   }>({ start: "10:00", end: "18:00" });
   const [customDayTitle, setCustomDayTitle] = React.useState("");
   const [customDayDescription, setCustomDayDescription] = React.useState("");
+  const [customDayCapacity, setCustomDayCapacity] = React.useState(10);
   const [activeTab, setActiveTab] = React.useState<"Individuals" | "Groups">(
     "Individuals"
   );
+  const [isUserAlreadySignedUp, setIsUserAlreadySignedUp] =
+    React.useState(false);
 
   const handleAddTimeSlot = () => {
+    if (isCapacityFull) return;
     setTimeSlots((prev) => {
       const updated = [...prev];
       updated[updated.length - 1].submitted = true;
@@ -110,6 +114,9 @@ export default function EventsPage() {
     !isOutOfBounds(lastSlot.end);
 
   const hasSubmittedSlot = timeSlots.some((slot) => slot.submitted);
+
+  const isCapacityFull =
+    individuals.length >= customDayCapacity && !isUserAlreadySignedUp;
 
   const isPastOrToday = (date?: Date) => {
     if (!date) return false;
@@ -246,6 +253,10 @@ export default function EventsPage() {
                 selectedDate
               );
               const slots = result.data;
+              const isUserAlreadySignedUp = slots.some(
+                (slot: TimeSlot) => !slot.organizationId
+              );
+              setIsUserAlreadySignedUp(isUserAlreadySignedUp);
 
               const formatted: {
                 start: string;
@@ -281,10 +292,12 @@ export default function EventsPage() {
               setCustomDayHours({ start, end });
               setCustomDayTitle(customDay.title ?? "");
               setCustomDayDescription(customDay.description ?? "");
+              setCustomDayCapacity(customDay.capacity);
             } else {
               setCustomDayHours({ start: "10:00", end: "18:00" });
               setCustomDayTitle("");
               setCustomDayDescription("");
+              setCustomDayCapacity(10);
             }
           })(),
         ]);
@@ -334,6 +347,11 @@ export default function EventsPage() {
                       height={175}
                     />
                     <div className="flex flex-col gap-5 mt-2 w-full">
+                      {isCapacityFull && (
+                        <div className="text-red-600 font-semibold text-sm border border-red-300 rounded-md px-4 py-2 bg-red-50">
+                          This event has reached its volunteer capacity.
+                        </div>
+                      )}
                       <div>
                         <div className="font-bold text-lg text-[#101828]">
                           {customDayTitle === ""
@@ -364,7 +382,7 @@ export default function EventsPage() {
                               : `${formattedDate} (${formatTime(
                                   customDayHours.start
                                 )} -${" "}
-                        ${formatTime(customDayHours.end)}.)`
+                        ${formatTime(customDayHours.end)})`
                             : "Choose Your Time"}
                         </div>
                       </div>
@@ -393,7 +411,8 @@ export default function EventsPage() {
                                         {slot.isGroup && " (Group)"}
                                       </div>
                                     </div>
-                                    {!isPastOrToday(selectedDate) ? (
+                                    {!isPastOrToday(selectedDate) &&
+                                    !isCapacityFull ? (
                                       <Icon
                                         icon="ic:baseline-clear"
                                         className="text-[#344054] cursor-pointer"
@@ -407,7 +426,8 @@ export default function EventsPage() {
                                       />
                                     ) : null}
                                   </div>
-                                ) : !isPastOrToday(selectedDate) ? (
+                                ) : !isPastOrToday(selectedDate) &&
+                                  !isCapacityFull ? (
                                   <div className="flex flex-row justify-between">
                                     <div className="flex items-center gap-4">
                                       <TextField
@@ -582,7 +602,10 @@ export default function EventsPage() {
                   onClick={
                     page === 0 ? throttledHandleConfirm : () => setPage(0)
                   }
-                  disabled={confirmLoading || (page === 0 && !hasSubmittedSlot)}
+                  disabled={
+                    confirmLoading ||
+                    (page === 0 && (!hasSubmittedSlot || isCapacityFull))
+                  }
                 >
                   {page === 0 ? "Confirm" : "Close"}
                 </Button>
@@ -631,7 +654,9 @@ export default function EventsPage() {
                     />
                     <div className="text-sm text-[#344054]">
                       Total Individual Signups: {individuals.length}{" "}
-                      {individuals.length === 1 ? "volunteer" : "volunteers"}
+                      {individuals.length === 1 ? "volunteer" : "volunteers"} /{" "}
+                      {customDayCapacity}{" "}
+                      {customDayCapacity === 1 ? "volunteer" : "volunteers"}
                     </div>
                   </div>
                 </div>
