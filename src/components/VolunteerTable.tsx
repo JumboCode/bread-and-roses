@@ -192,7 +192,7 @@ export default function VolunteerTable({
               }}
             >
               {fromAttendeePage
-                ? `Time(s) ${showOrganizationName ? "and Group Size" : null}`
+                ? `Time(s) ${showOrganizationName ? "and Group Size" : ""}`
                 : "Hours Volunteered"}
             </TableCell>
             <TableCell
@@ -332,8 +332,10 @@ export default function VolunteerTable({
 
                           return (
                             <div key={idx}>
-                              {format(start)} - {format(end)} (
-                              {slot.numVolunteers})
+                              {format(start)} - {format(end)}{" "}
+                              {showOrganizationName
+                                ? `(${slot.numVolunteers})`
+                                : ""}
                             </div>
                           );
                         })
