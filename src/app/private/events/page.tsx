@@ -655,7 +655,7 @@ export default function EventsPage() {
                     <div className="text-sm text-[#344054]">
                       Total Individual Signups: {individuals.length}{" "}
                       {individuals.length === 1 ? "volunteer" : "volunteers"} /{" "}
-                      {customDayCapacity}{" "}
+                      Capacity: {customDayCapacity}{" "}
                       {customDayCapacity === 1 ? "volunteer" : "volunteers"}
                     </div>
                   </div>
