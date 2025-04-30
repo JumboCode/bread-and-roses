@@ -69,7 +69,7 @@ export default function HomePage() {
           [key: string]: { start: string; end: string; title?: string };
         } = {};
 
-        for (let i = 1; i <= daysAhead; i++) {
+        for (let i = 0; i < daysAhead; i++) {
           const date = new Date(today);
           date.setDate(today.getDate() + i);
 
@@ -79,7 +79,7 @@ export default function HomePage() {
 
           try {
             const customDayDate = new Date(today);
-            customDayDate.setDate(today.getDate() + i - 1);
+            customDayDate.setDate(today.getDate() + i);
 
             const customDayRes = await getCustomDay(customDayDate);
 
@@ -311,16 +311,14 @@ export default function HomePage() {
               {sortedReadableTimeSlots(Object.keys(dayUsers))
                 .slice(0, 3)
                 .map((dateString) => {
-                  const displayDate = new Date(dateString).toLocaleDateString(
-                    "en-US",
-                    {
-                      weekday: "long",
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    }
-                  );
-
+                  const date = new Date(dateString);
+                  date.setDate(date.getDate() + 1);
+                  const displayDate = date.toLocaleDateString("en-US", {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  });
                   const formatTime = (time: string) => {
                     if (!time) return "";
                     const [hourStr, minute] = time.split(":");
@@ -355,7 +353,7 @@ export default function HomePage() {
                       actionButton={cardButton(() => {
                         router.push(
                           `/private/events?date=${getStandardDateString(
-                            new Date(dateString)
+                            new Date(displayDate)
                           )}`
                         );
                       })}
