@@ -26,7 +26,7 @@ export default function ForgotPasswordForm() {
   const [code, setCode] = useState(["", "", "", ""]);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
   const [error, setError] = useState("");
-  const [counter, setCounter] = React.useState(60);
+  const [counter, setCounter] = React.useState(900);
 
   const handleEmailSubmit = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -44,7 +44,7 @@ export default function ForgotPasswordForm() {
     } else {
       setError("");
       setStep(2);
-      setCounter(60);
+      setCounter(900);
     }
   };
 
@@ -107,7 +107,7 @@ export default function ForgotPasswordForm() {
   };
 
   const handleCodeResend = async () => {
-    setCounter(60);
+    setCounter(900);
     setError("");
     setCode(["", "", "", ""]);
 

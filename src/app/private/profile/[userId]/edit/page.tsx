@@ -7,16 +7,23 @@ import { getUser, updateUser } from "@api/user/route.client";
 import { Role, User, VolunteerDetails } from "@prisma/client";
 import RadioButton from "@components/RadioButton";
 import useApiThrottle from "../../../../../hooks/useApiThrottle";
+import { UserWithVolunteerDetail } from "../../../../types";
+import { Autocomplete, TextField } from "@mui/material";
+import { Organization } from "@prisma/client";
+import { getOrganizations } from "@api/organization/route.client";
 
 export default function EditProfilePage() {
   const router = useRouter();
   const { userId } = useParams();
   const { data: session, status, update } = useSession();
 
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserWithVolunteerDetail | null>(null);
   const [volunteerDetails, setVolunteerDetails] =
     useState<VolunteerDetails | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [organizationName, setOrganizationName] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -36,6 +43,7 @@ export default function EditProfilePage() {
         setLoadError("No user ID found.");
         return;
       }
+
       try {
         const response = await getUser(session?.user.id);
         if (!response?.data) {
@@ -49,7 +57,28 @@ export default function EditProfilePage() {
         console.error("Error fetching user:", err);
         setLoadError("Failed to load user information.");
       }
+
+      try {
+        const res = await getOrganizations();
+        if (res?.data) {
+          const sorted = [...res.data].sort((a, b) =>
+            a.normalizedName.localeCompare(b.normalizedName)
+          );
+          setOrganizations(sorted);
+        }
+
+        const userRes = await getUser(session.user.id);
+        setUser(userRes.data);
+        setVolunteerDetails(userRes.data.volunteerDetails);
+        setOrganizationName(userRes.data.organization?.name || "");
+      } catch (err) {
+        console.error("Failed to load user/organization info:", err);
+        setLoadError("Failed to load user/organization info.");
+      }
+
+      setLoading(false);
     };
+
     fetchData();
   }, [router, session?.user.id, status, userId]);
 
@@ -68,7 +97,7 @@ export default function EditProfilePage() {
     try {
       if (user) {
         await updateUser(
-          trimStrings(user),
+          { ...trimStrings(user), organizationName: organizationName.trim() },
           volunteerDetails ? trimStrings(volunteerDetails) : undefined
         );
         await update();
@@ -139,7 +168,7 @@ export default function EditProfilePage() {
     }
   };
 
-  if (status === "loading") {
+  if (status === "loading" || loading) {
     return (
       <div className="h-screen flex justify-center items-center text-3xl">
         Loading...
@@ -231,6 +260,46 @@ export default function EditProfilePage() {
       {/* Are You Over 14 Field */}
       {session.user.role === Role.VOLUNTEER ? (
         <>
+          <div className="flex items-start justify-between">
+            <div className="w-1/3">
+              <div className="font-bold text-[#344054]">Organization</div>
+            </div>
+            <div className="flex-grow">
+              <Autocomplete
+                includeInputInList
+                disableClearable
+                freeSolo
+                options={organizations.map((org) => org.name)}
+                inputValue={organizationName}
+                onInputChange={(_, value) => setOrganizationName(value)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    InputProps={{
+                      ...params.InputProps,
+                      disableUnderline: true,
+                      className:
+                        "w-full border border-gray-300 rounded-md pt-1 px-2",
+                      sx: {
+                        fontFamily: "inherit",
+                        fontSize: "16px",
+                        paddingBottom: "5px !important",
+                      },
+                      inputProps: {
+                        ...params.inputProps,
+                        className: "text-sm",
+                        style: {
+                          fontFamily: "inherit",
+                        },
+                      },
+                    }}
+                    variant="standard"
+                  />
+                )}
+              />
+            </div>
+          </div>
+
           <div className="flex items-center justify-between">
             <div className="w-1/3">
               <div className="font-bold text-[#344054]">
@@ -250,7 +319,8 @@ export default function EditProfilePage() {
               <RadioButton
                 label="No"
                 checked={volunteerDetails?.ageOver14 === false}
-                onChange={() => handleChange("ageOver14", false)}
+                onChange={() => {}}
+                disabled
               />
             </div>
           </div>

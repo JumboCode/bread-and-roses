@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export const POST = async (request: NextRequest) => {
   try {
-    const { date, startTime, endTime, title, description } =
+    const { date, startTime, endTime, title, description, capacity } =
       await request.json();
 
     const normalizedDate = new Date(date);
@@ -24,7 +24,7 @@ export const POST = async (request: NextRequest) => {
     if (existing) {
       result = await prisma.customDay.update({
         where: { id: existing.id },
-        data: { startTime, endTime, title, description },
+        data: { startTime, endTime, title, description, capacity },
       });
     } else {
       result = await prisma.customDay.create({
@@ -34,6 +34,7 @@ export const POST = async (request: NextRequest) => {
           endTime,
           title,
           description,
+          capacity,
         },
       });
     }

@@ -8,6 +8,9 @@ type CreateVolunteerDetailsInput = Omit<
   VolunteerDetails,
   "id" | "user" | "userId"
 >;
+type UserUpdateInput = Omit<User, "volunteerDetails" | "volunteerSessions"> & {
+  organizationName?: string;
+};
 
 /**
  * Sends an HTTP request to the specified endpoint with the provided method and body.
@@ -76,7 +79,7 @@ export const deleteUser = async (userID: string) => {
 };
 
 export const updateUser = async (
-  user: User,
+  user: UserUpdateInput,
   volunteerDetails?: VolunteerDetails
 ) => {
   return fetchApi("/api/user", "PATCH", { user, volunteerDetails });

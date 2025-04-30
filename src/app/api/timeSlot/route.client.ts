@@ -40,7 +40,6 @@ export const fetchApi = async (
 export const addTimeSlot = async (
   timeSlot: CreateTimeSlotInput,
   groupSignupInfo?: {
-    eventTitle: string;
     date: string;
     startTime: string;
     endTime: string;

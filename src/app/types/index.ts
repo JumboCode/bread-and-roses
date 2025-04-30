@@ -15,5 +15,6 @@ export type UserWithVolunteerDetail = User & {
 
 export type OrganizationWithUsers = Organization & {
   users?: User[];
+  timeSlots?: TimeSlot[];
   volunteerSessions?: VolunteerSession[];
 };

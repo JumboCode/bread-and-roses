@@ -21,7 +21,6 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
   const buttonRef = useRef(null);
   const calendarRef = useRef<HTMLDivElement>(null);
 
-  const [title, setTitle] = useState("");
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [reasons, setReasons] = useState("");
@@ -32,7 +31,6 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
   const [submitted, setSubmitted] = useState(false);
 
   const [errors, setErrors] = useState({
-    title: false,
     groupName: false,
     description: false,
     reasons: false,
@@ -63,7 +61,6 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
     });
 
     const newErrors = {
-      title: title.trim() === "",
       groupName: groupName.trim() === "",
       description: description.trim() === "",
       reasons: reasons.trim() === "",
@@ -111,7 +108,6 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
             numVolunteers: Number(capacity),
           },
           {
-            eventTitle: title,
             date: format(selectedDate!, "yyyy-MM-dd"),
             startTime: slot.start,
             endTime: slot.end,
@@ -123,9 +119,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
         );
       }
 
-      alert(
-        "Successfully created group request! Please wait for the admins to approve your request."
-      );
+      alert("Group sign up is successful! We hope to see you soon.");
       onClose();
     } catch (err) {
       console.error("Error creating time slots:", err);
@@ -180,7 +174,6 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
     });
 
     return (
-      title.trim() === "" ||
       groupName.trim() === "" ||
       description.trim() === "" ||
       reasons.trim() === "" ||
@@ -203,33 +196,6 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
           <Icon icon={"icon-park-solid:close-one"} width="25" />
         </button>
       </div>
-      <TextField
-        placeholder="Add event title"
-        variant="standard"
-        fullWidth
-        autoComplete="off"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        error={submitted && errors.title}
-        slotProps={{
-          input: {
-            sx: {
-              fontSize: 18,
-              fontWeight: 600,
-              color: "#6B7280",
-              padding: 0,
-            },
-          },
-          root: {
-            sx: {
-              "&::before": {
-                borderBottom: "1px solid #D0D5DD",
-              },
-            },
-          },
-        }}
-      />
-
       <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
         <Icon icon={"lets-icons:time-atack"} width="20" />
         Time

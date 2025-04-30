@@ -26,7 +26,7 @@ export const POST = async (request: NextRequest) => {
     const codeString = Math.floor(Math.random() * 10000)
       .toString()
       .padStart(4, "6");
-    const expire = new Date(Date.now() + 1000 * 60);
+    const expire = new Date(Date.now() + 1000 * 60 * 15);
 
     await prisma.code.update({
       where: { userId: user.id },

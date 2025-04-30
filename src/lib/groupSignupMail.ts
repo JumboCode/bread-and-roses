@@ -1,7 +1,6 @@
 import nodemailer from "nodemailer";
 
 export const sendGroupSignupMail = async (fields: {
-  eventTitle: string;
   date: string;
   startTime: string;
   endTime: string;
@@ -23,7 +22,6 @@ export const sendGroupSignupMail = async (fields: {
   });
 
   const {
-    eventTitle,
     date,
     startTime,
     endTime,
@@ -37,7 +35,6 @@ export const sendGroupSignupMail = async (fields: {
   const textBody = `
     Group Sign-Up Request
 
-    Event Title: ${eventTitle}
     Date: ${date}
     Start Time: ${startTime}
     End Time: ${endTime}
@@ -49,7 +46,6 @@ export const sendGroupSignupMail = async (fields: {
 
   const htmlBody = `
     <h2>New Group Sign-Up Request</h2>
-    <p><strong>Event Title:</strong> ${eventTitle}</p>
     <p><strong>Date:</strong> ${date}</p>
     <p><strong>Start Time:</strong> ${startTime}</p>
     <p><strong>End Time:</strong> ${endTime}</p>

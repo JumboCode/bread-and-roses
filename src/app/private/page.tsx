@@ -46,9 +46,12 @@ export default function HomePage() {
         const userRes = await getUser(session?.user.id as string);
         const res = await getTimeSlots(session?.user.id as string);
         const now = new Date();
-        const upcomingSlots = res.data.filter(
-          (slot: TimeSlot) => new Date(slot.startTime) > now
-        );
+        const upcomingSlots = res.data
+          .filter((slot: TimeSlot) => new Date(slot.startTime) > now)
+          .sort(
+            (a: TimeSlot, b: TimeSlot) =>
+              new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+          );
 
         setSessions(userRes.data.volunteerSessions);
         setTimeSlots(upcomingSlots);
@@ -285,7 +288,9 @@ export default function HomePage() {
                 {timeSlots.slice(0, 6).map((timeSlot, index) => (
                   <EventCard
                     key={timeSlot.id}
-                    title={`Time Slot ${index + 1}`}
+                    title={`Time Slot ${index + 1}${
+                      timeSlot.organizationId ? " (Group Event)" : ""
+                    }`}
                     subtexts={formatVolunteerSubtexts(
                       timeSlot.startTime,
                       timeSlot.endTime

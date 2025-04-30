@@ -171,7 +171,6 @@ export default function VolunteerTable({
             >
               Name
             </TableCell>
-
             <TableCell
               align="left"
               sx={{
@@ -192,7 +191,9 @@ export default function VolunteerTable({
                 width: "255px",
               }}
             >
-              {fromAttendeePage ? "Time(s)" : "Hours Volunteered"}
+              {fromAttendeePage
+                ? `Time(s) ${showOrganizationName ? "and Group Size" : null}`
+                : "Hours Volunteered"}
             </TableCell>
             <TableCell
               sx={{ width: "116px", height: "44px  " }}
@@ -331,7 +332,8 @@ export default function VolunteerTable({
 
                           return (
                             <div key={idx}>
-                              {format(start)} - {format(end)}
+                              {format(start)} - {format(end)} (
+                              {slot.numVolunteers})
                             </div>
                           );
                         })
