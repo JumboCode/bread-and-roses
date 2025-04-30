@@ -347,8 +347,11 @@ export const PATCH = async (request: NextRequest) => {
 
     const {
       id,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       volunteerDetails: _,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       volunteerSessions: __,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       organizationId: ___,
       organizationName,
       ...userWithoutRelations

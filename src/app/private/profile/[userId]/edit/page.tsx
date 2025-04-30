@@ -72,6 +72,7 @@ export default function EditProfilePage() {
         setVolunteerDetails(userRes.data.volunteerDetails);
         setOrganizationName(userRes.data.organization?.name || "");
       } catch (err) {
+        console.error("Failed to load user/organization info:", err);
         setLoadError("Failed to load user/organization info.");
       }
 
