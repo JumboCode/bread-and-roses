@@ -299,7 +299,11 @@ export const GET = async (request: NextRequest) => {
   try {
     const fetchedUser = await prisma.user.findUnique({
       where: id ? { id } : { email },
-      include: { volunteerDetails: true, volunteerSessions: true },
+      include: {
+        volunteerDetails: true,
+        volunteerSessions: true,
+        organization: true,
+      },
     });
 
     if (!fetchedUser) {
@@ -343,17 +347,29 @@ export const PATCH = async (request: NextRequest) => {
 
     const {
       id,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       volunteerDetails: _,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       volunteerSessions: __,
-      ...userWithoutIdAndRelations
+      organizationId: ___,
+      organizationName,
+      ...userWithoutRelations
     } = user;
+
+    const organization =
+      organizationName?.trim() !== ""
+        ? await prisma.organization.findFirst({
+            where: {
+              normalizedName: organizationName.trim().toLowerCase(),
+            },
+          })
+        : null;
 
     const updatedUser = await prisma.user.update({
       where: { id },
       data: {
-        ...userWithoutIdAndRelations,
+        ...userWithoutRelations,
+        ...(organization
+          ? { organization: { connect: { id: organization.id } } }
+          : { organization: { disconnect: true } }),
         volunteerDetails: volunteerDetails
           ? {
               update: {
@@ -383,7 +399,7 @@ export const PATCH = async (request: NextRequest) => {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error updating user:", error);
     return NextResponse.json(
       {
         code: "ERROR",

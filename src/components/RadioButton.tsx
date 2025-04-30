@@ -4,15 +4,31 @@ type RadioButtonProps = {
   label: string;
   checked: boolean;
   onChange?: () => void;
+  disabled?: boolean;
 };
 
-const RadioButton = ({ label, checked, onChange }: RadioButtonProps) => {
+const RadioButton = ({
+  label,
+  checked,
+  onChange,
+  disabled = false,
+}: RadioButtonProps) => {
+  const handleClick = () => {
+    if (!disabled && onChange) {
+      onChange();
+    }
+  };
+
   return (
     <div
       className={`w-[332px] h-[42px] inline-flex justify-between items-start ${
-        onChange ? "cursor-pointer" : ""
+        disabled
+          ? "opacity-50 cursor-not-allowed"
+          : onChange
+          ? "cursor-pointer"
+          : ""
       }`}
-      onClick={onChange}
+      onClick={handleClick}
     >
       <div className="flex items-center gap-2">
         <div className="w-[42px] h-[42px] flex items-center justify-center">
@@ -27,7 +43,7 @@ const RadioButton = ({ label, checked, onChange }: RadioButtonProps) => {
               <g clipPath="url(#clip0_yes)">
                 <path
                   d="M21 16C18.24 16 16 18.24 16 21C16 23.76 18.24 26 21 26C23.76 26 26 23.76 26 21C26 18.24 23.76 16 21 16ZM21 11C15.48 11 11 15.48 11 21C11 26.52 15.48 31 21 31C26.52 31 31 26.52 31 21C31 15.48 26.52 11 21 11ZM21 29C16.58 29 13 25.42 13 21C13 16.58 16.58 13 21 13C25.42 13 29 16.58 29 21C29 25.42 25.42 29 21 29Z"
-                  fill="#1976D2"
+                  fill={disabled ? "#A0A0A0" : "#1976D2"}
                 />
               </g>
               <defs>
@@ -47,8 +63,8 @@ const RadioButton = ({ label, checked, onChange }: RadioButtonProps) => {
               <g clipPath="url(#clip0_no)">
                 <path
                   d="M21 11C15.48 11 11 15.48 11 21C11 26.52 15.48 31 21 31C26.52 31 31 26.52 31 21C31 15.48 26.52 11 21 11ZM21 29C16.58 29 13 25.42 13 21C13 16.58 16.58 13 21 13C25.42 13 29 16.58 29 21C29 25.42 25.42 29 21 29Z"
-                  fill="black"
-                  fillOpacity="0.6"
+                  fill={disabled ? "#A0A0A0" : "black"}
+                  fillOpacity={disabled ? "0.3" : "0.6"}
                 />
               </g>
               <defs>

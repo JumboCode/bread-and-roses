@@ -318,6 +318,18 @@ export default function ProfileContent({
                 </button>
               ) : null}
             </div>
+            {/* Volunteer Reason Field */}
+            <div className="flex items-center">
+              <div className="w-1/3 font-bold text-[#344054]">Organization</div>
+              <div className="flex-1">
+                <div className="w-full h-[56px] bg-[#F9FAFB] rounded-t-md overflow-hidden flex flex-col justify-start items-start">
+                  <div className="w-full px-3 py-4 inline-flex justify-start items-center whitespace-normal break-words">
+                    {user.organization?.name || ""}
+                  </div>
+                </div>
+                <div className="w-full h-0 border-t border-[#101828]"></div>
+              </div>
+            </div>
             {/* Are You Over 14 Field */}
             <div className="flex">
               <div className="w-1/3">
