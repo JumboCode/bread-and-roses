@@ -16,7 +16,11 @@ import useApiThrottle from "../hooks/useApiThrottle";
 const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
   const { data: session } = useSession();
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow;
+  });
   const [showCalendar, setShowCalendar] = useState(false);
   const buttonRef = useRef(null);
   const calendarRef = useRef<HTMLDivElement>(null);

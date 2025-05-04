@@ -23,7 +23,11 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
   const buttonRef = React.useRef(null);
   const calendarRef = React.useRef<HTMLDivElement>(null);
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow;
+  });
   const [showCalendar, setShowCalendar] = useState(false);
   const [timeSlots, setTimeSlots] = React.useState([
     { start: "10:00", end: "18:00", submitted: false },

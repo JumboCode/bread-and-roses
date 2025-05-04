@@ -35,7 +35,7 @@ export function Calendar({
         disabled={(date) => {
           if (previousDisabled) {
             const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setDate(tomorrow.getDate() + 2);
             tomorrow.setHours(0, 0, 0, 0);
 
             const cutoff = new Date(tomorrow.getTime() - 24 * 60 * 60 * 1000);
