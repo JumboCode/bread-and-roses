@@ -14,11 +14,13 @@ import { OrganizationWithUsers } from "../../../types";
 import { useSession } from "next-auth/react";
 import { getOrganization } from "@api/organization/route.client";
 import VolunteerTable from "@components/VolunteerTable";
+import { useTranslation } from "react-i18next";
 
 export default function ProfileContent() {
   const { organizationId } = useParams();
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { t } = useTranslation("profile");
 
   const startButtonRef = React.useRef(null);
   const startCalendarRef = React.useRef<HTMLDivElement>(null);
@@ -128,7 +130,7 @@ export default function ProfileContent() {
   if (loading || !organization) {
     return (
       <div className="h-screen flex justify-center items-center text-3xl">
-        Loading...
+        {t("loading")}...
       </div>
     );
   }
@@ -152,7 +154,9 @@ export default function ProfileContent() {
             <div className="text-2xl font-bold text-[#101828]">
               {organization.name}
             </div>
-            <div className="font-normal text-[#344054]">Organization</div>
+            <div className="font-normal text-[#344054]">
+              {t("organization")}
+            </div>
           </div>
         </div>
       </div>
@@ -161,7 +165,7 @@ export default function ProfileContent() {
           <div className="flex items-center gap-3">
             <Icon icon="ic:round-timeline" height={44} />
             <div className="font-bold font-['Kepler_Std'] text-4xl">
-              Group Log
+              {t("group_log")}
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -170,7 +174,7 @@ export default function ProfileContent() {
                 className="border border-gray-300 rounded-md px-3 py-2 w-[215.5px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                 placeholder="MM/DD/YYYY"
                 variant="outlined"
-                label="Start Date"
+                label={t("start_date")}
                 autoComplete="off"
                 size="small"
                 onFocus={() => setShowStartCalendar(!showStartCalendar)}
@@ -229,7 +233,7 @@ export default function ProfileContent() {
                 className="border border-gray-300 rounded-md px-3 py-2 w-[215.5px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                 placeholder="MM/DD/YYYY"
                 variant="outlined"
-                label="End Date"
+                label={t("end_date")}
                 autoComplete="off"
                 size="small"
                 onFocus={() => setShowEndCalendar(!showEndCalendar)}
@@ -282,22 +286,22 @@ export default function ProfileContent() {
           </div>
         </div>
         <div className="flex justify-between">
-          <div>Group Stats</div>
+          <div>{t("group_stats")}</div>
           <div className="flex gap-4">
             <StatsCard
-              heading="Personal volunteer hours"
+              heading={t("personal_volunteer_hours")}
               value={hours}
               icon="tabler:clock-check"
             />
             <StatsCard
-              heading="Days volunteered"
+              heading={t("days_volunteered")}
               value={days}
               icon="mdi:calendar-outline"
             />
           </div>
         </div>
         <div className="flex justify-between">
-          <div>Group Timesheet</div>
+          <div>{t("group_timesheet")}</div>
           <div className="w-[736px]">
             {filteredSessions.length === 0 ? (
               <div className="text-center">
@@ -310,7 +314,7 @@ export default function ProfileContent() {
                   />
                 </div>
                 <div className="text-[#344054] font-['Kepler_Std'] text-2xl font-semibold mt-8">
-                  It looks like there are no time slots in this range!
+                  {t("no_time_slots_in_range")}
                 </div>
               </div>
             ) : (
@@ -321,7 +325,9 @@ export default function ProfileContent() {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Icon icon="material-symbols:people-rounded" height={44} />
-            <div className="font-bold font-['Kepler_Std'] text-4xl">People</div>
+            <div className="font-bold font-['Kepler_Std'] text-4xl">
+              {t("people")}
+            </div>
           </div>
         </div>
         {organization.users?.length === 0 ? (

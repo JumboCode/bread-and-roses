@@ -19,9 +19,11 @@ import { useSearchParams } from "next/navigation";
 import { getStandardDate } from "../../utils";
 import { getCustomDay } from "@api/customDay/route.client";
 import useApiThrottle from "../../../hooks/useApiThrottle";
+import { useTranslation } from "react-i18next";
 
 export default function EventsPage() {
   const { data: session } = useSession();
+  const { t } = useTranslation(["translation", "events"]);
   const searchParams = useSearchParams();
   const date = searchParams.get("date");
 
@@ -314,7 +316,7 @@ export default function EventsPage() {
   if (pageLoading || !session) {
     return (
       <div className="h-screen flex justify-center items-center text-3xl">
-        Loading...
+        {t("Loading", { ns: "translation" })}...
       </div>
     );
   }
@@ -323,7 +325,7 @@ export default function EventsPage() {
     <div>
       <div className="text-4xl font-['Kepler_Std'] font-semibold flex flex-row items-center gap-x-[12px] mb-10">
         <Icon icon="uil:calender" width="44" height="44" />
-        Events
+        {t("events", { ns: "events" })}
       </div>
       <div className="relative text-center w-full flex flex-row gap-x-[24px] pb-1">
         <div className="flex-2 flex flex-col">
@@ -356,8 +358,8 @@ export default function EventsPage() {
                         <div className="font-bold text-lg text-[#101828]">
                           {customDayTitle === ""
                             ? !isPastOrToday(selectedDate)
-                              ? `Sign up for your volunteering time!`
-                              : "Your Volunteer Hours"
+                              ? t("sign_up_prompt", { ns: "events" })
+                              : t("your_volunteer_hours", { ns: "events" })
                             : customDayTitle}
                         </div>
                         {customDayDescription !== "" && (
@@ -376,7 +378,12 @@ export default function EventsPage() {
                         <div className="text-sm text-[#344054]">
                           {formattedDate
                             ? !isPastOrToday(selectedDate)
-                              ? `Choose Your Time (${formattedDate}). We are open from${" "}
+                              ? `${t("choose_your_time", {
+                                  ns: "events",
+                                })} (${formattedDate}). ${t(
+                                  "we_are_open_from",
+                                  { ns: "events" }
+                                )}${" "}
                         ${formatTime(customDayHours.start)} -${" "}
                         ${formatTime(customDayHours.end)}.`
                               : `${formattedDate} (${formatTime(
@@ -392,7 +399,7 @@ export default function EventsPage() {
                         <div className="flex flex-col gap-4 flex-grow">
                           {isPastOrToday(selectedDate) &&
                           timeSlots.length === 1 ? (
-                            <div>No time slots!</div>
+                            <div>{t("no_time_slots", { ns: "events" })}</div>
                           ) : (
                             timeSlots.map((slot, index) => (
                               <div key={index}>
@@ -434,7 +441,9 @@ export default function EventsPage() {
                                         type="time"
                                         variant="outlined"
                                         size="small"
-                                        label="Start Time"
+                                        label={t("start_time", {
+                                          ns: "events",
+                                        })}
                                         value={slot.start}
                                         onChange={(e) => {
                                           const newSlots = [...timeSlots];
@@ -466,7 +475,7 @@ export default function EventsPage() {
                                         type="time"
                                         variant="outlined"
                                         size="small"
-                                        label="End Time"
+                                        label={t("end_time", { ns: "events" })}
                                         value={slot.end}
                                         onChange={(e) => {
                                           const newSlots = [...timeSlots];
@@ -519,7 +528,9 @@ export default function EventsPage() {
                                         width="20"
                                         height="20"
                                       />
-                                      <div>Add This Time Slot</div>
+                                      <div>
+                                        {t("add_time_slot", { ns: "events" })}
+                                      </div>
                                     </Button>
                                   </div>
                                 ) : null}
@@ -534,7 +545,7 @@ export default function EventsPage() {
               ) : (
                 <div className="flex flex-col items-center gap-6 mb-2">
                   <div className="font-bold text-2xl text-[#9A0F28] font-['Kepler_Std']">
-                    You have signed up! We look forward to seeing you!
+                    {t("signup_success", { ns: "events" })}
                   </div>
                   <Image
                     src="/confirmation.png"
@@ -545,8 +556,7 @@ export default function EventsPage() {
                     quality={100}
                   />
                   <div className="font-bold text-lg text-[#344054]">
-                    Below is your time slot information. You can check it out on
-                    the homepage.
+                    {t("time_slot_info_prompt", { ns: "events" })}
                   </div>
                   <div className="flex items-center gap-2">
                     <Icon
@@ -607,7 +617,9 @@ export default function EventsPage() {
                     (page === 0 && (!hasSubmittedSlot || isCapacityFull))
                   }
                 >
-                  {page === 0 ? "Confirm" : "Close"}
+                  {page === 0
+                    ? t("confirm", { ns: "events" })
+                    : t("close", { ns: "events" })}
                 </Button>
               ) : null}
             </div>
@@ -624,7 +636,7 @@ export default function EventsPage() {
                   <div>
                     <div className="font-bold text-4xl font-['Kepler_Std']">
                       {customDayTitle === ""
-                        ? "Time Slot Registrations"
+                        ? t("time_slot_registrations", { ns: "events" })
                         : customDayTitle}
                     </div>
                     {customDayDescription !== "" && (
@@ -641,7 +653,8 @@ export default function EventsPage() {
                       height="20"
                     />
                     <div className="text-sm text-[#344054]">
-                      Opening Time: {formatTime(customDayHours.start)} -{" "}
+                      {t("opening_time", { ns: "events" })}:{" "}
+                      {formatTime(customDayHours.start)} -{" "}
                       {formatTime(customDayHours.end)}
                     </div>
                   </div>
@@ -653,10 +666,15 @@ export default function EventsPage() {
                       height="20"
                     />
                     <div className="text-sm text-[#344054]">
-                      Total Individual Signups: {individuals.length}{" "}
-                      {individuals.length === 1 ? "volunteer" : "volunteers"} /{" "}
-                      Capacity: {customDayCapacity}{" "}
-                      {customDayCapacity === 1 ? "volunteer" : "volunteers"}
+                      {t("total_individual_signups", { ns: "events" })}:{" "}
+                      {individuals.length}{" "}
+                      {individuals.length === 1
+                        ? t("volunteer", { ns: "events" })
+                        : t("volunteers", { ns: "events" })}{" "}
+                      / {t("capacity", { ns: "events" })}: {customDayCapacity}{" "}
+                      {customDayCapacity === 1
+                        ? t("volunteer", { ns: "events" })
+                        : t("volunteers", { ns: "events" })}
                     </div>
                   </div>
                 </div>
@@ -683,7 +701,7 @@ export default function EventsPage() {
                         width="20"
                         height="20"
                       />
-                      <div>{tab}</div>
+                      <div>{t(tab.toLowerCase(), { ns: "events" })}</div>
                     </button>
                   ))}
                 </div>
@@ -699,7 +717,7 @@ export default function EventsPage() {
                         />
                       </div>
                       <div className="text-[#344054] font-['Kepler_Std'] text-2xl font-semibold mt-8">
-                        It seems like no individuals have signed up!
+                        {t("no_individuals", { ns: "events" })}
                       </div>
                     </div>
                   ) : (
@@ -721,7 +739,7 @@ export default function EventsPage() {
                       />
                     </div>
                     <div className="text-[#344054] font-['Kepler_Std'] text-2xl font-semibold mt-8">
-                      It seems like no groups have signed up!
+                      {t("no_groups", { ns: "events" })}
                     </div>
                   </div>
                 ) : (

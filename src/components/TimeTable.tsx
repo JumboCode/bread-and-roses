@@ -11,12 +11,15 @@ import {
 } from "@mui/material";
 import { VolunteerSession } from "@prisma/client";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 interface TimeTableProps {
   volunteerSessions: VolunteerSession[];
 }
 
 export default function TimeTable({ volunteerSessions }: TimeTableProps) {
+  const { t } = useTranslation(["translation", "profile"]);
+
   const [page, setPage] = React.useState(0);
 
   const sortedSessions = [...volunteerSessions].sort((a, b) => {
@@ -60,7 +63,7 @@ export default function TimeTable({ volunteerSessions }: TimeTableProps) {
                 width: "255px",
               }}
             >
-              Date
+              {t("date", { ns: "profile" })}
             </TableCell>
 
             <TableCell
@@ -72,7 +75,7 @@ export default function TimeTable({ volunteerSessions }: TimeTableProps) {
                 width: "255px",
               }}
             >
-              Total Hours Worked
+              {t("total_hours_worked", { ns: "profile" })}
             </TableCell>
             <TableCell
               align="left"
@@ -83,7 +86,7 @@ export default function TimeTable({ volunteerSessions }: TimeTableProps) {
                 width: "255px",
               }}
             >
-              Volunteer Session(s)
+              {t("volunteer_sessions", { ns: "profile" })}
             </TableCell>
           </TableRow>
         </TableHead>
@@ -139,7 +142,7 @@ export default function TimeTable({ volunteerSessions }: TimeTableProps) {
                   }}
                   align="left"
                 >
-                  {hoursWorked} hours
+                  {hoursWorked} {t("hours", { ns: "profile" })}
                 </TableCell>
                 <TableCell
                   sx={{
@@ -169,7 +172,8 @@ export default function TimeTable({ volunteerSessions }: TimeTableProps) {
         <Typography
           sx={{ fontSize: "14px", color: "#344054", fontWeight: 500 }}
         >
-          Page {page + 1} of {Math.ceil((volunteerSessions?.length || 0) / 5)}
+          {t("page", { ns: "profile" })} {page + 1} of{" "}
+          {Math.ceil((volunteerSessions?.length || 0) / 5)}
         </Typography>
 
         <Box>
@@ -186,7 +190,7 @@ export default function TimeTable({ volunteerSessions }: TimeTableProps) {
               border: "1px solid var(--Grey-300, #D0D5DD)",
             }}
           >
-            Previous
+            {t("previous", { ns: "profile" })}
           </Button>
           <Button
             onClick={() =>
@@ -212,7 +216,7 @@ export default function TimeTable({ volunteerSessions }: TimeTableProps) {
               border: "1px solid var(--Grey-300, #D0D5DD)",
             }}
           >
-            Next
+            {t("next", { ns: "profile" })}
           </Button>
         </Box>
       </Box>

@@ -15,8 +15,10 @@ import {
   getOrganizations,
 } from "@api/organization/route.client";
 import OrganizationTable from "@components/OrganizationTable";
+import { useTranslation } from "react-i18next";
 
 export default function VolunteersPage() {
+  const { t } = useTranslation("volunteers");
   const [pageLoading, setPageLoading] = React.useState(true);
   const [users, setUsers] = React.useState<User[]>();
   const [organizations, setOrganizations] = React.useState<Organization[]>();
@@ -26,6 +28,21 @@ export default function VolunteersPage() {
   const [activeTab, setActiveTab] = React.useState<
     "Individuals" | "Organizations"
   >("Individuals");
+
+  const isIndividual = activeTab === "Individuals";
+  const isSingular = selected.length === 1;
+
+  const typeKey = isIndividual
+    ? isSingular
+      ? "user"
+      : "users"
+    : isSingular
+    ? "organization"
+    : "organizations";
+
+  const profileKey = isSingular ? "profile" : "profiles";
+
+  const article = isSingular ? t("a") : "";
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -122,7 +139,7 @@ export default function VolunteersPage() {
   if (pageLoading) {
     return (
       <div className="h-screen flex justify-center items-center text-3xl">
-        Loading...
+        {t("loading")}...
       </div>
     );
   }
@@ -133,7 +150,10 @@ export default function VolunteersPage() {
         <div className="flex items-center gap-3">
           <Icon icon="mdi:people" width="44" height="44" />
           <div className="text-4xl font-['Kepler_Std'] font-semibold">
-            {activeTab === "Individuals" ? "Volunteer" : "Organizations"} List (
+            {`${t(
+              activeTab === "Individuals" ? "volunteer" : "organizations"
+            )} ${t("list")}`}{" "}
+            (
             {activeTab === "Individuals" && users
               ? users.length
               : organizations
@@ -144,7 +164,9 @@ export default function VolunteersPage() {
         </div>
         {selected.length > 0 ? (
           <div className="flex items-center gap-4">
-            <div>{selected.length} Selected</div>
+            <div>
+              {selected.length} {t("selected")}
+            </div>
             <Button
               sx={{
                 display: "flex",
@@ -163,7 +185,7 @@ export default function VolunteersPage() {
               onClick={() => setIsModalOpen(true)}
             >
               <DeleteOutlineIcon sx={{ width: 20, color: "whitesmoke" }} />
-              <div>Delete</div>
+              <div>{t("delete")}</div>
             </Button>
           </div>
         ) : (
@@ -195,7 +217,7 @@ export default function VolunteersPage() {
               width="24"
               height="24"
             />
-            <div>{tab}</div>
+            <div>{t(tab.toLowerCase())}</div>
           </button>
         ))}
       </div>
@@ -230,8 +252,9 @@ export default function VolunteersPage() {
             />
           </div>
           <div className="text-[#344054] font-['Kepler_Std'] text-3xl font-semibold mt-8">
-            No {activeTab === "Individuals" ? "individuals" : "organizations"}{" "}
-            found!
+            {activeTab === "Individuals"
+              ? t("no_individuals_found")
+              : t("no_organizations_found")}
           </div>
         </div>
       )}
@@ -240,19 +263,17 @@ export default function VolunteersPage() {
           <div className="fixed inset-0 bg-[#101828] opacity-40"></div>
           <div className="bg-white p-6 rounded-2xl shadow-lg z-10 max-w-[512px]">
             <div className="text-[#101828] text-center font-['Kepler_Std'] text-4xl font-semibold">
-              Are you sure you want to delete {selected.length}{" "}
-              {activeTab === "Individuals"
-                ? selected.length === 1
-                  ? "user"
-                  : "users"
-                : selected.length === 1
-                ? "organization"
-                : "organizations"}
-              ?
+              {t("delete_confirmation_title", {
+                count: selected.length,
+                type: t(typeKey),
+              })}
             </div>
             <div className="text-[#667085] text-center text-lg mt-2">
-              You will not be able to recover {selected.length === 1 ? "a" : ""}{" "}
-              deleted {selected.length === 1 ? "profile" : "profiles"}.
+              {t("delete_warning", {
+                article,
+                type: t(profileKey),
+                pluralSuffix: isSingular ? "" : t("pluralSuffix"),
+              })}
             </div>
             <div className="flex justify-end gap-5 mt-8">
               <Button
@@ -268,7 +289,7 @@ export default function VolunteersPage() {
                 }}
                 onClick={() => setIsModalOpen(false)}
               >
-                Cancel
+                {t("cancel")}
               </Button>
               <Button
                 variant="outlined"
@@ -291,7 +312,7 @@ export default function VolunteersPage() {
                   }
                 }}
               >
-                Delete
+                {t("delete")}
               </Button>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, InputBase } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { useTranslation } from "react-i18next";
 
 interface SearchBarProps {
   onSearchChange: (searchText: string) => void;
@@ -8,6 +9,8 @@ interface SearchBarProps {
 }
 
 const SearchBar = ({ onSearchChange, width = 400 }: SearchBarProps) => {
+  const { t } = useTranslation("volunteers");
+
   return (
     <Box
       sx={{
@@ -25,7 +28,7 @@ const SearchBar = ({ onSearchChange, width = 400 }: SearchBarProps) => {
     >
       <SearchIcon sx={{ color: "var(--Grey-500, #667085)" }} />
       <InputBase
-        placeholder="Search"
+        placeholder={t("search")}
         onChange={(e) => onSearchChange(e.target.value)}
         sx={{
           width: "100%",

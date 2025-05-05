@@ -157,7 +157,7 @@ export default function HomePage() {
   if (!session || pageLoading) {
     return (
       <div className="h-screen flex justify-center items-center text-3xl">
-        Loading...
+        {t("Loading")}...
       </div>
     );
   }
@@ -192,7 +192,9 @@ export default function HomePage() {
       className="flex justify-end flex-row gap-x-2 bg-teal-600 px-3.5 py-1 text-white rounded-lg place-items-center text-[14px] font-semibold leading-[20px]"
       onClick={action}
     >
-      {session.user.role === Role.VOLUNTEER ? t("Manage") : t("See details")}
+      {session.user.role === Role.VOLUNTEER
+        ? t("manage", { ns: "home" })
+        : t("see_details", { ns: "home" })}
     </button>
   );
 
@@ -203,7 +205,7 @@ export default function HomePage() {
           {t("welcome_title", { ns: "home" })}, {session.user.firstName} 👋
         </h1>
         <h1 className="text-lg mt-3 font-normal leading-7 font-serif text-slate-500">
-          Stats updated by:{" "}
+          {t("stats_updated_by", { ns: "home" })}{" "}
           {(() => {
             const date = new Date().toLocaleDateString("en-GB", {
               weekday: "long",
@@ -222,7 +224,7 @@ export default function HomePage() {
       <div className="flex flex-nowrap gap-x-7 pt-8">
         {session.user.role === Role.ADMIN && (
           <StatsCard
-            heading="Total volunteers"
+            heading={t("total_volunteer_count", { ns: "home" })}
             value={!loading ? users.length : "..."}
             icon="pepicons-pencil:people"
           />
@@ -230,7 +232,7 @@ export default function HomePage() {
         <StatsCard
           heading={
             session.user.role === Role.ADMIN
-              ? "Total volunteer hours"
+              ? t("total_volunteer_hours", { ns: "home" })
               : t("volunteer_hours", { ns: "home" })
           }
           value={hours}
@@ -238,7 +240,7 @@ export default function HomePage() {
         />
         {session.user.role === Role.VOLUNTEER && (
           <StatsCard
-            heading="Days volunteered"
+            heading={t("days_volunteered", { ns: "home" })}
             value={days}
             icon="mdi:calendar-outline"
           />
@@ -249,7 +251,7 @@ export default function HomePage() {
         <div className="flex items-center justify-between mt-8 mb-4">
           <h1 className="text-2xl font-semibold leading-8 font-['Kepler_Std']">
             {session.user.role === Role.ADMIN
-              ? "Upcoming Events"
+              ? t("upcoming_events", { ns: "home" })
               : t("upcoming_times", { ns: "home" })}
           </h1>
           <div
@@ -280,7 +282,7 @@ export default function HomePage() {
                   />
                 </div>
                 <div className="text-[#344054] font-['Kepler_Std'] text-2xl font-semibold mt-8">
-                  It seems like you have not signed up for any time slots yet!
+                  {t("no_upcoming_slots", { ns: "home" })}
                 </div>
               </div>
             ) : (
@@ -288,7 +290,7 @@ export default function HomePage() {
                 {timeSlots.slice(0, 6).map((timeSlot, index) => (
                   <EventCard
                     key={timeSlot.id}
-                    title={`Time Slot ${index + 1}${
+                    title={`${t("time_slot", { ns: "home" })} ${index + 1}${
                       timeSlot.organizationId ? " (Group Event)" : ""
                     }`}
                     subtexts={formatVolunteerSubtexts(
@@ -338,7 +340,9 @@ export default function HomePage() {
                       }
                       subtexts={[
                         {
-                          text: `Opening Time: ${formatTime(
+                          text: `${t("opening_time", {
+                            ns: "home",
+                          })}: ${formatTime(
                             customDayTimes[dateString]?.start || "10:00"
                           )} - ${formatTime(
                             customDayTimes[dateString]?.end || "18:00"
@@ -346,7 +350,9 @@ export default function HomePage() {
                           icon: "tabler:calendar",
                         },
                         {
-                          text: `Total Volunteers: ${dayUsers[dateString].size}`,
+                          text: `${t("total_volunteer_count", {
+                            ns: "home",
+                          })}: ${dayUsers[dateString].size}`,
                           icon: `ic:baseline-people`,
                         },
                       ]}
@@ -368,7 +374,7 @@ export default function HomePage() {
         <>
           <div className="flex items-center justify-between mt-8">
             <h1 className="text-2xl font-semibold leading-8 font-['Kepler_Std'] mb-3">
-              Volunteers List
+              {t("volunteers_list", { ns: "home" })}
             </h1>
             <div
               className="flex items-center gap-2 cursor-pointer"

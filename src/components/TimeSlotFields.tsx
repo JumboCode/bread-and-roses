@@ -1,6 +1,7 @@
 import { TextField } from "@mui/material";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 interface TimeSlotProps {
   timeSlots: { start: string; end: string; submitted: boolean }[];
@@ -11,6 +12,7 @@ interface TimeSlotProps {
 
 const TimeSlotFields = (props: TimeSlotProps) => {
   const { timeSlots, setTimeSlots } = props;
+  const { t } = useTranslation("events");
 
   const formatTime = (time: string) => {
     if (!time) return "";
@@ -76,7 +78,7 @@ const TimeSlotFields = (props: TimeSlotProps) => {
                   type="time"
                   variant="outlined"
                   size="small"
-                  label="Start Time"
+                  label={t("start_time")}
                   value={slot.start}
                   onChange={(e) => {
                     const newSlots = [...timeSlots];
@@ -100,7 +102,7 @@ const TimeSlotFields = (props: TimeSlotProps) => {
                   type="time"
                   variant="outlined"
                   size="small"
-                  label="End Time"
+                  label={t("end_time")}
                   value={slot.end}
                   onChange={(e) => {
                     const newSlots = [...timeSlots];

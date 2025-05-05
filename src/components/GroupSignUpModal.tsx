@@ -12,9 +12,11 @@ import { useSession } from "next-auth/react";
 import { addTimeSlot } from "@api/timeSlot/route.client";
 import { TimeSlotStatus } from "@prisma/client";
 import useApiThrottle from "../hooks/useApiThrottle";
+import { useTranslation } from "react-i18next";
 
 const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
   const { data: session } = useSession();
+  const { t } = useTranslation("events");
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
     const tomorrow = new Date();
@@ -82,7 +84,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
     if (hasErrors()) return;
 
     if (!session?.user || !session.user.organizationId) {
-      alert("You must belong to an organization to create time slots.");
+      alert(t("must_belong_to_org"));
       return;
     }
 
@@ -123,11 +125,11 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
         );
       }
 
-      alert("Group sign up is successful! We hope to see you soon.");
+      alert(t("group_signup_success"));
       onClose();
     } catch (err) {
       console.error("Error creating time slots:", err);
-      alert("Failed to create time slots. Please try again.");
+      alert(t("create_time_slots_failed"));
     }
   };
 
@@ -202,14 +204,14 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
       </div>
       <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
         <Icon icon={"lets-icons:time-atack"} width="20" />
-        Time
+        {t("time")}
       </label>
       <div ref={calendarRef} className="flex flex-row w-full gap-[15px]">
         <TextField
           className="border border-gray-300 rounded-md px-3 py-2 w-[700px] focus:outline-none focus:ring-1 focus:ring-blue-500"
           placeholder="MM/DD/YYYY"
           variant="outlined"
-          label="Select Date"
+          label={t("select_date")}
           autoComplete="off"
           size="small"
           onFocus={() => setShowCalendar(!showCalendar)}
@@ -262,7 +264,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
 
       <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
         <Icon icon={"material-symbols:group"} width="20" />
-        Name of group
+        {t("group_name")}
       </label>
       <TextField
         variant="outlined"
@@ -276,7 +278,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
 
       <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
         <Icon icon={"basil:document-solid"} width="20" />
-        Group description
+        {t("group_description")}
       </label>
       <TextField
         variant="outlined"
@@ -292,7 +294,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
 
       <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
         <Icon icon={"material-symbols:group-add"} width="20" />
-        Reason(s) for group signup
+        {t("group_signup_reason")}
       </label>
       <TextField
         variant="outlined"
@@ -308,7 +310,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
 
       <label className="text-sm font-medium flex flex-row gap-[6px] items-center">
         <Icon icon={"material-symbols:groups"} width="20" />
-        Capacity
+        {t("capacity")}
       </label>
       <TextField
         className="w-[46px]"
@@ -330,7 +332,7 @@ const GroupSignUpModal = ({ onClose }: { onClose: () => void }) => {
           onClick={throttledHandleSubmit}
           disabled={submitLoading || isDisabled()}
         >
-          Send
+          {t("send")}
         </button>
       </div>
     </div>

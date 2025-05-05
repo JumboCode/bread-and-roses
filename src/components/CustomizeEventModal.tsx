@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { addCustomDay, getCustomDay } from "@api/customDay/route.client";
 import useApiThrottle from "../hooks/useApiThrottle";
+import { useTranslation } from "react-i18next";
 
 interface CustomizeEventProps {
   modalVisible: boolean;
@@ -18,6 +19,7 @@ interface CustomizeEventProps {
 
 const CustomizeEventModal = (props: CustomizeEventProps) => {
   const { modalVisible, setModalVisible } = props;
+  const { t } = useTranslation("events");
 
   const modalRef = useRef<HTMLDivElement>(null);
   const buttonRef = React.useRef(null);
@@ -155,13 +157,13 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
 
       if (result.code === "SUCCESS") {
         setModalVisible(false);
-        alert("Event saved successfully!");
+        alert(t("event_saved_success"));
       } else {
-        alert("Failed to save event.");
+        alert(t("event_save_failed"));
       }
     } catch (err) {
       console.error(err);
-      alert("An error occurred while saving.");
+      alert(t("event_save_error"));
     }
   };
 
@@ -188,7 +190,7 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
           />
         </div>
         <TextField
-          placeholder="Add event title"
+          placeholder={t("add_event_title")}
           variant="standard"
           fullWidth
           value={title}
@@ -214,7 +216,7 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
         />
         <div className="flex items-center space-x-2 mb-2">
           <TimelapseIcon />
-          <span className="font-sm">Time</span>
+          <span className="font-sm">{t("time")}</span>
         </div>
         <div className="mb-4">
           <div className="flex gap-4">
@@ -223,7 +225,7 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
                 className="border border-gray-300 rounded-md px-3 py-2 w-[215.5px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                 placeholder="MM/DD/YYYY"
                 variant="outlined"
-                label="Start Date"
+                label={t("start_date")}
                 autoComplete="off"
                 size="small"
                 onFocus={() => setShowCalendar(!showCalendar)}
@@ -279,7 +281,7 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
         <div>
           <div className="flex items-center space-x-2 mb-2">
             <DescriptionRoundedIcon />
-            <span className="font-sm">Event description (if any)</span>
+            <span className="font-sm">{t("event_description_optional")}</span>
           </div>
           <textarea
             className="w-full border rounded px-3 py-2"
@@ -292,7 +294,7 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
               borderWidth: "1px",
               resize: "none",
             }}
-            placeholder="Enter description..."
+            placeholder={t("enter_description")}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -300,7 +302,7 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
         <div>
           <div className="flex items-center space-x-2 mb-2">
             <Icon icon="material-symbols:groups" width="20" />
-            <span className="font-sm">Capacity</span>
+            <span className="font-sm">{t("capacity")}</span>
           </div>
           <TextField
             className="w-[100px]"
@@ -321,7 +323,7 @@ const CustomizeEventModal = (props: CustomizeEventProps) => {
             onClick={throttledHandleAdd}
             disabled={addLoading || hasTimeSlotError}
           >
-            Add
+            {t("add")}
           </button>
         </div>
       </div>
