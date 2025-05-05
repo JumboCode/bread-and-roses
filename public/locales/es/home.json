@@ -22,5 +22,6 @@
   "hours": "horas",
   "view": "Ver",
   "times": "Hora(s)",
-  "times_and_group_size": "Hora(s) y tamaño del grupo"
+  "times_and_group_size": "Hora(s) y tamaño del grupo",
+  "no_volunteers_yet": "¡Todavía no hay voluntarios!"
 }

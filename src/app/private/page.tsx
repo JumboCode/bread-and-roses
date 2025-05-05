@@ -391,12 +391,28 @@ export default function HomePage() {
               />
             </div>
           </div>
-          <VolunteerTable
-            showPagination={false}
-            fromVolunteerPage={false}
-            fromAttendeePage={false}
-            users={users}
-          />
+          {users.length !== 0 ? (
+            <VolunteerTable
+              showPagination={false}
+              fromVolunteerPage={false}
+              fromAttendeePage={false}
+              users={users}
+            />
+          ) : (
+            <div className="text-center">
+              <div className="relative w-full h-[30vh]">
+                <Image
+                  src="/empty_list.png"
+                  alt="Empty List"
+                  layout="fill"
+                  objectFit="contain"
+                />
+              </div>
+              <div className="text-[#344054] font-['Kepler_Std'] text-2xl font-semibold mt-8">
+                {t("no_volunteers_yet", { ns: "home" })}
+              </div>
+            </div>
+          )}
         </>
       ) : null}
     </div>

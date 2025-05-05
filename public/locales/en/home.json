@@ -22,5 +22,6 @@
   "hours": "hours",
   "view": "View",
   "times": "Time(s)",
-  "times_and_group_size": "Time(s) and Group Size"
+  "times_and_group_size": "Time(s) and Group Size",
+  "no_volunteers_yet": "There are no volunteers yet!"
 }
