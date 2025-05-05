@@ -10,5 +10,11 @@
   "profile": "Perfil",
   "logout": "Cerrar sesión",
   "see_all": "Ver más",
-  "ver_more": "Ver más"
+  "ver_more": "Ver más",
+  "customize_event": "Personalizar evento",
+  "sign_up_group": "Registrarse como grupo",
+  "admin": "Administrador",
+  "communication": "Comunicación",
+  "organization": "Organización",
+  "check_in_out": "Entrada/Salida"
 }

@@ -15,6 +15,7 @@ import { Box, Button, Typography } from "@mui/material";
 import UserAvatar from "@components/UserAvatar";
 import { UserWithVolunteerDetail } from "../app/types";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 interface VolunteerTableProps {
   showPagination: boolean;
@@ -36,6 +37,7 @@ export default function VolunteerTable({
   setSelected,
 }: VolunteerTableProps) {
   const router = useRouter();
+  const { t } = useTranslation(["home", "events"]);
 
   const [page, setPage] = useState(0);
   const tableContainerRef = useRef<HTMLDivElement | null>(null);
@@ -169,7 +171,7 @@ export default function VolunteerTable({
                 width: "255px",
               }}
             >
-              Name
+              {t("name", { ns: "home" })}
             </TableCell>
             <TableCell
               align="left"
@@ -180,7 +182,7 @@ export default function VolunteerTable({
                 width: "255px",
               }}
             >
-              Email Address
+              {t("email_address", { ns: "home" })}
             </TableCell>
             <TableCell
               align="left"
@@ -192,8 +194,10 @@ export default function VolunteerTable({
               }}
             >
               {fromAttendeePage
-                ? `Time(s) ${showOrganizationName ? "and Group Size" : ""}`
-                : "Hours Volunteered"}
+                ? showOrganizationName
+                  ? t("times_and_group_size", { ns: "home" })
+                  : t("times", { ns: "home" })
+                : t("hours_volunteered", { ns: "home" })}
             </TableCell>
             <TableCell
               sx={{ width: "116px", height: "44px  " }}
@@ -341,7 +345,9 @@ export default function VolunteerTable({
                         })
                     : "No Time Slots"
                   : `${row.totalHours.toFixed(1)} ${
-                      row.totalHours === 1 ? "hour" : "hours"
+                      row.totalHours === 1
+                        ? t("hour", { ns: "home" })
+                        : t("hours", { ns: "home" })
                     }`}
               </TableCell>
               <TableCell
@@ -360,7 +366,7 @@ export default function VolunteerTable({
                     className="cursor-pointer"
                     onClick={() => router.push(`/private/profile/${row.id}`)}
                   >
-                    View
+                    {t("view", { ns: "home" })}
                   </div>
                   <IconButton
                     aria-label="more information on volunteer"
@@ -387,7 +393,8 @@ export default function VolunteerTable({
           <Typography
             sx={{ fontSize: "14px", color: "#344054", fontWeight: 500 }}
           >
-            Page {page + 1} of {Math.ceil((users?.length || 0) / 6)}
+            {t("page", { ns: "events" })} {page + 1} of{" "}
+            {Math.ceil((users?.length || 0) / 6)}
           </Typography>
 
           <Box>
@@ -404,7 +411,7 @@ export default function VolunteerTable({
                 border: "1px solid var(--Grey-300, #D0D5DD)",
               }}
             >
-              Previous
+              {t("previous", { ns: "events" })}
             </Button>
             <Button
               onClick={() =>
@@ -425,7 +432,7 @@ export default function VolunteerTable({
                 border: "1px solid var(--Grey-300, #D0D5DD)",
               }}
             >
-              Next
+              {t("next", { ns: "events" })}
             </Button>
           </Box>
         </Box>

@@ -1,0 +1,15 @@
+{
+  "send_email_to_volunteers": "Enviar correo a los voluntarios",
+  "email_subject": "Asunto",
+  "email_from": "Correo del remitente",
+  "default_email_note": "Este es el correo predeterminado.",
+  "email_body": "Cuerpo del correo",
+  "email_reach_note": "Este mensaje se enviará a todos los voluntarios en el sitio.",
+  "email_example": "ej: ¡Bienvenido a Bread & Roses!",
+  "click_to_upload": "Haz clic para subir",
+  "type_email_content": "Escribe el contenido del correo",
+  "send_email": "Enviar correo",
+  "complete": "Completado",
+  "email_sent_confirmation": "¡Correo enviado! Recibirás una copia por correo electrónico.",
+  "back_to_original_page": "Volver a la página original"
+}

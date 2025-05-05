@@ -57,8 +57,8 @@ const TopHeader = ({ user }: TopHeaderProps) => {
   };
 
   const getTitle = () => {
-    const pathSegments = pathname.split("/");
-    return pathSegments[2].charAt(0).toUpperCase() + pathSegments[2].slice(1);
+    const pathKey = pathname.split("/")[2];
+    return t(pathKey);
   };
 
   // display form when requesting group sign up
@@ -68,16 +68,16 @@ const TopHeader = ({ user }: TopHeaderProps) => {
     <div className="w-[calc(100vw-240px)] top-0 left-60 right-0 flex items-center justify-between border-gray-200 border-y py-5 px-6 sticky z-10 bg-white">
       <div className="relative">
         {pathname === "/private" ? (
-          <div className="text-gray-500 text-lg">Home</div>
+          <div className="text-gray-500 text-lg">{t("home")}</div>
         ) : pathname === "/private/events" && user.role === Role.ADMIN ? (
           <button
             onClick={() => {
               setCustomizeModal(true);
             }}
-            className="flex items-center justify-center w-[186px] h-[44px] rounded-[8px] px-[18px] py-[10px] gap-[8px] font-semibold bg-teal-600 text-white"
+            className="flex items-center justify-center h-[44px] rounded-[8px] px-[18px] py-[10px] gap-[8px] font-semibold bg-teal-600 text-white"
           >
             <Icon icon={icon} width="20" height="20" />
-            <div className="mt-0.5">Customize Event</div>
+            <div className="mt-0.5">{t("customize_event")}</div>
           </button>
         ) : pathname === "/private/events" &&
           user.role === Role.VOLUNTEER &&
@@ -95,7 +95,7 @@ const TopHeader = ({ user }: TopHeaderProps) => {
               }}
             >
               <Icon icon={icon} width="20" height="20" />
-              <div className="mt-0.5">Sign Up As a Group</div>
+              <div className="mt-0.5">{t("sign_up_group")}</div>
             </button>
 
             {showModal && (
@@ -110,7 +110,7 @@ const TopHeader = ({ user }: TopHeaderProps) => {
           </>
         ) : (
           <div className="text-gray-500 text-lg">
-            {getTitle() === "Organization" ? "Profile" : getTitle()}
+            {getTitle() === "Organization" ? t("profile") : getTitle()}
           </div>
         )}
         <CustomizeEventModal

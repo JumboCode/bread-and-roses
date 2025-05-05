@@ -19,9 +19,11 @@ import { useRouter } from "next/navigation";
 import useApiThrottle from "../hooks/useApiThrottle";
 import { OrganizationWithUsers, UserWithVolunteerDetail } from "../app/types";
 import { getOrganizationsByDate } from "@api/organization/route.client";
+import { useTranslation } from "react-i18next";
 
 export default function CheckInOutForm() {
   const router = useRouter();
+  const { t } = useTranslation("check");
 
   const [email, setEmail] = useState("");
   const [activeButton, setActiveButton] = useState<
@@ -120,10 +122,10 @@ export default function CheckInOutForm() {
         } catch (err) {
           const errorData = JSON.parse((err as Error).message);
           if (errorData.code === "ALREADY_CHECKED_OUT") {
-            alert("You must check in before checking out again.");
+            alert(t("must_check_in_first"));
           } else {
             console.error("Check-out failed:", errorData.message);
-            alert("There was an error during check-out.");
+            alert(t("checkout_error"));
           }
         }
       }
@@ -161,10 +163,10 @@ export default function CheckInOutForm() {
         } catch (err) {
           const errorData = JSON.parse((err as Error).message);
           if (errorData.code === "ALREADY_CHECKED_OUT") {
-            alert("This group has already checked out.");
+            alert(t("group_already_checked_out"));
           } else {
             console.error("Group check-out failed:", errorData.message);
-            alert("There was an error during check-out.");
+            alert(t("checkout_error"));
           }
         }
       }
@@ -233,12 +235,10 @@ export default function CheckInOutForm() {
         const errorData = JSON.parse(err.message);
 
         if (errorData.code === "ALREADY_CHECKED_IN") {
-          alert(
-            "You have already checked in and must check out before checking in again."
-          );
+          alert(t("already_checked_in"));
         } else {
           console.error("Check-in failed:", errorData.message);
-          alert("There was an error during check-in. Please try again.");
+          alert(t("checkin_error"));
         }
       } else {
         console.error("Unexpected error:", err);
@@ -275,7 +275,7 @@ export default function CheckInOutForm() {
               }}
             >
               <Icon icon={"tabler:arrow-left"} width="20" />
-              Back
+              {t("back")}
             </button>
           </div>
           <Image
@@ -296,7 +296,7 @@ export default function CheckInOutForm() {
                     fontFamily: "Kepler Std",
                   }}
                 >
-                  Daily Check-In/Check-Out
+                  {t("daily_checkin_checkout")}
                 </div>
                 <div className="text-[#667085] text-[16px] font-normal mb-[10px]">
                   {new Date().toLocaleDateString("en-US", {
@@ -310,9 +310,9 @@ export default function CheckInOutForm() {
               <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
 
               <div className="flex flex-col w-full text-lg font-bold text-[#344054] gap-[32px]">
-                Here is your shift signup information:
+                {t("shift_signup_info")}
                 <div className="flex flex-col gap-[20px] text-[16px] font-bold text-[#344054]">
-                  Shift(s) (choose one)
+                  {t("shifts_choose_one")}
                   {timeSlots.map((slot, index) => {
                     const start = new Date(slot.startTime);
                     const end = new Date(slot.endTime);
@@ -343,7 +343,7 @@ export default function CheckInOutForm() {
                         />
                         <TextField
                           sx={{ width: "50%", pointerEvents: "none" }}
-                          label="Start"
+                          label={t("start")}
                           variant="filled"
                           value={format(start)}
                           slotProps={{
@@ -353,7 +353,7 @@ export default function CheckInOutForm() {
                         />
                         <TextField
                           sx={{ width: "50%", pointerEvents: "none" }}
-                          label="End"
+                          label={t("end")}
                           variant="filled"
                           value={format(end)}
                           slotProps={{
@@ -377,7 +377,7 @@ export default function CheckInOutForm() {
                 onClick={throttledHandleConfirm}
                 disabled={confirmLoading || selectedTimeSlot === null}
               >
-                Confirm Your Check-In
+                {t("confirm_check_in")}
               </button>
             </div>
           </div>
@@ -387,23 +387,22 @@ export default function CheckInOutForm() {
   } else if (stage === "confirmation") {
     return (
       <CheckConfirmation
-        title={`Hooray! You have checked ${
-          activeButton === "checkin" ? "in" : "out"
-        } at ${
-          checkInOutTime
+        title={t("check_success_message", {
+          action: activeButton === "checkin" ? t("in") : t("out"),
+          time: checkInOutTime
             ? checkInOutTime.toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
                 second: "2-digit",
               })
-            : ""
-        }.`}
+            : "",
+        })}
         captionText={
           activeButton === "checkin"
-            ? "Do not forget to check out before you leave!"
-            : "Thank you for your hard work today! We look forward to seeing you again soon."
+            ? t("checkin_caption")
+            : t("checkout_caption")
         }
-        buttonText="Back to First Page"
+        buttonText={t("back_to_first_page")}
         image={confirmation}
         onClick={() => {
           setEmail("");
@@ -428,7 +427,7 @@ export default function CheckInOutForm() {
             }}
           >
             <Icon icon={"tabler:arrow-left"} width="20" />
-            Back to Home Page
+            {t("back_to_home_page")}
           </button>
         </div>
         <Image
@@ -449,7 +448,7 @@ export default function CheckInOutForm() {
                   fontFamily: "Kepler Std",
                 }}
               >
-                Daily Check-In/Check-Out
+                {t("daily_checkin_checkout")}
               </div>
               <div className="text-[#667085] text-[16px] font-normal mb-[10px]">
                 {new Date().toLocaleDateString("en-US", {
@@ -463,7 +462,7 @@ export default function CheckInOutForm() {
             <hr className="w-full border-t border-[#D0D5DD] mb-[20px]" />
 
             <div className="flex flex-col w-full text-lg font-bold text-[#344054] gap-[8px]">
-              I want to
+              {t("i_want_to")}
               <div className="flex flex-row gap-4 w-full">
                 <button
                   onClick={() => setActiveButton("checkin")}
@@ -475,7 +474,7 @@ export default function CheckInOutForm() {
                             }
                     `}
                 >
-                  Check In
+                  {t("check_in")}
                 </button>
                 <button
                   onClick={() => setActiveButton("checkout")}
@@ -487,13 +486,13 @@ export default function CheckInOutForm() {
                             }
                     `}
                 >
-                  Check Out
+                  {t("check_out")}
                 </button>
               </div>
             </div>
 
             <div className="flex flex-col w-full text-lg font-bold text-[#344054] gap-[16px]">
-              Select type
+              {t("select_type")}
               <div className="flex flex-row gap-4 w-full">
                 <button
                   onClick={() => setActiveTab("individual")}
@@ -504,7 +503,7 @@ export default function CheckInOutForm() {
           : "bg-white-50 border-gray-300 border-[1px]"
       }`}
                 >
-                  Individual
+                  {t("individual")}
                 </button>
                 <button
                   onClick={() => setActiveTab("group")}
@@ -515,12 +514,12 @@ export default function CheckInOutForm() {
           : "bg-white-50 border-gray-300 border-[1px]"
       }`}
                 >
-                  Group
+                  {t("group")}
                 </button>
               </div>
               {activeTab === "individual" ? (
                 <>
-                  <div>Your Email</div>
+                  <div>{t("your_email")}</div>
                   <Autocomplete
                     includeInputInList
                     disableClearable
@@ -557,7 +556,7 @@ export default function CheckInOutForm() {
                 </>
               ) : (
                 <>
-                  <div>Organization Name</div>
+                  <div>{t("organization_name")}</div>
                   <Autocomplete
                     includeInputInList
                     disableClearable
@@ -606,7 +605,7 @@ export default function CheckInOutForm() {
                 throttledHandleContinue(e);
               }}
             >
-              Continue
+              {t("continue")}
             </button>
           </div>
         </div>

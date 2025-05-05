@@ -14,6 +14,7 @@ import { InputAdornment, TextField } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { UserWithVolunteerDetail } from "../app/types";
+import { useTranslation } from "react-i18next";
 
 interface ProfileContentProps {
   user: UserWithVolunteerDetail;
@@ -27,6 +28,7 @@ export default function ProfileContent({
   editable,
 }: ProfileContentProps) {
   const router = useRouter();
+  const { t } = useTranslation(["translation", "profile"]);
 
   const startButtonRef = React.useRef(null);
   const startCalendarRef = React.useRef<HTMLDivElement>(null);
@@ -126,7 +128,7 @@ export default function ProfileContent({
             className="flex items-center gap-2 bg-teal-600 p-2.5 px-3 text-white rounded-md font-semibold"
           >
             <Icon icon="ic:round-edit" width="24" height="20" />
-            Edit
+            {t("edit", { ns: "profile" })}
           </button>
         ) : null}
       </div>
@@ -138,7 +140,7 @@ export default function ProfileContent({
               <div className="flex items-center gap-3">
                 <Icon icon="ic:round-timeline" height={44} />
                 <div className="font-bold font-['Kepler_Std'] text-4xl">
-                  Volunteer Log
+                  {t("volunteer_log", { ns: "profile" })}
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -147,7 +149,7 @@ export default function ProfileContent({
                     className="border border-gray-300 rounded-md px-3 py-2 w-[215.5px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                     placeholder="MM/DD/YYYY"
                     variant="outlined"
-                    label="Start Date"
+                    label={t("start_date", { ns: "profile" })}
                     autoComplete="off"
                     size="small"
                     onFocus={() => setShowStartCalendar(!showStartCalendar)}
@@ -206,7 +208,7 @@ export default function ProfileContent({
                     className="border border-gray-300 rounded-md px-3 py-2 w-[215.5px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                     placeholder="MM/DD/YYYY"
                     variant="outlined"
-                    label="End Date"
+                    label={t("end_date", { ns: "profile" })}
                     autoComplete="off"
                     size="small"
                     onFocus={() => setShowEndCalendar(!showEndCalendar)}
@@ -263,22 +265,22 @@ export default function ProfileContent({
               </div>
             </div>
             <div className="flex justify-between">
-              <div>Personal Stats</div>
+              <div>{t("personal_stats", { ns: "profile" })}</div>
               <div className="flex gap-4">
                 <StatsCard
-                  heading="Personal volunteer hours"
+                  heading={t("personal_volunteer_hours", { ns: "profile" })}
                   value={hours}
                   icon="tabler:clock-check"
                 />
                 <StatsCard
-                  heading="Days volunteered"
+                  heading={t("days_volunteered", { ns: "profile" })}
                   value={days}
                   icon="mdi:calendar-outline"
                 />
               </div>
             </div>
             <div className="flex justify-between">
-              <div>Volunteer Timesheet</div>
+              <div>{t("volunteer_timesheet", { ns: "profile" })}</div>
               <div className="w-[736px]">
                 {filteredSessions.length === 0 ? (
                   <div className="text-center">
@@ -291,7 +293,7 @@ export default function ProfileContent({
                       />
                     </div>
                     <div className="text-[#344054] font-['Kepler_Std'] text-2xl font-semibold mt-8">
-                      It looks like there are no time slots in this range!
+                      {t("no_time_slots_in_range", { ns: "profile" })}
                     </div>
                   </div>
                 ) : (
@@ -303,7 +305,7 @@ export default function ProfileContent({
               <div className="flex items-center gap-3">
                 <Icon icon="material-symbols:person-rounded" height={44} />
                 <div className="font-bold font-['Kepler_Std'] text-4xl">
-                  Personal Information
+                  {t("personal_information", { ns: "profile" })}
                 </div>
               </div>
               {editable ? (
@@ -314,13 +316,15 @@ export default function ProfileContent({
                   className="flex items-center gap-2 bg-teal-600 p-2.5 px-3 text-white rounded-md font-semibold"
                 >
                   <Icon icon="ic:round-edit" width="24" height="20" />
-                  Edit
+                  {t("edit", { ns: "profile" })}
                 </button>
               ) : null}
             </div>
             {/* Volunteer Reason Field */}
             <div className="flex items-center">
-              <div className="w-1/3 font-bold text-[#344054]">Organization</div>
+              <div className="w-1/3 font-bold text-[#344054]">
+                {t("organization", { ns: "profile" })}
+              </div>
               <div className="flex-1">
                 <div className="w-full h-[56px] bg-[#F9FAFB] rounded-t-md overflow-hidden flex flex-col justify-start items-start">
                   <div className="w-full px-3 py-4 inline-flex justify-start items-center whitespace-normal break-words">
@@ -334,20 +338,20 @@ export default function ProfileContent({
             <div className="flex">
               <div className="w-1/3">
                 <div className="font-bold text-[#344054] mb-1">
-                  Are you over 14? <span className="text-[#E61932]">*</span>
+                  {t("over_14_question", { ns: "profile" })}{" "}
+                  <span className="text-[#E61932]">*</span>
                 </div>
                 <div className="text-sm font-normal text-[#667085]">
-                  Note: we require volunteers to be over 14 years old to work
-                  with us.
+                  {t("over_14_note", { ns: "profile" })}
                 </div>
               </div>
               <div className="flex gap-8 flex-grow">
                 <RadioButton
-                  label="Yes"
+                  label={t("yes", { ns: "profile" })}
                   checked={user.volunteerDetails?.ageOver14 === true}
                 />
                 <RadioButton
-                  label="No"
+                  label={t("no", { ns: "profile" })}
                   checked={user.volunteerDetails?.ageOver14 === false}
                 />
               </div>
@@ -355,12 +359,12 @@ export default function ProfileContent({
             {/* First Time Volunteering Field */}
             <div className="flex items-center">
               <div className="font-bold text-[#344054] w-1/3">
-                Is this your first time volunteering with us?{" "}
+                {t("first_time_question", { ns: "profile" })}{" "}
                 <span className="text-[#E61932]">*</span>
               </div>
               <div className="flex gap-8 items-center flex-grow">
                 <RadioButton
-                  label="Yes"
+                  label={t("yes", { ns: "profile" })}
                   checked={user.volunteerDetails?.firstTime === true}
                 />
                 <RadioButton
@@ -372,7 +376,8 @@ export default function ProfileContent({
             {/* Address Field */}
             <div className="flex">
               <div className="w-1/3 font-bold text-[#344054]">
-                Address <span className="text-[#E61932]">*</span>
+                {t("address", { ns: "profile" })}{" "}
+                <span className="text-[#E61932]">*</span>
               </div>
               <div className="flex flex-col gap-4 flex-grow">
                 {/* Street Field */}
@@ -430,12 +435,12 @@ export default function ProfileContent({
             {/* Driver's License Field */}
             <div className="flex items-center">
               <div className="w-1/3 font-bold text-[#344054]">
-                Do you have a driver&apos;s license?{" "}
+                {t("drivers_license_question", { ns: "profile" })}{" "}
                 <span className="text-[#E61932]">*</span>
               </div>
               <div className="flex gap-8 items-center flex-grow">
                 <RadioButton
-                  label="Yes"
+                  label={t("yes", { ns: "profile" })}
                   checked={user.volunteerDetails?.hasLicense === true}
                 />
                 <RadioButton
@@ -447,11 +452,12 @@ export default function ProfileContent({
             {/* Speak Spanish Field */}
             <div className="flex items-center">
               <div className="w-1/3 font-bold text-[#344054]">
-                Do you speak Spanish? <span className="text-[#E61932]">*</span>
+                {t("speak_spanish_question", { ns: "profile" })}{" "}
+                <span className="text-[#E61932]">*</span>
               </div>
               <div className="flex gap-8 items-center flex-grow">
                 <RadioButton
-                  label="Yes"
+                  label={t("yes", { ns: "profile" })}
                   checked={user.volunteerDetails?.speaksEsp === true}
                 />
                 <RadioButton
@@ -463,7 +469,7 @@ export default function ProfileContent({
             {/* Volunteer Reason Field */}
             <div className="flex items-center">
               <div className="w-1/3 font-bold text-[#344054]">
-                Why do you want to volunteer with us?{" "}
+                {t("why_volunteer_question", { ns: "profile" })}{" "}
                 <span className="text-[#E61932]">*</span>
               </div>
               <div className="flex-1">
@@ -478,7 +484,7 @@ export default function ProfileContent({
             {/* Questions/Comments Field */}
             <div className="flex items-center">
               <div className="w-1/3 font-bold text-[#344054]">
-                Do you have any other questions or comments?
+                {t("other_questions_prompt", { ns: "profile" })}
               </div>
               <div className="flex-1">
                 <div className="w-full h-[56px] bg-[#F9FAFB] rounded-t-md overflow-hidden flex flex-col justify-start items-start">

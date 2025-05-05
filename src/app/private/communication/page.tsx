@@ -9,6 +9,7 @@ import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Attachment } from "nodemailer/lib/mailer";
+import { useTranslation } from "react-i18next";
 
 export default function CommunicationPage() {
   const [step, setStep] = useState(1);
@@ -17,6 +18,7 @@ export default function CommunicationPage() {
     code: "SUCCESS" | "ERROR";
     message: string;
   }
+  const { t } = useTranslation("communication");
 
   const [subject, setSubject] = React.useState("");
   const [fromEmail] = React.useState("breadandrosesjc@gmail.com");
@@ -104,18 +106,18 @@ export default function CommunicationPage() {
     <div className="flex flex-col gap-8 h-full">
       <div className="flex items-center gap-3 text-4xl font-['Kepler_Std'] font-semibold">
         <GroupRoundedIcon sx={{ width: 44, height: 44 }}></GroupRoundedIcon>
-        Send Email To Volunteers
+        {t("send_email_to_volunteers")}
       </div>
       {step === 1 && (
         <>
           <div className="flex items-start">
             <div className="w-1/3">
-              <p className="font-semibold">Subject</p>
+              <p className="font-semibold">{t("email_subject")}</p>
             </div>
             <div className="w-2/3">
               <input
                 type="text"
-                placeholder="ex: Welcome to Bread & Roses!"
+                placeholder={t("email_example")}
                 className="border border-gray-300 rounded-md p-2 w-full"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
@@ -125,8 +127,8 @@ export default function CommunicationPage() {
 
           <div className="flex items-start">
             <div className="w-1/3">
-              <p className="font-semibold">Email From</p>
-              <p className="text-gray-500">This is the default email.</p>
+              <p className="font-semibold">{t("email_from")}</p>
+              <p className="text-gray-500">{t("default_email_note")}</p>
             </div>
             <div className="w-2/3">
               <input
@@ -140,10 +142,8 @@ export default function CommunicationPage() {
 
           <div className="flex items-start">
             <div className="w-1/3">
-              <p className="font-semibold">Email Body</p>
-              <p className="text-gray-500">
-                This will be sent to all volunteers on the site.
-              </p>
+              <p className="font-semibold">{t("email_body")}</p>
+              <p className="text-gray-500">{t("email_reach_note")}</p>
             </div>
             <div className="w-2/3 flex flex-col gap-6">
               <button
@@ -154,9 +154,8 @@ export default function CommunicationPage() {
                 <FileUploadRoundedIcon sx={{ color: "#138D8A" }} />
                 <p>
                   <span className="text-teal-600 font-semibold">
-                    Click to upload
+                    {t("click_to_upload")}
                   </span>{" "}
-                  or drag and drop
                 </p>
               </button>
               <input
@@ -178,7 +177,7 @@ export default function CommunicationPage() {
                       <div className="text-gray-500 flex flex-row gap-2">
                         <div>{formatFileSize(src.size)}</div>
                         <div>•</div>
-                        <div>Complete</div>
+                        <div>{t("complete")}</div>
                       </div>
                     </div>
                     <DeleteIcon
@@ -194,7 +193,7 @@ export default function CommunicationPage() {
 
               <textarea
                 className="border border-gray-300 rounded-md p-2 w-full resize-none"
-                placeholder="Type your email content"
+                placeholder={t("type_email_content")}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 rows={10}
@@ -222,7 +221,7 @@ export default function CommunicationPage() {
                   }
                 }}
               >
-                Send Email
+                {t("send_email")}
               </button>
             </div>
           </div>
@@ -241,14 +240,14 @@ export default function CommunicationPage() {
                 quality={100}
               />
               <div className="text-3xl font-['Kepler_Std'] font-semibold">
-                Email sent! You will receive a copy via email.
+                {t("email_sent_confirmation")}
               </div>
             </div>
             <button
               onClick={() => handleBackToOriginalPage()}
               className="w-auto h-auto font-semibold bg-teal-600 py-2.5 px-4 text-white rounded-md items-center"
             >
-              Back to the original page
+              {t("back_to_original_page")}
             </button>
           </div>
         </>

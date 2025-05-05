@@ -11,11 +11,13 @@ import { UserWithVolunteerDetail } from "../../../../types";
 import { Autocomplete, TextField } from "@mui/material";
 import { Organization } from "@prisma/client";
 import { getOrganizations } from "@api/organization/route.client";
+import { useTranslation } from "react-i18next";
 
 export default function EditProfilePage() {
   const router = useRouter();
   const { userId } = useParams();
   const { data: session, status, update } = useSession();
+  const { t } = useTranslation(["translation", "profile"]);
 
   const [user, setUser] = useState<UserWithVolunteerDetail | null>(null);
   const [volunteerDetails, setVolunteerDetails] =
@@ -171,7 +173,7 @@ export default function EditProfilePage() {
   if (status === "loading" || loading) {
     return (
       <div className="h-screen flex justify-center items-center text-3xl">
-        Loading...
+        {t("loading", { ns: "profile" })}...
       </div>
     );
   }
@@ -179,7 +181,7 @@ export default function EditProfilePage() {
   if (!session) {
     return (
       <div className="h-screen flex justify-center items-center text-xl">
-        You must be logged in to edit your profile.
+        {t("must_be_logged_in")}
       </div>
     );
   }
@@ -192,7 +194,7 @@ export default function EditProfilePage() {
           onClick={() => router.push(`/private/profile/${userId}`)}
           className="px-4 py-2 bg-gray-200 rounded"
         >
-          Go back
+          {t("go_back")}
         </button>
       </div>
     );
@@ -201,7 +203,7 @@ export default function EditProfilePage() {
   if (!user) {
     return (
       <div className="h-[calc(100vh-90px)] flex justify-center items-center text-3xl">
-        Loading...
+        {t("loading", { ns: "profile" })}...
       </div>
     );
   }
@@ -209,14 +211,16 @@ export default function EditProfilePage() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#101828]">Edit Info</h1>
+        <h1 className="text-2xl font-bold text-[#101828]">
+          {t("edit_info", { ns: "profile" })}
+        </h1>
         <div className="flex gap-4">
           <button
             type="button"
             onClick={handleCancel}
             className="px-4 py-2 bg-gray-300 text-black rounded-md"
           >
-            Cancel
+            {t("cancel", { ns: "profile" })}
           </button>
           <button
             type="submit"
@@ -224,7 +228,7 @@ export default function EditProfilePage() {
             onClick={throttledHandleSave}
             disabled={!isFormValid() || saveLoading}
           >
-            Save
+            {t("save", { ns: "profile" })}
           </button>
         </div>
       </div>
@@ -232,7 +236,7 @@ export default function EditProfilePage() {
       {/* First Name / Last Name */}
       <div className="flex items-center justify-between">
         <div className="font-bold text-[#344054] w-1/3">
-          Name <span className="text-red-500">*</span>
+          {t("name", { ns: "profile" })} <span className="text-red-500">*</span>
         </div>
 
         <div className="flex flex-col md:flex-row gap-4 flex-grow">
@@ -262,7 +266,9 @@ export default function EditProfilePage() {
         <>
           <div className="flex items-start justify-between">
             <div className="w-1/3">
-              <div className="font-bold text-[#344054]">Organization</div>
+              <div className="font-bold text-[#344054]">
+                {t("organization", { ns: "profile" })}
+              </div>
             </div>
             <div className="flex-grow">
               <Autocomplete
@@ -303,16 +309,16 @@ export default function EditProfilePage() {
           <div className="flex items-center justify-between">
             <div className="w-1/3">
               <div className="font-bold text-[#344054]">
-                Are you over 14? <span className="text-[#E61932]">*</span>
+                {t("over_14_question", { ns: "profile" })}{" "}
+                <span className="text-[#E61932]">*</span>
               </div>
               <div className="text-sm font-normal text-[#667085]">
-                Note: we require volunteers to be over 14 years old to work with
-                us.
+                {t("over_14_note", { ns: "profile" })}
               </div>
             </div>
             <div className="flex gap-8 items-center flex-grow">
               <RadioButton
-                label="Yes"
+                label={t("yes", { ns: "profile" })}
                 checked={volunteerDetails?.ageOver14 === true}
                 onChange={() => handleChange("ageOver14", true)}
               />
@@ -328,12 +334,12 @@ export default function EditProfilePage() {
           {/* First time volunteering? */}
           <div className="flex items-center justify-between">
             <label className="font-bold text-[#344054] w-1/3">
-              Is this your first time volunteering with us?{" "}
+              {t("first_time_question", { ns: "profile" })}{" "}
               <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-8 items-center flex-grow">
               <RadioButton
-                label="Yes"
+                label={t("yes", { ns: "profile" })}
                 checked={volunteerDetails?.firstTime === true}
                 onChange={() => handleChange("firstTime", true)}
               />
@@ -350,7 +356,8 @@ export default function EditProfilePage() {
             {/* Address Row */}
             <div className="flex items-center justify-between mb-2">
               <div className="font-bold text-[#344054] w-1/3">
-                Address <span className="text-red-500">*</span>
+                {t("address", { ns: "profile" })}{" "}
+                <span className="text-red-500">*</span>
               </div>
               <div className="flex-grow">
                 <input
@@ -409,12 +416,12 @@ export default function EditProfilePage() {
           {/* Driver's license? */}
           <div className="flex items-center justify-between">
             <label className="font-bold text-[#344054] w-1/3">
-              Do you have a driver&apos;s license?{" "}
+              {t("drivers_license_question", { ns: "profile" })}{" "}
               <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-8 items-center flex-grow">
               <RadioButton
-                label="Yes"
+                label={t("yes", { ns: "profile" })}
                 checked={volunteerDetails?.hasLicense === true}
                 onChange={() => handleChange("hasLicense", true)}
               />
@@ -429,11 +436,12 @@ export default function EditProfilePage() {
           {/* Speak Spanish? */}
           <div className="flex items-center justify-between">
             <label className="font-bold text-[#344054] w-1/3">
-              Do you speak Spanish? <span className="text-red-500">*</span>
+              {t("speak_spanish_question", { ns: "profile" })}{" "}
+              <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-8 items-center flex-grow">
               <RadioButton
-                label="Yes"
+                label={t("yes", { ns: "profile" })}
                 checked={volunteerDetails?.speaksEsp === true}
                 onChange={() => handleChange("speaksEsp", true)}
               />
@@ -451,7 +459,7 @@ export default function EditProfilePage() {
             <div className="flex items-start justify-between mb-4">
               <div className="w-1/3">
                 <label className="font-bold text-[#344054]">
-                  Why do you want to volunteer with us?{" "}
+                  {t("why_volunteer_question", { ns: "profile" })}{" "}
                   <span className="text-red-500">*</span>
                 </label>
               </div>
@@ -469,7 +477,7 @@ export default function EditProfilePage() {
             <div className="flex items-start justify-between">
               <div className="w-1/3">
                 <div className="font-bold text-[#344054]">
-                  Do you have any other questions or comments?
+                  {t("other_questions_prompt", { ns: "profile" })}
                 </div>
               </div>
               <div className="flex-grow">

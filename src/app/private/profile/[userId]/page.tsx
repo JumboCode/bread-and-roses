@@ -7,11 +7,13 @@ import ProfileContent from "@components/ProfileContent";
 import { UserWithVolunteerDetail } from "../../../types";
 import { VolunteerSession } from "@prisma/client";
 import { getUser } from "@api/user/route.client";
+import { useTranslation } from "react-i18next";
 
 export default function UserProfilePage() {
   const { userId } = useParams();
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { t } = useTranslation("profile");
 
   const [user, setUser] = useState<UserWithVolunteerDetail | null>(null);
   const [sessions, setSessions] = useState<VolunteerSession[]>([]);
@@ -48,7 +50,7 @@ export default function UserProfilePage() {
   if (loading || !user) {
     return (
       <div className="h-screen flex justify-center items-center text-3xl">
-        Loading...
+        {t("loading")}...
       </div>
     );
   }

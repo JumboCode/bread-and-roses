@@ -1,0 +1,15 @@
+{
+  "send_email_to_volunteers": "Send Email To Volunteers",
+  "email_subject": "Subject",
+  "email_from": "Email From",
+  "default_email_note": "This is the default email.",
+  "email_body": "Email Body",
+  "email_reach_note": "This will be sent to all volunteers on the site.",
+  "email_example": "ex: Welcome to Bread & Roses!",
+  "click_to_upload": "Click to upload",
+  "type_email_content": "Type your email content",
+  "send_email": "Send Email",
+  "complete": "Complete",
+  "email_sent_confirmation": "Email sent! You will receive a copy via email.",
+  "back_to_original_page": "Back to the original page"
+}

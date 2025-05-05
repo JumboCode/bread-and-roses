@@ -10,5 +10,11 @@
   "profile": "Profile",
   "logout": "Logout",
   "see_all": "See all",
-  "ver_more": "See all"
+  "ver_more": "See all",
+  "customize_event": "Customize Event",
+  "sign_up_group": "Sign Up As a Group",
+  "admin": "Admin",
+  "communication": "Communication",
+  "organization": "Organization",
+  "check_in_out": "Check-in/out"
 }

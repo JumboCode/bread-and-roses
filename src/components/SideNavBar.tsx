@@ -26,7 +26,7 @@ const currentYear = new Date().getFullYear();
 const SideNavBar = ({ user }: SideNavBarProps) => {
   const router = useRouter();
   const pathname = usePathname();
-  const { t } = useTranslation(["translation"]);
+  const { t } = useTranslation("translation");
 
   const adminTabs = [
     { name: t("home"), icon: "tabler:home", href: "/private" },
@@ -37,12 +37,12 @@ const SideNavBar = ({ user }: SideNavBarProps) => {
       href: "/private/volunteers",
     },
     {
-      name: "Communication",
+      name: t("communication"),
       icon: "material-symbols:inbox-outline",
       href: "/private/communication",
     },
     {
-      name: "Check-in/out",
+      name: t("check_in_out"),
       icon: "material-symbols:check-circle-outline-rounded",
       href: "/private/check-in-out",
     },
